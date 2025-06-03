@@ -1,5 +1,6 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.DTOs;
+package com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages;
 
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.BaseMessage;
 import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.Enums.MessageType;
 import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.Enums.OnlineStatusType;
 import jakarta.validation.constraints.NotNull;

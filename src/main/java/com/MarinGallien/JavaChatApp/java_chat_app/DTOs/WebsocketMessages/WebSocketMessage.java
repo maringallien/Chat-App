@@ -1,9 +1,10 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.DTOs;
+package com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages;
 
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.BaseMessage;
 import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.Enums.MessageType;
 import jakarta.validation.constraints.NotBlank;
 
-public class WebSocketMessage extends BaseMessage{
+public class WebSocketMessage extends BaseMessage {
     // Parameters
     @NotBlank(message = "Room ID cannot be blank")
     private String roomID;
