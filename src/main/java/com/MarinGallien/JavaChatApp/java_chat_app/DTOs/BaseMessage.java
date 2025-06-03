@@ -1,6 +1,8 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.DTOs;
 
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.Enums.MessageType;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -14,11 +16,11 @@ public class BaseMessage {
     @NotBlank(message = "Message ID cannot be blank")
     private String messageID;
 
-    @NotBlank(message = "Message type cannot be blank")
-    private String type;
+    @NotNull(message = "Message type cannot be blank")
+    private MessageType type;
 
     @NotBlank(message = "Sender ID cannot be blank")
-    private String senderID;
+    private String clientID;
 
     @NotBlank(message = "Timestamp ID cannot be blank")
     private Long timestamp;
@@ -30,40 +32,23 @@ public class BaseMessage {
     }
 
     // Constructor with required fields - used when creating DTO objects in code
-    protected BaseMessage(String type, String senderID) {
+    protected BaseMessage(MessageType type, String clientID) {
         this();
         this.type = type;
-        this.senderID = senderID;
+        this.clientID = clientID;
     }
 
     // Getters
-    public String getMessageID() {
-        return messageID;
-    }
-    public String getType() {
-        return type;
-    }
-    public String getSenderID() {
-        return senderID;
-    }
-    public Long getTimestamp() {
-        return timestamp;
-    }
-
+    public String getMessageID() {return messageID;}
+    public MessageType getType() {return type;}
+    public String getClientID() {return clientID;}
+    public Long getTimestamp() {return timestamp;}
 
     // Setters
-    public void setMessageID(String messageID){
-        this.messageID = messageID;
-    }
-    public void setType(String type) {
-        this.type = type;
-    }
-    public void setSenderID(String senderID) {
-        this.senderID = senderID;
-    }
-    public void setTimestamp(Long timestamp) {
-        this.timestamp = timestamp;
-    }
+    public void setMessageID(String messageID) {this.messageID = messageID;}
+    public void setType(MessageType type) {this.type = type;}
+    public void setClientID(String clientID) {this.clientID = clientID;}
+    public void setTimestamp(Long timestamp) {this.timestamp = timestamp;}
 
     // Equals function checks for equality between 2 DTO IDs.
     @Override
@@ -71,7 +56,7 @@ public class BaseMessage {
         // Check for equality
         if (this == obj) return true;
         // Check for type equality
-        if (obj != null || this.getClass() != obj.getClass()) return false;
+        if (obj == null || this.getClass() != obj.getClass()) return false;
         // Convert to BaseMessage to access fields and check message ID equality
         BaseMessage that = (BaseMessage) obj;
         return messageID != null ? messageID.equals(that.messageID) : that.messageID == null;
@@ -87,11 +72,10 @@ public class BaseMessage {
     @Override
     public String toString() {
         return "BaseMessage{" +
-                "messageId='" + messageId + '\'' +
+                "messageId='" + messageID + '\'' +
                 ", type='" + type + '\'' +
-                ", senderId='" + senderId + '\'' +
+                ", clientID='" + clientID + '\'' +
                 ", timestamp=" + timestamp +
-                ", version='" + version + '\'' +
                 '}';
     }
 }
