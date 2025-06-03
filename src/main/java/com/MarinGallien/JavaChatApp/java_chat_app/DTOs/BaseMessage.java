@@ -68,7 +68,7 @@ public class BaseMessage {
         return messageID != null ? messageID.hashCode() : 0;
     }
 
-    // basic toString function
+    // Basic toString function
     @Override
     public String toString() {
         return "BaseMessage{" +
