@@ -1,4 +1,4 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.DTOs.Enums;
+package com.MarinGallien.JavaChatApp.java_chat_app.Enums;
 
 public enum MessageType {
     TEXT_MESSAGE("TEXT_MESSAGE"),

@@ -1,6 +1,6 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.DTOs;
 
-import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.Enums.MessageType;
+import com.MarinGallien.JavaChatApp.java_chat_app.Enums.MessageType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

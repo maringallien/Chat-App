@@ -1,6 +1,6 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.DTOs.Enums;
+package com.MarinGallien.JavaChatApp.java_chat_app.Enums;
 
-public enum OnlineStatusType {
+public enum OnlineStatus {
     ONLINE("ONLINE"),
     OFFLINE("OFFLINE");
 
@@ -8,7 +8,7 @@ public enum OnlineStatusType {
     private final String value;
 
     // Constructor creates string representation of enum for JSON
-    OnlineStatusType(String value) {this.value = value;}
+    OnlineStatus(String value) {this.value = value;}
 
     // Returns the string value of message type for JSON serialization
     public String getValue() {return value;}
@@ -18,8 +18,8 @@ public enum OnlineStatusType {
     public String toString() {return value;}
 
     // Method used by JSON for deserialization of string into corresponding MessageType enum\
-    public static OnlineStatusType fromString(String value) {
-        for (OnlineStatusType status : OnlineStatusType.values()) {
+    public static OnlineStatus fromString(String value) {
+        for (OnlineStatus status : OnlineStatus.values()) {
             if (status.value.equals(value)) {
                 return status;
             }

@@ -114,7 +114,9 @@ public class RoomManager {
             return false;
         }
 
+
         Room removedRoom = rooms.remove(roomID.trim());
+        removedRoom.clearRoom();
 
         if (removedRoom != null) {
             logger.info("Room {} with {} participants was successfully removed", roomID, removedRoom.getMembersCount());
@@ -127,9 +129,15 @@ public class RoomManager {
 
     // Deletes all rooms
     public boolean clearAllRooms() {
-        int roomCount = rooms.size();
-        rooms.clear();
-        logger.info("{} rooms were deleted", roomCount);
+        try {
+            int roomCount = rooms.size();
+            rooms.clear();
+            logger.info("{} rooms were deleted", roomCount);
+            return true;
+        } catch (Exception e) {
+            logger.error("Error clearing rooms", e);
+            return false;
+        }
     }
 
     // Returns a room object corresponding to roomID

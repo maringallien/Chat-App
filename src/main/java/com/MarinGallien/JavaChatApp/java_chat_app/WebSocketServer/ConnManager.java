@@ -11,9 +11,9 @@ import java.util.HashSet;
 
 public class ConnManager {
     private static final Logger logger = LoggerFactory.getLogger(ConnManager.class);
-
+    private static final int MAX_USER_SESSSIONS = 5;
     // Connections map - userID:WebSocketSession
-    private final Map<String, WebSocketSession> activeConnections = new ConcurrentHashMap<>();
+    private final Map<String, Set<WebSocketSession>> activeConnections = new ConcurrentHashMap<>();
 
     // Adds a new connection to the hashmap
     public boolean addConnection(String userID, WebSocketSession session) {

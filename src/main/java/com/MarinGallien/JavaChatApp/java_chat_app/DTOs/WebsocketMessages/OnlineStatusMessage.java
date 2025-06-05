@@ -1,29 +1,29 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.BaseMessage;
-import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.Enums.MessageType;
-import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.Enums.OnlineStatusType;
+import com.MarinGallien.JavaChatApp.java_chat_app.Enums.MessageType;
+import com.MarinGallien.JavaChatApp.java_chat_app.Enums.OnlineStatus;
 import jakarta.validation.constraints.NotNull;
 
 public class OnlineStatusMessage extends BaseMessage {
     // Parameters
     @NotNull(message = "Status cannot be null")
-    private OnlineStatusType status;
+    private OnlineStatus status;
 
     // Default constructor
     public OnlineStatusMessage() {super();}
 
     // Constructor for creating online presence messages
-    public OnlineStatusMessage(OnlineStatusType status, String senderID){
+    public OnlineStatusMessage(OnlineStatus status, String senderID){
         super(MessageType.ONLINE_PRESENCE, senderID);
         this.status = status;
     }
 
     // Getters
-    public OnlineStatusType getStatus() {return status;}
+    public OnlineStatus getStatus() {return status;}
 
     // Setters
-    public void setStatus(OnlineStatusType status) {this.status = status;}
+    public void setStatus(OnlineStatus status) {this.status = status;}
 
     public String toString() {
         return "PresenceMessage{" +
