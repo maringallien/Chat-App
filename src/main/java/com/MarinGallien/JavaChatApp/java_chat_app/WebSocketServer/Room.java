@@ -21,9 +21,14 @@ public class Room {
 
     private final Set<String> participants = ConcurrentHashMap.newKeySet();
 
-    // Constructor
+    // Default constructor generates roomID internally
     public Room() {
         this.roomID = generateRoomID();
+        this.createdAt = Instant.now().toEpochMilli();
+    }
+
+    public Room(String roomID) {
+        this.roomID = roomID;
         this.createdAt = Instant.now().toEpochMilli();
     }
 
@@ -31,18 +36,21 @@ public class Room {
     public String getRoomID() {return roomID;}
     public Long getCreatedAt() {return createdAt;}
 
-
+    // Check user ID is valid
+    private boolean checkId(String ID) {
+       return ID != null && !ID.trim().isEmpty();
+    }
 
     // Method adds new participant to room
     public boolean addMember(String userID) {
         // Check that we have a userID
-        if (userID != null || userID.trim().isEmpty()){
+        if (!checkId(userID)){
             logger.warn("Cannot add user: User ID is null or empty");
             return false;
         }
 
         // Add user to room
-        boolean wasAdded = participants.add(userID. trim());
+        boolean wasAdded = participants.add(userID.trim());
 
         if (wasAdded) {
             logger.info("Added user {} to room {}.", userID, roomID);
@@ -56,7 +64,7 @@ public class Room {
     // Method removes member from room
     public boolean removeMember(String userID) {
         // Check that we have a userID
-        if (userID != null || userID.trim().isEmpty()){
+        if (!checkId(userID)){
             logger.warn("Cannot remove user: User ID is null or empty");
             return false;
         }
@@ -75,7 +83,7 @@ public class Room {
     // Method checks if the room contains userID
     public boolean hasMember(String userID) {
         // Check that we have a userID
-        if (userID != null || userID.trim().isEmpty()){
+        if (!checkId(userID)){
             return false;
         }
 
