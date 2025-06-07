@@ -1,4 +1,4 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities;
+package com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.OnlineStatus;
 import jakarta.persistence.*;
@@ -16,7 +16,7 @@ import java.util.Set;
 public class UserEntity {
 
 
-    // Entities:
+    // Columns:
 
     // Create primary key column
     @Id
@@ -152,7 +152,7 @@ public class UserEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (this.obj = obj) return true;
+        if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         UserEntity user = (UserEntity) obj;
         return userId != null ? userId.equals(user.userId) : user.userId == null;
