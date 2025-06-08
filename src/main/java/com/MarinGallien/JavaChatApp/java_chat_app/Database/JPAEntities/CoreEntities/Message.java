@@ -1,7 +1,5 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities;
 
-import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.JunctionEntities.MessageFile;
-import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.JunctionEntities.MessageRecipient;
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.MessageType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -12,11 +10,10 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.MarinGallien.JavaChatApp.java_chat_app.Enums.MessageType;
 
 @Entity
 @Table(name = "messages")
-public class MessageEntity {
+public class Message {
 
     // Columns
 
@@ -29,12 +26,12 @@ public class MessageEntity {
     // Create sender column
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id", nullable = false)
-    private UserEntity sender;
+    private User sender;
 
     // Create chat column
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_id", nullable = false)
-    private ChatEntity chat;
+    private Chat chat;
 
     // Create message content column
     @NotBlank
@@ -55,20 +52,16 @@ public class MessageEntity {
 
     // Relationships
 
-    // Message to recipients relationship
-    @OneToMany(mappedBy = "message", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<MessageRecipient> recipients = new HashSet<>();
-
     // Message to files relationship
     @OneToMany(mappedBy = "message", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<MessageFile> messageFiles = new HashSet<>();
+    private Set<File> messageFileEntities = new HashSet<>();
 
 
     // Constructors
 
-    public MessageEntity() {}
+    public Message() {}
 
-    public MessageEntity(UserEntity sender, ChatEntity chat, String content, MessageType messageType) {
+    public Message(User sender, Chat chat, String content, MessageType messageType) {
         this.sender = sender;
         this.chat = chat;
         this.content = content;
@@ -80,10 +73,10 @@ public class MessageEntity {
     public String getMessageId() {
         return messageId;
     }
-    public UserEntity getSender() {
+    public User getSender() {
         return sender;
     }
-    public ChatEntity getChat() {
+    public Chat getChat() {
         return chat;
     }
     public String getContent() {
@@ -95,11 +88,8 @@ public class MessageEntity {
     public MessageType getMessageType() {
         return messageType;
     }
-    public Set<MessageRecipient> getRecipients() {
-        return recipients;
-    }
-    public Set<MessageFile> getMessageFiles() {
-        return messageFiles;
+    public Set<File> getMessageFiles() {
+        return messageFileEntities;
     }
 
 
@@ -107,10 +97,10 @@ public class MessageEntity {
     public void setMessageId(String messageId) {
         this.messageId = messageId;
     }
-    public void setSender(UserEntity sender) {
+    public void setSender(User sender) {
         this.sender = sender;
     }
-    public void setChat(ChatEntity chat) {
+    public void setChat(Chat chat) {
         this.chat = chat;
     }
     public void setContent(String content) {
@@ -122,32 +112,25 @@ public class MessageEntity {
     public void setMessageType(MessageType messageType) {
         this.messageType = messageType;
     }
-    public void setRecipients(Set<MessageRecipient> recipients) {
-        this.recipients = recipients;
-    }
-    public void setMessageFiles(Set<MessageFile> messageFiles) {
-        this.messageFiles = messageFiles;
-    }
+    public void setMessageFiles(Set<File> messageFileEntities) {this.messageFileEntities = messageFileEntities;}
 
 
     // Helper Methods
 
-    // Adds a recipient to the message
-    public void addRecipient(MessageRecipient recipient) {
-        recipients.add(recipient);
-    }
-
     // Associates a file with a message
-    public void addFile(MessageFile messageFile) {
-        messageFiles.add(messageFile);
-    }
+    public void addFile(File messageFile) {messageFileEntities.add(messageFile);}
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        MessageEntity message = (MessageEntity) obj;
+        Message message = (Message) obj;
         return messageId != null ? messageId.equals(message.messageId) : message.messageId == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return messageId != null ? messageId.hashCode() : 0;
     }
 
     @Override

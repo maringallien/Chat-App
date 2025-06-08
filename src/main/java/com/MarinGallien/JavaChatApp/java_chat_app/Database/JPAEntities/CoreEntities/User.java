@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class UserEntity {
+public class User {
 
 
     // Columns:
@@ -65,7 +65,7 @@ public class UserEntity {
 
     // User to files relationship
     @OneToMany(mappedBy = "uploader", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<FileEntity> uploadedFiles = new HashSet<>();
+    private Set<File> uploadedFiles = new HashSet<>();
 
     // User to session relationship
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -73,9 +73,9 @@ public class UserEntity {
 
 
     // Constructors
-    public UserEntity() {}
+    public User() {}
 
-    public UserEntity(String username, String email, String passwordHash) {
+    public User(String username, String email, String passwordHash) {
         this.username = username;
         this.email = email;
         this.passwordHash = passwordHash;
@@ -104,10 +104,8 @@ public class UserEntity {
     public OnlineStatus getStatus() {
         return status;
     }
-    public Set<Message> getSentMessages() {
-        return sentMessages;
-    }
-    public Set<FileEntity> getUploadedFiles() {
+    public Set<Message> getSentMessages() {return sentMessages;}
+    public Set<File> getUploadedFiles() {
         return uploadedFiles;
     }
     public Session getSession() {
@@ -115,7 +113,7 @@ public class UserEntity {
     }
 
 
-        // Setters
+    // Setters
     public void setUserId(String userId) {
         this.userId = userId;
     }
@@ -140,7 +138,7 @@ public class UserEntity {
     public void setSentMessages(Set<Message> sentMessages) {
         this.sentMessages = sentMessages;
     }
-    public void setUploadedFiles(Set<FileEntity> uploadedFiles) {
+    public void setUploadedFiles(Set<File> uploadedFiles) {
         this.uploadedFiles = uploadedFiles;
     }
     public void setSession(Session session) {
@@ -153,8 +151,8 @@ public class UserEntity {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        UserEntity user = (UserEntity) obj;
+        if (obj == null || this.getClass() != obj.getClass()) return false;
+        User user = (User) obj;
         return userId != null ? userId.equals(user.userId) : user.userId == null;
     }
 
