@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class Contact {
     // Columns
 
+    @Id 
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
     private String id;

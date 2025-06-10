@@ -61,7 +61,7 @@ public class User {
 
     // User to messages relationship
     @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Message> sebtMessages = new HashSet<>();
+    private Set<Message> sentMessages = new HashSet<>();
 
     // User to files relationship
     @OneToMany(mappedBy = "uploader", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
