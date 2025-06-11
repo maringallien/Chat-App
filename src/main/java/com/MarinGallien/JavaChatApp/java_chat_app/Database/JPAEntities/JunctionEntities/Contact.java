@@ -2,6 +2,7 @@ package com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.Junction
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.User;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
@@ -24,7 +25,7 @@ public class Contact {
     @JoinColumn(name = "contact_user_id", nullable = false)
     private User contactUser;
 
-    @GeneratedValue
+    @CreationTimestamp
     @Column(name = "added_at", nullable = false, updatable = false)
     private LocalDateTime addedAt;
 

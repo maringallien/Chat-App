@@ -42,7 +42,9 @@ public class File {
     private Message message;
 
 
-    // Constructor
+    // Constructors
+    public File() {}
+
     public File(String filename, Long fileSize, String fileType, String filePath, User uploader) {
         this.filename = filename;
         this.fileSize = fileSize;
