@@ -1,4 +1,22 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories;
 
-public interface ChatRepo {
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.Chat;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface ChatRepo extends JpaRepository<Chat, String> {
+    // Returns a list of all chat IDs
+    @Query("SELECT c.chatId FROM Chat c")
+    List<String> findAllChatIds();
+
+    // Delete a chat by its ID
+    @Modifying
+    @Query("DELETE FROM chat c WHERE c.chatId = :chatId")
+    int deleteChatById(@Param("chatId") String chatId);
 }
