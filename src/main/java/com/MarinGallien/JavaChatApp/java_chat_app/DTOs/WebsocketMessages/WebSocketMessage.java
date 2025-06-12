@@ -21,14 +21,16 @@ public class WebSocketMessage extends BaseMessage {
     }
 
     // Getters
-    public String getContent() {
-        return content;
-    }
+    public String getContent() { return content; }
+    public String getRoomID() { return roomID; }
+    public String getRecipientID() {return recipientID; }
 
     // Setters
     public void setContent(String content) {
         this.content = content;
     }
+    public void setRoomID(String roomID) { this.roomID = roomID; }
+    public void setRecipientID(String recipientID) { this.recipientID = recipientID; }
 
     // Constructor for creating text messages in code
     public WebSocketMessage(String senderID, String roomID, String content, String recipientID) {

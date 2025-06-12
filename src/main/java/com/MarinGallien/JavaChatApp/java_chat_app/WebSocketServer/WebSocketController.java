@@ -2,16 +2,21 @@ package com.MarinGallien.JavaChatApp.java_chat_app.WebSocketServer;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.OnlineStatusMessage;
 import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.WebSocketMessage;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.Message;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.WebSocketDatabaseService;
 
+import com.MarinGallien.JavaChatApp.java_chat_app.Enums.OnlineStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
+
+import java.util.List;
 
 @Controller
 public class WebSocketController {
@@ -33,39 +38,14 @@ public class WebSocketController {
     // Handles text messages sent to specific chat rooms
     @MessageMapping("/chat/{roomId}")
     @SendTo("/topic/chat/{roomId}")
-    public WebSocketMessage handleTextMessage(@DestinationVariable String roomId, @Payload WebSocketMessage message,
+    public Message handleTextMessage(@DestinationVariable String roomId, @Payload WebSocketMessage message,
                                               SimpMessageHeaderAccessor headerAccessor) {
         try {
-            String senderId = message.getClientID();
+            String senderId = message.getSenderID();
             logger.info("Processing text message from {} to room {}", senderId, roomId);
 
-            // Perform null/empty check on message content
-            if (message.getContent() == null || message.getContent().trim().isEmpty()) {
-                logger.warn("Empty message content from user {}", senderId);
-                return null;
-            }
-
-            // Verify user exists
-            if (!databaseService.userExists(senderId)) {
-                logger.warn("User {} does not exist", senderId);
-                return null;
-            }
-
-            // Verify room exists
-            if (databaseService.roomExists(roomId)) {
-                logger.warn("Room {} does not exist", roomId);
-                return null;
-            }
-
-            // Verify user is in the chatroom
-            if (!databaseService.isUserInChat(senderId, roomId)) {
-                logger.warn("User {} does not belong to chat {}", senderId, roomId);
-
-            }
-
-            // Save message to database
-            Message savedMessage = databaseService.saveMessage(message);
-
+            // Save message to database and return
+            return databaseService.saveMessage(message);
         } catch (Exception e) {
             logger.error("Error processing text message", e);
             return null;
@@ -74,12 +54,44 @@ public class WebSocketController {
 
     // Handles online presence updates
     @MessageMapping("/presence")
-    public void handlePresenceUpdate(@Payload OnlineStatusMessage presenceMessage) {
+    public void handleContactPresenceUpdate(@Payload OnlineStatusMessage presenceMessage) {
+        try {
+            // Extract fields
+            String userId = presenceMessage.getSenderID();
+            OnlineStatus status = presenceMessage.getStatus();
 
+            // Update status in database
+            boolean statusUpdated = databaseService.saveStatus(userId, status);
+            if (!statusUpdated) {
+                logger.warn("Failed to update status for user {}", userId);
+                return;
+            }
+        } catch (Exception e) {
+            logger.error("Error processing status update", e);
+        }
     }
 
-    // Helper method to check if user exists and is allowed to chat in the room
-    private boolean checkRoomPermissions(String userId, String roomId) {
+    // We need a method handleSelfPresenceUpdate to change our own status in the database when websocket connection is closedwds
 
+    private void notifyContactsOfStatusChange(String userId, OnlineStatus status) {
+        try {
+            // Retrieve list of contacts from the database
+            List<String> contactIds = databaseService.getContacts(userId);
+
+            // Create a status message
+            OnlineStatusMessage statusMessage = new OnlineStatusMessage(status, userId);
+
+            // Broadcast status message to each contact
+            for (String contactId : contactIds) {
+                messagingTemplate.convertAndSendToUser(
+                        contactId,
+                        "/queue/presence",
+                        statusMessage
+                );
+            }
+        } catch (Exception e) {
+            logger.error("Error noptifying contacts of status change for user: {}", userId);
+        }
     }
+
 }

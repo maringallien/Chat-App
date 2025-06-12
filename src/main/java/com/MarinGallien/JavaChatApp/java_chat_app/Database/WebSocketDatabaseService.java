@@ -1,5 +1,6 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.Database;
 
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.WebSocketMessage;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.Chat;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.Message;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.User;
@@ -39,36 +40,53 @@ public class WebSocketDatabaseService {
     private ContactRepo contactRepo;
 
 
-    // Save a message to the database
-    public Message saveMessage(Message message) {
+    // Save a WebSocketMessage to the database
+    public Message saveMessage(WebSocketMessage message) {
         try {
-            // Perform null checks
-            if (message == null) {
-                logger.warn("Cannot save message: message is null");
+            // Verify user exists
+            if (!userRepo.existsById(message.getSenderID())) {
+                logger.warn("Could not save message: user {} does not exist", message.getSenderID());
                 return null;
             }
 
-            if (message.getSender() == null) {
-                logger.warn("Cannot save message: sender is null");
+            // Verify room exists
+            if (!chatRepo.existsById(message.getRoomID())) {
+                logger.warn("Could not save message: room {} does not exist", message.getRoomID());
                 return null;
             }
 
-            if (message.getContent() == null || message.getContent().trim().isEmpty()) {
-                logger.warn("Cannot save message: content is null");
-                return null;
+            // Verify user is in the chatroom
+            if (!chatParticipantRepo.existsByChatIdAndUserId(message.getSenderID(), message.getRoomID())) {
+                logger.warn("Could not save message: user {} does not belong to chat {}",
+                        message.getSenderID(), message.getRoomID());
+
             }
 
             // Save message to database
-            Message savedMessage = messageRepo.save(message);
+            Message newMessage = createMessage(message);
             logger.info("Successfully saved message with ID: {} in chat {}",
-                    savedMessage.getMessageId(), savedMessage.getChat().getChatId());
+                    newMessage.getMessageId(), newMessage.getChat().getChatId());
 
-            return savedMessage;
+            return newMessage;
         } catch (Exception e) {
             logger.error("Error saving message to the database", e);
             return null;
         }
     }
+
+    // Creates a message object
+    private Message createMessage(WebSocketMessage message) {
+        // Find room by ID
+        Chat chat = chatRepo.findChatById(message.getRoomID());
+
+        // Find user by ID
+        User user = userRepo.findUserById(message.getSenderID());
+
+        // Create and return Message entity
+        return new Message (user, chat, message.getContent(), message.getType());
+
+    }
+
 
     // Update user status in database
     public boolean saveStatus(String userId, OnlineStatus status) {

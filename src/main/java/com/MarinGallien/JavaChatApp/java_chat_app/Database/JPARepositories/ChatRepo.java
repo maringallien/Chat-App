@@ -19,4 +19,8 @@ public interface ChatRepo extends JpaRepository<Chat, String> {
     @Modifying
     @Query("DELETE FROM chat c WHERE c.chatId = :chatId")
     int deleteChatById(@Param("chatId") String chatId);
+
+    // Find a chat by ID
+    @Query("SELECT c FROM Chat c WHERE c.chatId = :chatId")
+    Chat findChatById(String chatId);
 }

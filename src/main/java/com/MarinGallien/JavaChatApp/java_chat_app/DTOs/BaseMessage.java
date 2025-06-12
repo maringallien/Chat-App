@@ -20,7 +20,7 @@ public class BaseMessage {
     private MessageType type;
 
     @NotBlank(message = "Sender ID cannot be blank")
-    private String clientID;
+    private String senderID;
 
     @NotBlank(message = "Timestamp ID cannot be blank")
     private Long timestamp;
@@ -32,22 +32,22 @@ public class BaseMessage {
     }
 
     // Constructor with required fields - used when creating DTO objects in code
-    protected BaseMessage(MessageType type, String clientID) {
+    protected BaseMessage(MessageType type, String senderID) {
         this();
         this.type = type;
-        this.clientID = clientID;
+        this.senderID = senderID;
     }
 
     // Getters
     public String getMessageID() {return messageID;}
     public MessageType getType() {return type;}
-    public String getClientID() {return clientID;}
+    public String getSenderID() {return senderID;}
     public Long getTimestamp() {return timestamp;}
 
     // Setters
     public void setMessageID(String messageID) {this.messageID = messageID;}
     public void setType(MessageType type) {this.type = type;}
-    public void setClientID(String clientID) {this.clientID = clientID;}
+    public void setsenderID(String senderID) {this.senderID = senderID;}
     public void setTimestamp(Long timestamp) {this.timestamp = timestamp;}
 
     // Equals function checks for equality between 2 DTO IDs.
@@ -74,7 +74,7 @@ public class BaseMessage {
         return "BaseMessage{" +
                 "messageId='" + messageID + '\'' +
                 ", type='" + type + '\'' +
-                ", clientID='" + clientID + '\'' +
+                ", senderID='" + senderID + '\'' +
                 ", timestamp=" + timestamp +
                 '}';
     }
