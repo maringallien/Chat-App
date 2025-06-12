@@ -20,6 +20,16 @@ public class WebSocketMessage extends BaseMessage {
         super();
     }
 
+    // Getters
+    public String getContent() {
+        return content;
+    }
+
+    // Setters
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     // Constructor for creating text messages in code
     public WebSocketMessage(String senderID, String roomID, String content, String recipientID) {
         super(MessageType.TEXT_MESSAGE, senderID);
@@ -31,3 +41,4 @@ public class WebSocketMessage extends BaseMessage {
 
 
 }
+

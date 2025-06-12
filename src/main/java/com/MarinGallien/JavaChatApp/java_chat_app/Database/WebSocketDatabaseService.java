@@ -140,5 +140,46 @@ public class WebSocketDatabaseService {
             return List.of();
         }
     }
+
+    public boolean userExists(String userId) {
+        try {
+            if (userId == null || userId.trim().isEmpty()) {
+                return false;
+            }
+            return userRepo.existsById(userId);
+        } catch (Exception e) {
+            logger.error("Error checking if user {} exists", userId, e);
+            return false;
+        }
+    }
+
+    public boolean isUserInChat(String userId, String chatId) {
+        try {
+            if (userId == null || userId.trim().isEmpty()) {
+                return false;
+            }
+            return chatParticipantRepo.existsByChatIdAndUserId(userId, chatId);
+        } catch (Exception e) {
+            logger.error("Error checking if user {} is in room {}", userId, chatId);
+            return false;
+        }
+    }
+
+    public boolean roomExists(String chatId) {
+        try {
+            // Validate input
+            if (chatId == null || chatId.trim().isEmpty()) {
+                logger.warn("Cannot check if room exists: chat ID is null or empty");
+                return false;
+            }
+
+            // Check if chat exists in database
+            return chatRepo.existsById(chatId.trim());
+
+        } catch (Exception e) {
+            logger.error("Error checking if room {} exists", chatId, e);
+            return false;
+        }
+    }
 }
 
