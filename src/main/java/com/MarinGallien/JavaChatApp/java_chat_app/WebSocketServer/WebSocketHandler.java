@@ -45,7 +45,7 @@ public class WebSocketController {
     @MessageMapping("/chat/{roomId}")
     @SendTo("/topic/chat/{roomId}")
     public Message handleTextMessage(@DestinationVariable String roomId, @Payload WebSocketMessage message,
-                                              SimpMessageHeaderAccessor headerAccessor) {
+                                     SimpMessageHeaderAccessor headerAccessor) {
         try {
             String senderId = message.getSenderID();
             logger.info("Processing text message from {} to room {}", senderId, roomId);
@@ -111,7 +111,7 @@ public class WebSocketController {
     public void handleWebSocketDisconnectEvent(SessionDisconnectEvent event) {
         try {
             SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
-            String userId = headerAccessor.getSessionId();
+            String userId = getUserIdFromSession(headerAccessor);
 
             if (userId == null || userId.trim().isEmpty()) {
                 logger.warn("Could not update online status: user ID is null or empty");
