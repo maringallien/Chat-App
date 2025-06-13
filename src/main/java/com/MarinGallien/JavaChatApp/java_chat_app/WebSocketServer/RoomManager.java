@@ -2,6 +2,7 @@ package com.MarinGallien.JavaChatApp.java_chat_app.WebSocketServer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -9,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 import java.util.Set;
 
+@Component
 public class RoomManager {
     private static final Logger logger = LoggerFactory.getLogger(RoomManager.class);
 

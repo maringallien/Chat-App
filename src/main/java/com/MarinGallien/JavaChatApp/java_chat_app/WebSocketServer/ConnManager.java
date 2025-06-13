@@ -1,5 +1,7 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.WebSocketServer;
 
+import org.hibernate.annotations.Comment;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 
+@Component
 public class ConnManager {
     private static final Logger logger = LoggerFactory.getLogger(ConnManager.class);
     // Connections map - userID:WebSocketSession

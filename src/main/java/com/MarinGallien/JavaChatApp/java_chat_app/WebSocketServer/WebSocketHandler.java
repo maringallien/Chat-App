@@ -22,16 +22,16 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import java.util.List;
 
 @Controller
-public class WebSocketController {
+public class WebSocketHandler {
     // Parameters
-    private static final Logger logger = LoggerFactory.getLogger(WebSocketController.class);
+    private static final Logger logger = LoggerFactory.getLogger(WebSocketHandler.class);
     private final WebSocketDatabaseService databaseService;
     private final ConnManager connManager;
     private final RoomManager roomManager;
     private final SimpMessagingTemplate messagingTemplate;
 
     // Constructor
-    public WebSocketController(WebSocketDatabaseService databaseService, ConnManager connManager,
+    public WebSocketHandler(WebSocketDatabaseService databaseService, ConnManager connManager,
                                RoomManager roomManager, SimpMessagingTemplate messagingTemplate) {
         this.databaseService = databaseService;
         this.connManager = connManager;

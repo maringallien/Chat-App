@@ -103,7 +103,7 @@ public class WebSocketDatabaseService {
             }
 
             // Make sure user exists in database
-            if (userRepo.existsById(userId.trim())) {
+            if (!userRepo.existsById(userId.trim())) {
                 logger.warn("Cannot save status: User with ID {} not found", userId);
                 return false;
             }
