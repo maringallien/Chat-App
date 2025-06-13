@@ -8,6 +8,7 @@ import com.MarinGallien.JavaChatApp.java_chat_app.Database.WebSocketDatabaseServ
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.OnlineStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -15,6 +16,8 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.messaging.SessionConnectEvent;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.List;
 
@@ -25,16 +28,19 @@ public class WebSocketController {
     private final WebSocketDatabaseService databaseService;
     private final ConnManager connManager;
     private final RoomManager roomManager;
+    private final SimpMessagingTemplate messagingTemplate;
 
     // Constructor
     public WebSocketController(WebSocketDatabaseService databaseService, ConnManager connManager,
-                               RoomManager roomManager) {
+                               RoomManager roomManager, SimpMessagingTemplate messagingTemplate) {
         this.databaseService = databaseService;
         this.connManager = connManager;
         this.roomManager = roomManager;
+        this.messagingTemplate = messagingTemplate;
     }
 
 
+    // THIS METHOD needs to be  updated because it does not handle offline users
     // Handles text messages sent to specific chat rooms
     @MessageMapping("/chat/{roomId}")
     @SendTo("/topic/chat/{roomId}")
@@ -52,27 +58,7 @@ public class WebSocketController {
         }
     }
 
-    // Handles online presence updates
-    @MessageMapping("/presence")
-    public void handleContactPresenceUpdate(@Payload OnlineStatusMessage presenceMessage) {
-        try {
-            // Extract fields
-            String userId = presenceMessage.getSenderID();
-            OnlineStatus status = presenceMessage.getStatus();
-
-            // Update status in database
-            boolean statusUpdated = databaseService.saveStatus(userId, status);
-            if (!statusUpdated) {
-                logger.warn("Failed to update status for user {}", userId);
-                return;
-            }
-        } catch (Exception e) {
-            logger.error("Error processing status update", e);
-        }
-    }
-
-    // We need a method handleSelfPresenceUpdate to change our own status in the database when websocket connection is closedwds
-
+    // Method notifies a user's contacts of a status change
     private void notifyContactsOfStatusChange(String userId, OnlineStatus status) {
         try {
             // Retrieve list of contacts from the database
@@ -90,8 +76,69 @@ public class WebSocketController {
                 );
             }
         } catch (Exception e) {
-            logger.error("Error noptifying contacts of status change for user: {}", userId);
+            logger.error("Error notifying contacts of status change for user: {}", userId);
         }
+    }
+
+    // Handle connection - Save user ID in session attributes and update online status in database
+    @EventListener
+    public void handleWebSocketConnectEvent(SessionConnectEvent event) {
+        try {
+            SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
+            String userId = getUserIdFromSession(headerAccessor);
+
+            if (userId == null || userId.trim().isEmpty()) {
+                logger.warn("Could not updated online status: user ID is null");
+                return;
+            }
+
+            // Update user status in database
+            boolean statusUpdated = databaseService.saveStatus(userId, OnlineStatus.ONLINE);
+
+            if (!statusUpdated) {
+                logger.warn("Failed to update status to ONLINE for user {}", userId);
+            }
+
+            // Notify contacts of status change
+            notifyContactsOfStatusChange(userId, OnlineStatus.ONLINE);
+        } catch (Exception e) {
+            logger.error("Error handling websocket connection", e);
+        }
+    }
+
+    // Handle disconnection - retrieve user ID from session attributes and update online status in database
+    @EventListener
+    public void handleWebSocketDisconnectEvent(SessionDisconnectEvent event) {
+        try {
+            SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
+            String userId = headerAccessor.getSessionId();
+
+            if (userId == null || userId.trim().isEmpty()) {
+                logger.warn("Could not update online status: user ID is null or empty");
+                return;
+            }
+
+            // Update user status in database
+            boolean statusUpdated = databaseService.saveStatus(userId, OnlineStatus.OFFLINE);
+
+            if (!statusUpdated) {
+                logger.warn("Failed to update user status to OFFLINE for user {}", userId);
+                return;
+            }
+
+            // Notify contacts of status change
+            notifyContactsOfStatusChange(userId, OnlineStatus.OFFLINE);
+
+        } catch (Exception e) {
+            logger.warn("Error handling websocket disconnection", e);
+        }
+    }
+
+    // Retrieve user ID from session attributes
+    private String getUserIdFromSession(SimpMessageHeaderAccessor headerAccessor) {
+        // Retrieve user ID from session attributes
+        Object userId = headerAccessor.getSessionAttributes().get("userId");
+        return userId != null ? userId.toString() : null;
     }
 
 }

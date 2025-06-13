@@ -103,14 +103,13 @@ public class WebSocketDatabaseService {
             }
 
             // Make sure user exists in database
-            Optional<User> userOptional = userRepo.findById(userId.trim());
-            if (userOptional == null) {
+            if (userRepo.existsById(userId.trim())) {
                 logger.warn("Cannot save status: User with ID {} not found", userId);
                 return false;
             }
 
             // Extract user object from optional, set status, and save to database
-            User user = userOptional.get();
+            User user = userRepo.findUserById(userId.trim());
             OnlineStatus previousStatus = user.getStatus();
             user.setStatus(status);
 
