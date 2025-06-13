@@ -20,6 +20,13 @@ public class ChatManager {
     // Constructor
     public ChatManager(){}
 
+    // CHAT MANAGER SHOULD QUERY DATABASE UPON STARTUP TO LOAD ALL EXISTING CHATS AND PARTICIPANTS
+    // CHAT MANAGER WILL NEED EVENT LISTENERS FOR:
+    //  . CHAT CREATION
+    //  . CHAT DELETION
+    //  . USER JOINING CHAT
+    //  . USER LEAVING CHAT
+
     // Creates a chat of 2 members
     public String createPrivateChat(String userID1, String userID2) {
         // Validate input parameters
@@ -129,37 +136,12 @@ public class ChatManager {
         }
     }
 
-    // Deletes all chats
-    public boolean clearAllChats() {
-        try {
-            int chatCount = chats.size();
-            chats.clear();
-            logger.info("{} chats were deleted", chatCount);
-            return true;
-        } catch (Exception e) {
-            logger.error("Error clearing chats", e);
-            return false;
-        }
-    }
+    // NEED ADD USER TO CHAT METHOD
 
-    // Returns a chat object corresponding to chatID
-    public Chat getChat(String chatID) {
-        if (!checkId(chatID)) {
-            logger.warn("Could not retrieve chat because ID is null or empty");
-            return null;
-        }
+    // NEED REMOVE USER FROM CHAT METHOD
 
-        return chats.get(chatID.trim());
-    }
-
-    // Returns the total number of chats
-    public int getTotalChats() {
-        return chats.size();
-    }
-
-    // Returns a set of chat IDs
-    public Set<String> getAllChatIDs() {
-        return new HashSet<>(chats.keySet());
+    public Set<String> getChatParticipants(String chatId) {
+        return chats.get(chatId).getMembers();
     }
 
     // Checks if the chat exists

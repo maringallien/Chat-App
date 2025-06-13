@@ -13,28 +13,28 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.List;
+import java.util.Set;
 
 @Controller
 public class WebSocketHandler {
     // Parameters
     private static final Logger logger = LoggerFactory.getLogger(WebSocketHandler.class);
     private final WebSocketDatabaseService databaseService;
-    private final ConnManager connManager;
+    private final StatusManager statusManager;
     private final ChatManager chatManager;
     private final SimpMessagingTemplate messagingTemplate;
 
     // Constructor
-    public WebSocketHandler(WebSocketDatabaseService databaseService, ConnManager connManager,
+    public WebSocketHandler(WebSocketDatabaseService databaseService, StatusManager statusManager,
                                ChatManager chatManager, SimpMessagingTemplate messagingTemplate) {
         this.databaseService = databaseService;
-        this.connManager = connManager;
+        this.statusManager = statusManager;
         this.chatManager = chatManager;
         this.messagingTemplate = messagingTemplate;
     }
@@ -43,18 +43,28 @@ public class WebSocketHandler {
     // THIS METHOD needs to be  updated because it does not handle offline users
     // Handles text messages sent to specific chat chats
     @MessageMapping("/chat/{chatId}")
-    @SendTo("/topic/chat/{chatId}")
-    public Message handleTextMessage(@DestinationVariable String chatId, @Payload WebSocketMessage message,
+    public void handleTextMessage(@DestinationVariable String chatId, @Payload WebSocketMessage message,
                                      SimpMessageHeaderAccessor headerAccessor) {
         try {
             String senderId = message.getSenderID();
             logger.info("Processing text message from {} to chat {}", senderId, chatId);
 
             // Save message to database and return
-            return databaseService.saveMessage(message);
+            databaseService.saveMessage(message);
+
+            String messageChatId = message.getChatID();
+            Set<String> chatParticipants = chatManager.getChatParticipants(messageChatId);
+
+            for (String userId : chatParticipants) {
+                if (statusManager.isOnline(userId)) {
+                    messagingTemplate.convertAndSendToUser(userId, "/queue/messages", message);
+                } else {
+                    // FORWARD TO REDIS QUEUE
+                }
+            }
+
         } catch (Exception e) {
             logger.error("Error processing text message", e);
-            return null;
         }
     }
 
@@ -92,8 +102,13 @@ public class WebSocketHandler {
                 return;
             }
 
+            // NEED TO CHECK USER ID EXISTS
+
             // Update user status in database
             boolean statusUpdated = databaseService.saveStatus(userId, OnlineStatus.ONLINE);
+
+            // Update status in status manager
+            statusManager.setUserOnline(userId);
 
             if (!statusUpdated) {
                 logger.warn("Failed to update status to ONLINE for user {}", userId);
@@ -118,8 +133,13 @@ public class WebSocketHandler {
                 return;
             }
 
+            // NEED TO CHECK USER ID EXISTS
+
             // Update user status in database
             boolean statusUpdated = databaseService.saveStatus(userId, OnlineStatus.OFFLINE);
+
+            // Update status in status manager
+            statusManager.setUserOffline(userId);
 
             if (!statusUpdated) {
                 logger.warn("Failed to update user status to OFFLINE for user {}", userId);
