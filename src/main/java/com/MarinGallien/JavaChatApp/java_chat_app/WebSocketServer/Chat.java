@@ -10,30 +10,30 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.UUID;
 
-public class Room {
-    private static final Logger logger = LoggerFactory.getLogger(Room.class);
+public class Chat {
+    private static final Logger logger = LoggerFactory.getLogger(Chat.class);
     // Parameters
-    @NotBlank(message = "Room ID cannot be blank")
-    private final String roomID;
+    @NotBlank(message = "Chat ID cannot be blank")
+    private final String chatId;
 
     @NotBlank(message = "Creation timestamp cannot be blank")
     private Long createdAt;
 
     private final Set<String> participants = ConcurrentHashMap.newKeySet();
 
-    // Default constructor generates roomID internally
-    public Room() {
-        this.roomID = generateRoomID();
+    // Default constructor generates chatId internally
+    public Chat() {
+        this.chatId = generateChatId();
         this.createdAt = Instant.now().toEpochMilli();
     }
 
-    public Room(String roomID) {
-        this.roomID = roomID;
+    public Chat(String chatId) {
+        this.chatId = chatId;
         this.createdAt = Instant.now().toEpochMilli();
     }
 
     // Getters:
-    public String getRoomID() {return roomID;}
+    public String getChatId() {return chatId;}
     public Long getCreatedAt() {return createdAt;}
 
     // Check user ID is valid
@@ -41,7 +41,7 @@ public class Room {
        return ID != null && !ID.trim().isEmpty();
     }
 
-    // Method adds new participant to room
+    // Method adds new participant to chat
     public boolean addMember(String userID) {
         // Check that we have a userID
         if (!checkId(userID)){
@@ -49,19 +49,19 @@ public class Room {
             return false;
         }
 
-        // Add user to room
+        // Add user to chat
         boolean wasAdded = participants.add(userID.trim());
 
         if (wasAdded) {
-            logger.info("Added user {} to room {}.", userID, roomID);
+            logger.info("Added user {} to chat {}.", userID, chatId);
         } else {
-            logger.debug("User {} is already a member of room {}", userID, roomID);
+            logger.debug("User {} is already a member of chat {}", userID, chatId);
         }
 
         return wasAdded;
     }
 
-    // Method removes member from room
+    // Method removes member from chat
     public boolean removeMember(String userID) {
         // Check that we have a userID
         if (!checkId(userID)){
@@ -72,15 +72,15 @@ public class Room {
         boolean wasRemoved = participants.remove(userID.trim());
 
         if (wasRemoved) {
-            logger.info("Removed user {} to room {}.", userID, roomID);
+            logger.info("Removed user {} to chat {}.", userID, chatId);
         } else {
-            logger.debug("User {} was not a member of room {}", userID, roomID);
+            logger.debug("User {} was not a member of chat {}", userID, chatId);
         }
 
         return wasRemoved;
     }
 
-    // Method checks if the room contains userID
+    // Method checks if the chat contains userID
     public boolean hasMember(String userID) {
         // Check that we have a userID
         if (!checkId(userID)){
@@ -90,58 +90,58 @@ public class Room {
         return participants.contains(userID);
     }
 
-    // Method returns the participants of the room
+    // Method returns the participants of the chat
     public Set<String> getMembers() {
         return Set.copyOf(participants);
     }
 
-    // Returns the number of participants in a room
+    // Returns the number of participants in a chat
     public int getMembersCount() {
         return participants.size();
     }
 
-    // Removes members from room
-    public boolean clearRoom() {
+    // Removes members from chat
+    public boolean clearChat() {
         int count = participants.size();
         participants.clear();
 
-        logger.info("Cleared all {} participants from room {}", count, roomID);
+        logger.info("Cleared all {} participants from chat {}", count, chatId);
         return true;
     }
 
-    // Checks if the room is empty
+    // Checks if the chat is empty
     public boolean isEmpty() {
         return participants.isEmpty();
     }
 
-    // Overrides equals method for room comparison
+    // Overrides equals method for chat comparison
     public boolean equals(Object obj) {
         // Check for equality
         if (this == obj) return true;
         // Check for object type equality
         if (obj == null || getClass() != obj.getClass()) return false;
 
-        // Convert to Room to access fields and check message ID equality
-        Room room = (Room) obj;
-        return roomID != null ? roomID.equals(room.roomID) : room.roomID == null;
+        // Convert to chat to access fields and check message ID equality
+        Chat chat = (Chat) obj;
+        return chatId != null ? chatId.equals(chat.chatId) : chat.chatId == null;
     }
 
-    // Returns a room ID
-    private String generateRoomID() {
-        return "ROOM_" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    // Returns a chat ID
+    private String generateChatId() {
+        return "chat_" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
     // Override hashCode for efficient hashmap operations
     @Override
     public int hashCode() {
-        return roomID != null ? roomID.hashCode() : 0;
+        return chatId != null ? chatId.hashCode() : 0;
     }
 
     // Override toString for debugging
     @Override
     public String toString() {
-        return "Room{" +
-                "roomID='" + roomID + '\'' +
+        return "chat{" +
+                "chatId='" + chatId + '\'' +
                 ", createdAt=" + createdAt +
                 ", participantCount=" + participants.size() +
                 '}';

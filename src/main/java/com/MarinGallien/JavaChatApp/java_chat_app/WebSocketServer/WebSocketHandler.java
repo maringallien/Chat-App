@@ -27,28 +27,28 @@ public class WebSocketHandler {
     private static final Logger logger = LoggerFactory.getLogger(WebSocketHandler.class);
     private final WebSocketDatabaseService databaseService;
     private final ConnManager connManager;
-    private final RoomManager roomManager;
+    private final ChatManager chatManager;
     private final SimpMessagingTemplate messagingTemplate;
 
     // Constructor
     public WebSocketHandler(WebSocketDatabaseService databaseService, ConnManager connManager,
-                               RoomManager roomManager, SimpMessagingTemplate messagingTemplate) {
+                               ChatManager chatManager, SimpMessagingTemplate messagingTemplate) {
         this.databaseService = databaseService;
         this.connManager = connManager;
-        this.roomManager = roomManager;
+        this.chatManager = chatManager;
         this.messagingTemplate = messagingTemplate;
     }
 
 
     // THIS METHOD needs to be  updated because it does not handle offline users
-    // Handles text messages sent to specific chat rooms
-    @MessageMapping("/chat/{roomId}")
-    @SendTo("/topic/chat/{roomId}")
-    public Message handleTextMessage(@DestinationVariable String roomId, @Payload WebSocketMessage message,
+    // Handles text messages sent to specific chat chats
+    @MessageMapping("/chat/{chatId}")
+    @SendTo("/topic/chat/{chatId}")
+    public Message handleTextMessage(@DestinationVariable String chatId, @Payload WebSocketMessage message,
                                      SimpMessageHeaderAccessor headerAccessor) {
         try {
             String senderId = message.getSenderID();
-            logger.info("Processing text message from {} to room {}", senderId, roomId);
+            logger.info("Processing text message from {} to chat {}", senderId, chatId);
 
             // Save message to database and return
             return databaseService.saveMessage(message);

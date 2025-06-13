@@ -6,8 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 
 public class WebSocketMessage extends BaseMessage {
     // Parameters
-    @NotBlank(message = "Room ID cannot be blank")
-    private String roomID;
+    @NotBlank(message = "chat ID cannot be blank")
+    private String chatID;
 
     @NotBlank(message = "Content cannot be blank")
     private String content;
@@ -22,20 +22,20 @@ public class WebSocketMessage extends BaseMessage {
 
     // Getters
     public String getContent() { return content; }
-    public String getRoomID() { return roomID; }
+    public String getChatID() { return chatID; }
     public String getRecipientID() {return recipientID; }
 
     // Setters
     public void setContent(String content) {
         this.content = content;
     }
-    public void setRoomID(String roomID) { this.roomID = roomID; }
+    public void setChatID(String chatID) { this.chatID = chatID; }
     public void setRecipientID(String recipientID) { this.recipientID = recipientID; }
 
     // Constructor for creating text messages in code
-    public WebSocketMessage(String senderID, String roomID, String content, String recipientID) {
+    public WebSocketMessage(String senderID, String chatID, String content, String recipientID) {
         super(MessageType.TEXT_MESSAGE, senderID);
-        this.roomID = roomID;
+        this.chatID = chatID;
         this.content = content;
         this.recipientID = recipientID;
 

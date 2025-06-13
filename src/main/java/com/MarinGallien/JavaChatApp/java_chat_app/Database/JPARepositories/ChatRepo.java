@@ -16,9 +16,7 @@ public interface ChatRepo extends JpaRepository<Chat, String> {
     List<String> findAllChatIds();
 
     // Delete a chat by its ID
-    @Modifying
-    @Query("DELETE FROM chat c WHERE c.chatId = :chatId")
-    int deleteChatById(@Param("chatId") String chatId);
+    int deleteByChatId(@Param("chatId") String chatId);
 
     // Find a chat by ID
     @Query("SELECT c FROM Chat c WHERE c.chatId = :chatId")

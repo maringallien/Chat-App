@@ -1,6 +1,7 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.JunctionEntities.ChatParticipant;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,10 +17,9 @@ public interface ChatParticipantRepo extends JpaRepository<ChatParticipant, Stri
     List<Object[]> findAllChatUserMappings();
 
     // Remove a participant from a chat
-    @Modifying
-    @Query("DELETE FROM ChatParticipant cp WHERE cp.chat.chatId == :chatId AND cp.user.userId = :userId")
-    int removeByChatIdAndUserId(@Param("chatId") String chatId, @Param("userId") String userId);
+    @Transactional
+    int removeByChatChatIdAndUserUserId(@Param("chatId") String chatId, @Param("userId") String userId);
 
     // Check if a user is in a room
-    boolean existsByChatIdAndUserId(String chatId, String userId);
+    boolean existsByChatChatIdAndUserUserId(String chatId, String userId);
 }

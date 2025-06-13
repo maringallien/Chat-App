@@ -49,17 +49,17 @@ public class WebSocketDatabaseService {
                 return null;
             }
 
-            // Verify room exists
-            if (!chatRepo.existsById(message.getRoomID())) {
-                logger.warn("Could not save message: room {} does not exist", message.getRoomID());
+            // Verify chat exists
+            if (!chatRepo.existsById(message.getChatID())) {
+                logger.warn("Could not save message: chat {} does not exist", message.getChatID());
                 return null;
             }
 
-            // Verify user is in the chatroom
-            if (!chatParticipantRepo.existsByChatIdAndUserId(message.getSenderID(), message.getRoomID())) {
+            // Verify user is in the chat
+            if (!chatParticipantRepo.existsByChatChatIdAndUserUserId(message.getSenderID(), message.getChatID())) {
                 logger.warn("Could not save message: user {} does not belong to chat {}",
-                        message.getSenderID(), message.getRoomID());
-
+                        message.getSenderID(), message.getChatID());
+                return null;
             }
 
             // Save message to database
@@ -76,8 +76,8 @@ public class WebSocketDatabaseService {
 
     // Creates a message object
     private Message createMessage(WebSocketMessage message) {
-        // Find room by ID
-        Chat chat = chatRepo.findChatById(message.getRoomID());
+        // Find chat by ID
+        Chat chat = chatRepo.findChatById(message.getChatID());
 
         // Find user by ID
         User user = userRepo.findUserById(message.getSenderID());
@@ -175,18 +175,18 @@ public class WebSocketDatabaseService {
             if (userId == null || userId.trim().isEmpty()) {
                 return false;
             }
-            return chatParticipantRepo.existsByChatIdAndUserId(userId, chatId);
+            return chatParticipantRepo.existsByChatChatIdAndUserUserId(userId, chatId);
         } catch (Exception e) {
-            logger.error("Error checking if user {} is in room {}", userId, chatId);
+            logger.error("Error checking if user {} is in chat {}", userId, chatId);
             return false;
         }
     }
 
-    public boolean roomExists(String chatId) {
+    public boolean chatExists(String chatId) {
         try {
             // Validate input
             if (chatId == null || chatId.trim().isEmpty()) {
-                logger.warn("Cannot check if room exists: chat ID is null or empty");
+                logger.warn("Cannot check if chat exists: chat ID is null or empty");
                 return false;
             }
 
@@ -194,7 +194,7 @@ public class WebSocketDatabaseService {
             return chatRepo.existsById(chatId.trim());
 
         } catch (Exception e) {
-            logger.error("Error checking if room {} exists", chatId, e);
+            logger.error("Error checking if chat {} exists", chatId, e);
             return false;
         }
     }
