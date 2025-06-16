@@ -1,0 +1,133 @@
+package com.MarinGallien.JavaChatApp.java_chat_app.WebSocketServer;
+
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.WebSocketMessage;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.Chat;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.Message;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.User;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.JunctionEntities.ChatParticipant;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.JunctionEntities.Contact;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories.MessageRepo;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.WebSocketDatabaseService;
+import com.MarinGallien.JavaChatApp.java_chat_app.Enums.ChatType;
+import com.MarinGallien.JavaChatApp.java_chat_app.Enums.OnlineStatus;
+
+import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.Import;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.socket.messaging.SessionConnectEvent;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
+import org.mockito.Mock;
+import static org.mockito.Mockito.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+@DataJpaTest
+@ActiveProfiles
+@Import({WebSocketDatabaseService.class, StatusManager.class, ChatManager.class})
+public class WebSocketHandlerIntegrationTests {
+
+    @Autowired
+    private TestEntityManager entityManager;
+    @Autowired
+    private WebSocketDatabaseService databaseService;
+    @Autowired
+    private ChatManager chatManager;
+    @Autowired
+    private StatusManager statusManager;
+    @Autowired
+    private MessageRepo messageRepo;
+
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
+
+    private WebSocketHandler webSocketHandler;
+    private User user1;
+    private User user2;
+    private Chat chat1;
+    private WebSocketMessage testMessage;
+
+    @BeforeEach
+    void setUp() {
+        // Create real webSocketHandler with real dependencies except messaging template
+        webSocketHandler = new WebSocketHandler(databaseService, statusManager, chatManager, messagingTemplate);
+
+        // Create and persist users in database
+        user1 = new User("alice", "alice@test.com", "password");
+        user2 = new User("bob", "bob@test.com", "password");
+        entityManager.persistAndFlush(user1);
+        entityManager.persistAndFlush(user2);
+
+        // Create and persist test chat
+        chat1 = new Chat(ChatType.SINGLE);
+        entityManager.persistAndFlush(chat1);
+
+        // Make users contacts of each other
+        Contact contact1 = new Contact(user1, user2);
+        Contact contact2 = new Contact(user2, user1);
+        entityManager.persistAndFlush(contact1);
+        entityManager.persistAndFlush(contact2);
+
+        entityManager.clear();
+
+        // Create test message
+        testMessage = new WebSocketMessage(user1.getUserId(), chat1.getChatId(), "Hello World", user2.getUserId());
+    }
+
+    @Test
+    void handleTextMessage_ValidMessage_SavesAndProcesses() {
+        // Given
+        statusManager.setUserOnline(user1.getUserId());
+        statusManager.setUserOnline(user2.getUserId());
+
+        // When
+        webSocketHandler.handleTextMessage(chat1.getChatId(), testMessage);
+
+        // Then - verify message was saved to database
+        Message savedMessage = databaseService.saveMessage(testMessage);
+        assertNotNull(savedMessage);
+        assertTrue(messageRepo.existsById(savedMessage.getMessageId()));
+
+        // Verify it exists in database
+        Message foundMessage = messageRepo.findById(savedMessage.getMessageId()).orElse(null);
+        assertNotNull(foundMessage);
+        assertEquals("Hello World", foundMessage.getContent());
+
+        // Verify message was sent to recipients (user 1 sender and user 2 recipient)
+        verify(messagingTemplate).convertAndSendToUser(user1.getUserId(), "/queue/messages", testMessage);
+        verify(messagingTemplate).convertAndSendToUser(user2.getUserId(), "/queue/messages", testMessage);
+        verify(messagingTemplate, times(2)).convertAndSendToUser(anyString(), eq("/eq/messages"), eq(testMessage));
+    }
+
+    @Test
+    void handleTextMessage_UserNotInChat_DoesNotSaveOrSend() {
+        // Given - create a user not in the chat
+        User user3 = new User("chalie", "charlie@test.com", "password");
+        entityManager.persistAndFlush(user3);
+        entityManager.clear();
+
+        WebSocketMessage invalidMessage = new WebSocketMessage(user3.getUserId(), chat1.getChatId(), "Should fail", user1.getUserId());
+
+        // When
+        webSocketHandler.handleTextMessage(chat1.getChatId(), invalidMessage);
+
+        // Then - verify messages was not saved to database
+        Message foundMessage = messageRepo.findById(invalidMessage.getMessageID()).orElse(null);
+        assertNull(foundMessage);
+
+        // Make sure message was not sent to anyone
+        verify(messagingTemplate, never()).convertAndSendToUser(anyString(), anyString(), any());
+    }
+}

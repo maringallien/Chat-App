@@ -43,8 +43,7 @@ public class WebSocketHandler {
     // THIS METHOD needs to be  updated because it does not handle offline users
     // Handles text messages sent to specific chat chats
     @MessageMapping("/chat/{chatId}")
-    public void handleTextMessage(@DestinationVariable String chatId, @Payload WebSocketMessage message,
-                                     SimpMessageHeaderAccessor headerAccessor) {
+    public void handleTextMessage(@DestinationVariable String chatId, @Payload WebSocketMessage message) {
         try {
             String senderId = message.getSenderID();
             logger.info("Processing text message from {} to chat {}", senderId, chatId);
