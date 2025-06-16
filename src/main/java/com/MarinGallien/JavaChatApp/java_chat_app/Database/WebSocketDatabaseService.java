@@ -56,7 +56,7 @@ public class WebSocketDatabaseService {
             }
 
             // Verify user is in the chat
-            if (!chatParticipantRepo.existsByChatChatIdAndUserUserId(message.getSenderID(), message.getChatID())) {
+            if (!chatParticipantRepo.existsByChatChatIdAndUserUserId(message.getChatID(), message.getSenderID())) {
                 logger.warn("Could not save message: user {} does not belong to chat {}",
                         message.getSenderID(), message.getChatID());
                 return null;
@@ -64,10 +64,12 @@ public class WebSocketDatabaseService {
 
             // Save message to database
             Message newMessage = createMessage(message);
+
             logger.info("Successfully saved message with ID: {} in chat {}",
                     newMessage.getMessageId(), newMessage.getChat().getChatId());
 
-            return newMessage;
+            return messageRepo.save(newMessage);
+
         } catch (Exception e) {
             logger.error("Error saving message to the database", e);
             return null;
@@ -175,7 +177,7 @@ public class WebSocketDatabaseService {
             if (userId == null || userId.trim().isEmpty()) {
                 return false;
             }
-            return chatParticipantRepo.existsByChatChatIdAndUserUserId(userId, chatId);
+            return chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId, userId);
         } catch (Exception e) {
             logger.error("Error checking if user {} is in chat {}", userId, chatId);
             return false;
