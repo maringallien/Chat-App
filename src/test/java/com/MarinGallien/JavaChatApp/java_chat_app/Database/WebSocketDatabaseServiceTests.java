@@ -6,6 +6,7 @@ import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntit
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.User;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories.*;
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.ChatType;
+import com.MarinGallien.JavaChatApp.java_chat_app.Enums.MessageType;
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.OnlineStatus;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +27,8 @@ import static org.mockito.Mockito.*;
 class WebSocketDatabaseServiceTests {
 
     @Mock
+    private MessageRepo messageRepo;
+    @Mock
     private UserRepo userRepo;
     @Mock
     private ChatRepo chatRepo;
@@ -40,6 +43,7 @@ class WebSocketDatabaseServiceTests {
     private User testUser;
     private Chat testChat;
     private WebSocketMessage testMessage;
+    private Message testMessageEntity;
 
     @BeforeEach
     void setUp() {
@@ -51,8 +55,12 @@ class WebSocketDatabaseServiceTests {
         testChat = new Chat(ChatType.SINGLE);
         testChat.setChatId("chat123");
 
-        // Create test message entity
+        // Create test message DTO entity
         testMessage = new WebSocketMessage("user123", "chat123", "Hello", "user456");
+
+        // Create test message database entity
+        testMessageEntity = new Message(testUser, testChat, "Hello World", MessageType.TEXT_MESSAGE);
+        testMessageEntity.setMessageId("msg123");
     }
 
     @Test
@@ -60,16 +68,17 @@ class WebSocketDatabaseServiceTests {
         // Given
         when(userRepo.existsById("user123")).thenReturn(true);
         when(chatRepo.existsById("chat123")).thenReturn(true);
-        when(chatParticipantRepo.existsByChatChatIdAndUserUserId("user123", "chat123")).thenReturn(true);
+        when(chatParticipantRepo.existsByChatChatIdAndUserUserId("chat123", "user123")).thenReturn(true);
         when(chatRepo.findChatById("chat123")).thenReturn(testChat);
         when(userRepo.findUserById("user123")).thenReturn(testUser);
+        when(messageRepo.save(any(Message.class))).thenReturn(testMessageEntity);
 
         // When
         Message result = service.saveMessage(testMessage);
 
         // Then
         assertNotNull(result);
-        assertEquals("Hello", result.getContent());
+        assertEquals("Hello World", result.getContent());
     }
 
     @Test
