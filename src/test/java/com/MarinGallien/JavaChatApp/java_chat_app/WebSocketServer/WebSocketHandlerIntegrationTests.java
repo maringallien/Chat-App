@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.ActiveProfiles;
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -44,12 +46,12 @@ public class WebSocketHandlerIntegrationTests {
     @Autowired
     private WebSocketDatabaseService databaseService;
     @Autowired
-    private ChatManager chatManager;
-    @Autowired
     private StatusManager statusManager;
     @Autowired
     private MessageRepo messageRepo;
 
+    @Mock
+    private ChatManager chatManager;
     @Mock
     private SimpMessagingTemplate messagingTemplate;
 
@@ -101,6 +103,10 @@ public class WebSocketHandlerIntegrationTests {
         statusManager.setUserOnline(user1.getUserId());
         statusManager.setUserOnline(user2.getUserId());
 
+        // Mock chatManager to return the participants for the chat
+        Set<String> chatParticipants = Set.of(user1.getUserId(), user2.getUserId());
+        when(chatManager.getChatParticipants(chat1.getChatId())).thenReturn(chatParticipants);
+
         // When
         webSocketHandler.handleTextMessage(chat1.getChatId(), testMessage);
 
@@ -117,26 +123,35 @@ public class WebSocketHandlerIntegrationTests {
         // Verify message was sent to recipients (user 1 sender and user 2 recipient)
         verify(messagingTemplate).convertAndSendToUser(user1.getUserId(), "/queue/messages", testMessage);
         verify(messagingTemplate).convertAndSendToUser(user2.getUserId(), "/queue/messages", testMessage);
-        verify(messagingTemplate, times(2)).convertAndSendToUser(anyString(), eq("/eq/messages"), eq(testMessage));
+        verify(messagingTemplate, times(2)).convertAndSendToUser(anyString(), eq("/queue/messages"), eq(testMessage));
     }
 
-//    @Test
-//    void handleTextMessage_UserNotInChat_DoesNotSaveOrSend() {
-//        // Given - create a user not in the chat
-//        User user3 = new User("chalie", "charlie@test.com", "password");
-//        entityManager.persistAndFlush(user3);
-//        entityManager.clear();
-//
-//        WebSocketMessage invalidMessage = new WebSocketMessage(user3.getUserId(), chat1.getChatId(), "Should fail", user1.getUserId());
-//
-//        // When
-//        webSocketHandler.handleTextMessage(chat1.getChatId(), invalidMessage);
-//
-//        // Then - verify messages was not saved to database
-//        Message foundMessage = messageRepo.findById(invalidMessage.getMessageID()).orElse(null);
-//        assertNull(foundMessage);
-//
-//        // Make sure message was not sent to anyone
-//        verify(messagingTemplate, never()).convertAndSendToUser(anyString(), anyString(), any());
-//    }
+    @Test
+    void handleTextMessage_UserNotInChat_DoesNotSend() {
+        // Given
+        statusManager.setUserOnline(user1.getUserId());
+        statusManager.setUserOnline(user2.getUserId());
+
+        // Mock chatManager to return only user1 as participant
+        Set<String> chatParticipants = Set.of(user1.getUserId());
+        when(chatManager.getChatParticipants(chat1.getChatId())).thenReturn(chatParticipants);
+
+        // When
+        webSocketHandler.handleTextMessage(chat1.getChatId(), testMessage);
+
+        // Then - verify message was saved to database
+        Message savedMessage = databaseService.saveMessage(testMessage);
+        assertNotNull(savedMessage);
+        assertTrue(messageRepo.existsById(savedMessage.getMessageId()));
+
+        // Verify it exists in database
+        Message foundMessage = messageRepo.findById(savedMessage.getMessageId()).orElse(null);
+        assertNotNull(foundMessage);
+        assertEquals("Hello World", foundMessage.getContent());
+
+        // Verify message was sent to recipients (user 1 sender and user 2 recipient)
+        verify(messagingTemplate).convertAndSendToUser(user1.getUserId(), "/queue/messages", testMessage);
+        verify(messagingTemplate, never()).convertAndSendToUser(user2.getUserId(), "/queue/messages", testMessage);
+        verify(messagingTemplate, times(1)).convertAndSendToUser(anyString(), eq("/queue/messages"), eq(testMessage));
+    }
 }

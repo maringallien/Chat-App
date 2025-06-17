@@ -47,14 +47,33 @@ public class Chat {
     // Constructors
     public Chat() {}
 
+    // For group chats
     public Chat(ChatType chatType) {
         this.chatType = chatType;
     }
 
+    // For private chats with non-specific names
+    public Chat(String chatId, ChatType chatType) {
+        this.chatId = chatId;
+        this.chatType = chatType;
+        this.createdAt = LocalDateTime.now(); // Set manually since @CreationTimestamp won't work
+    }
+
+    // For group chats with specific names
     public Chat(ChatType chatType, String chatName) {
         this.chatType = chatType;
         this.chatName = chatName;
     }
+
+    // For private chats with specific names
+    public Chat(String chatId, ChatType chatType, String chatName) {
+        this.chatId = chatId;
+        this.chatType = chatType;
+        this.chatName = chatName;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    // NEED CONSTRUCTOR WHICH TAKES CHAT ID
 
 
     // Getters
