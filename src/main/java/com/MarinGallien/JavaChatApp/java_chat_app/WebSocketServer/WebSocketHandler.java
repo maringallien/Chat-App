@@ -2,10 +2,10 @@ package com.MarinGallien.JavaChatApp.java_chat_app.WebSocketServer;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.OnlineStatusMessage;
 import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.WebSocketMessage;
-import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.Message;
-import com.MarinGallien.JavaChatApp.java_chat_app.Database.WebSocketDatabaseService;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.DatabaseServices.WebSocketDatabaseService;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.OnlineStatus;
+import com.MarinGallien.JavaChatApp.java_chat_app.OfflineMessageService.OfflineMessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -29,14 +29,16 @@ public class WebSocketHandler {
     private final StatusManager statusManager;
     private final ChatManager chatManager;
     private final SimpMessagingTemplate messagingTemplate;
+    private final OfflineMessageService offlineMessageService;
 
     // Constructor
-    public WebSocketHandler(WebSocketDatabaseService databaseService, StatusManager statusManager,
-                               ChatManager chatManager, SimpMessagingTemplate messagingTemplate) {
+    public WebSocketHandler(WebSocketDatabaseService databaseService, StatusManager statusManager, ChatManager chatManager,
+                            SimpMessagingTemplate messagingTemplate, OfflineMessageService offlineMessageService) {
         this.databaseService = databaseService;
         this.statusManager = statusManager;
         this.chatManager = chatManager;
         this.messagingTemplate = messagingTemplate;
+        this.offlineMessageService = offlineMessageService;
     }
 
 
@@ -58,7 +60,12 @@ public class WebSocketHandler {
                 if (statusManager.isOnline(userId)) {
                     messagingTemplate.convertAndSendToUser(userId, "/queue/messages", message);
                 } else {
-                    // FORWARD TO REDIS QUEUE
+                    // Store message in Redis queue for offline user
+                    boolean stored = offlineMessageService.storeOfflineMessage(userId, message);
+                    if (!stored) {
+                        logger.warn("Failed to queue message for user {}", userId);
+                    }
+                    logger.info("Queued message for offline user {}", userId);
                 }
             }
 
@@ -66,6 +73,8 @@ public class WebSocketHandler {
             logger.error("Error processing text message", e);
         }
     }
+
+
 
     // Method notifies a user's contacts of a status change
     private void notifyContactsOfStatusChange(String userId, OnlineStatus status) {
@@ -86,6 +95,29 @@ public class WebSocketHandler {
             }
         } catch (Exception e) {
             logger.error("Error notifying contacts of status change for user: {}", userId);
+        }
+    }
+
+    private void deliverPendingMessages(String userId) {
+        try {
+            // Check if the user has any pending messages
+            if (!offlineMessageService.hasPendingMessages(userId)) {
+                logger.info("No pending messages for user {}", userId);
+                return;
+            }
+
+            // Retrieve all pending messages
+            List<WebSocketMessage> pendingMessages = offlineMessageService.retrievePendingMessages(userId);
+
+            // Send each message to the user
+            for (WebSocketMessage message : pendingMessages) {
+                messagingTemplate.convertAndSendToUser(userId, "/queue/messages", message);
+            }
+
+            logger.info("Successfully delivered pending messages to user {}", userId);
+
+        } catch (Exception e) {
+            logger.error("Failed to deliver pending messages to user {}", userId);
         }
     }
 
@@ -115,6 +147,10 @@ public class WebSocketHandler {
 
             // Notify contacts of status change
             notifyContactsOfStatusChange(userId, OnlineStatus.ONLINE);
+
+            // Send any pending messages
+            deliverPendingMessages(userId);
+
         } catch (Exception e) {
             logger.error("Error handling websocket connection", e);
         }

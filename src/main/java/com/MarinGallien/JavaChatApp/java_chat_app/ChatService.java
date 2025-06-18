@@ -8,6 +8,7 @@ public class ChatService {
      *      . Creating group chat
      *      . Deleting a chat
      *      . Adding member
-     *      . Removing member
+     *      . Removing memberexit
+     *
      */
 }

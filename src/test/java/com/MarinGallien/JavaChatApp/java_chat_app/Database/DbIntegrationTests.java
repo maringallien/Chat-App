@@ -1,6 +1,7 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.Database;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.WebSocketMessage;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.DatabaseServices.WebSocketDatabaseService;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.Chat;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.Message;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.User;
@@ -25,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @ActiveProfiles("test")
 @Import(WebSocketDatabaseService.class)
-class DatabaseIntegrationTests {
+class DbIntegrationTests {
 
     @Autowired
     private TestEntityManager entityManager;

@@ -7,7 +7,7 @@ import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntit
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.JunctionEntities.ChatParticipant;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.JunctionEntities.Contact;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories.MessageRepo;
-import com.MarinGallien.JavaChatApp.java_chat_app.Database.WebSocketDatabaseService;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.DatabaseServices.WebSocketDatabaseService;
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.ChatType;
 
 import org.junit.jupiter.api.BeforeEach;
