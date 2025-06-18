@@ -9,9 +9,7 @@ import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.JunctionE
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories.MessageRepo;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.WebSocketDatabaseService;
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.ChatType;
-import com.MarinGallien.JavaChatApp.java_chat_app.Enums.OnlineStatus;
 
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -19,22 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.socket.messaging.SessionConnectEvent;
-import org.springframework.web.socket.messaging.SessionDisconnectEvent;
-import org.mockito.Mock;
 import static org.mockito.Mockito.*;
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 @DataJpaTest
 @ActiveProfiles
