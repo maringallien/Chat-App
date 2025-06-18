@@ -47,7 +47,7 @@ public class BaseMessage {
     // Setters
     public void setMessageID(String messageID) {this.messageID = messageID;}
     public void setType(MessageType type) {this.type = type;}
-    public void setsenderID(String senderID) {this.senderID = senderID;}
+    public void setSenderID(String senderID) {this.senderID = senderID;}
     public void setTimestamp(Long timestamp) {this.timestamp = timestamp;}
 
     // Equals function checks for equality between 2 DTO IDs.

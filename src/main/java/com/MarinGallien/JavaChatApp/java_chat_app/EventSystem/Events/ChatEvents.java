@@ -1,4 +1,4 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.Events;
+package com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events;
 
 /**
  * This class contains chat-related events that will be published by the http server when:

@@ -1,6 +1,6 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.WebSocketServer;
+package com.MarinGallien.JavaChatApp.java_chat_app.Config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.MarinGallien.JavaChatApp.java_chat_app.WebSocketServer.UserSessionInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
