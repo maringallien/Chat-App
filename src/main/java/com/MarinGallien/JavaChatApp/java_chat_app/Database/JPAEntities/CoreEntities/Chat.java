@@ -32,6 +32,9 @@ public class Chat {
     @Column(name = "chat_name")
     private String chatName;
 
+    @Column(name = "creator_id")
+    private String creatorId;
+
 
     // Relationships:
 
@@ -47,31 +50,20 @@ public class Chat {
     // Constructors
     public Chat() {}
 
-    // For group chats
-    public Chat(ChatType chatType) {
-        this.chatType = chatType;
-    }
-
-    // For private chats with non-specific names
+    // For private chats
     public Chat(String chatId, ChatType chatType) {
         this.chatId = chatId;
         this.chatType = chatType;
         this.createdAt = LocalDateTime.now(); // Set manually since @CreationTimestamp won't work
     }
 
-    // For group chats with specific names
-    public Chat(ChatType chatType, String chatName) {
+    // For group chats
+    public Chat(ChatType chatType, String chatName, String creatorId) {
         this.chatType = chatType;
         this.chatName = chatName;
+        this.creatorId = creatorId;
     }
 
-    // For private chats with specific names
-    public Chat(String chatId, ChatType chatType, String chatName) {
-        this.chatId = chatId;
-        this.chatType = chatType;
-        this.chatName = chatName;
-        this.createdAt = LocalDateTime.now();
-    }
 
     // NEED CONSTRUCTOR WHICH TAKES CHAT ID
 
@@ -83,6 +75,7 @@ public class Chat {
     public String getChatName() {return chatName;}
     public Set<Message> getMessages() {return messages;}
     public Set<ChatParticipant> getParticipants() {return participants;}
+    public String getCreatorId() {return creatorId;}
 
 
     // Setters
@@ -92,6 +85,7 @@ public class Chat {
     public void setChatName(String chatName) {this.chatName = chatName;}
     public void setMessages(Set<Message> messages) {this.messages = messages;}
     public void setParticipants(Set<ChatParticipant> participants) {this.participants = participants;}
+    public void setCreatorId(String creatorId) {this.creatorId = creatorId;}
 
 
     // Helper methods
