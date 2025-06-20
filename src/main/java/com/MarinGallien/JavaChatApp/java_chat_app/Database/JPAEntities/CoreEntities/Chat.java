@@ -10,13 +10,14 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
+
 @Entity
 @Table(name = "chats")
 public class Chat {
     // Columns:
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "chat_id")
     private String chatId;
 
@@ -54,11 +55,11 @@ public class Chat {
     public Chat(String chatId, ChatType chatType) {
         this.chatId = chatId;
         this.chatType = chatType;
-        this.createdAt = LocalDateTime.now(); // Set manually since @CreationTimestamp won't work
     }
 
     // For group chats
     public Chat(ChatType chatType, String chatName, String creatorId) {
+        this.chatId = UUID.randomUUID().toString();
         this.chatType = chatType;
         this.chatName = chatName;
         this.creatorId = creatorId;

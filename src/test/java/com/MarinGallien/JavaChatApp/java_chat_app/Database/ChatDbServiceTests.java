@@ -6,6 +6,7 @@ import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntit
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories.ChatParticipantRepo;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories.ChatRepo;
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.ChatType;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,6 @@ public class ChatDbServiceTests {
     private User user4;
     private Set<String> members;
     private String gcId;
-    private String pcId;
 
     @BeforeEach
     void setUp() {
@@ -57,10 +57,16 @@ public class ChatDbServiceTests {
         entityManager.persistAndFlush(user3);
         entityManager.persistAndFlush(user4);
 
+
+        // DEBUG: Print the user IDs
+        System.out.println("User1 ID: " + user1.getUserId());
+        System.out.println("User2 ID: " + user2.getUserId());
+        System.out.println("User3 ID: " + user3.getUserId());
+        System.out.println("User4 ID: " + user4.getUserId());
+
         members = Set.of(user2.getUserId(), user3.getUserId());
 
         gcId = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
-        pcId = chatDbService.createPrivateChat(user1.getUserId(), user4.getUserId());
     }
 
     // ==========================================================================
@@ -69,14 +75,17 @@ public class ChatDbServiceTests {
 
     @Test
     void createPrivateChat_ValidUsers_CreatesChat() {
-        // Given - We have already created a private chat in setup
+        // Given
+        String pcId = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
+        assertNotNull(pcId);
+        assertTrue(chatRepo.existsById(pcId));
 
         // Then
         assertNotNull(pcId);
         assertTrue(pcId.startsWith("PRIVATE_"));
         assertTrue(chatRepo.existsById(pcId));
         assertTrue(chatParticipantRepo.existsByChatChatIdAndUserUserId(pcId, user1.getUserId()));
-        assertTrue(chatParticipantRepo.existsByChatChatIdAndUserUserId(pcId, user4.getUserId()));
+        assertTrue(chatParticipantRepo.existsByChatChatIdAndUserUserId(pcId, user2.getUserId()));
     }
 
     @Test
@@ -90,11 +99,17 @@ public class ChatDbServiceTests {
 
     @Test
     void createPrivateChat_AlreadyExists_ReturnsFalse() {
+        // Given
+        String pcId = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
+        assertNotNull(pcId);
+        assertTrue(chatRepo.existsById(pcId));
+
         // When
         String secondChatId = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
 
         // Then
         assertNull(secondChatId);
+        assertFalse(chatRepo.existsById(secondChatId));
     }
 
     // ==========================================================================
@@ -231,6 +246,7 @@ public class ChatDbServiceTests {
     @Test
     void addMemberToGc_PrivateChat_ReturnsFalse() {
         // Given
+        String pcId = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
         assertNotNull(pcId);
         assertTrue(chatRepo.existsById(pcId));
 
@@ -282,7 +298,9 @@ public class ChatDbServiceTests {
     @Test
     void removeMember_PrivateChat_ReturnsFalse() {
         // Given
+        String pcId = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
         assertNotNull(pcId);
+        assertTrue(chatRepo.existsById(pcId));
         assertTrue(chatParticipantRepo.existsByChatChatIdAndUserUserId(pcId, user1.getUserId()));
 
         // When
@@ -323,6 +341,11 @@ public class ChatDbServiceTests {
 
     @Test
     void getChats_ValidInputs_ReturnsEmptyList() {
+        // Given
+        String pcId = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
+        assertNotNull(pcId);
+        assertTrue(chatRepo.existsById(pcId));
+
         // When
         List<Chat> userChats = chatDbService.getUserChats(user1.getUserId());
 

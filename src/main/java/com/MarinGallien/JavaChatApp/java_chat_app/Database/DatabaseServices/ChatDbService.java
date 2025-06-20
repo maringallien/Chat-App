@@ -52,6 +52,8 @@ public class ChatDbService {
             // Create and save private chat
             Chat chat = new Chat(privateChatId, ChatType.SINGLE);
             chatRepo.save(chat);
+            logger.info("Created and saved private chat");
+
 
             // Add both users as participants
             User user1 = userRepo.findUserById(userId1);
