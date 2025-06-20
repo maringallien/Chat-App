@@ -1,6 +1,5 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.EventSystem;
 
-import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.BaseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -15,13 +14,11 @@ public class EventBusService {
         this.eventPublisher = eventPublisher;
     }
 
-    public void publishEvent(BaseEvent event) {
+    public void publishEvent(Object event) {
         try {
-            logger.info("Publishing event: {} with ID: {}", event.getEventType(), event.getEventId());
             eventPublisher.publishEvent(event);
-            logger.info("Successfully published event: {} with ID: {}", event.getEventType(), event.getEventId());
         } catch (Exception e) {
-            logger.error("Failed to publish even: {} with ID: {}", event.getEventType(), event.getEventId());
+            logger.error("Failed to publish even");
             throw new RuntimeException("Failed to publish event", e);
         }
     }

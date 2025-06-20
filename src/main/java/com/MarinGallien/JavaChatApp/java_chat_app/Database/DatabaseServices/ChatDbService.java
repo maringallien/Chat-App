@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -32,21 +33,9 @@ public class ChatDbService {
     private ChatParticipantRepo chatParticipantRepo;
 
     public String createPrivateChat(String userId1, String userId2) {
-        try{
-            // validate userId1
-            if (!validateId(userId1) || !validateId(userId2)) {
-                logger.warn("Cannot create private chat: One or both user IDs are null or empty");
-                return null;
-            }
-
-            // Validate userId2
-            if (userId1.trim().equals(userId2.trim())) {
-                logger.warn("Cannot create private chat: Both user IDs are identical");
-                return null;
-            }
-
-            // Check if they exist
-            if (!userRepo.existsById(userId1) || userRepo.existsById(userId2)) {
+        try {
+            // Check if IDs exist
+            if (!userRepo.existsById(userId1) || !userRepo.existsById(userId2)) {
                 logger.warn("Cannot create private chat: One or both user IDs do not exist");
                 return null;
             }
@@ -85,22 +74,9 @@ public class ChatDbService {
     }
 
     public String createGroupChat(String creatorId, Set<String> participants, String groupName) {
-        try{
-            // validate creator ID
-            if (!validateId(creatorId) || !userRepo.existsById(creatorId)) {
-                logger.warn("Cannot create group chat: creator ID is null, empty, or doesn't exist");
-                return null;
-            }
-
-            // Validate participants list
-            if (participants == null || participants.isEmpty()) {
-                logger.warn("Cannot create group chat: participants list is null or empty");
-                return null;
-            }
-
-            // Validate groupName
-            if (groupName == null || groupName.isEmpty()) {
-                logger.warn("Cannot create group chat: group name is null or empty");
+        try {
+            if (!userRepo.existsById(creatorId)) {
+                logger.warn("Cannot create chat: user {} does not exist", creatorId);
                 return null;
             }
 
@@ -115,10 +91,6 @@ public class ChatDbService {
 
             // Validate each member, create participant and add to gc
             for (String id : participants) {
-                if (!validateId(id)) {
-                    logger.warn("Cannot create group chat: a member ID is null or empty");
-                    return null;
-                }
 
                 if (!userRepo.existsById(id)) {
                     logger.warn("Cannot create group chat: user {} does not exist", id);
@@ -139,11 +111,17 @@ public class ChatDbService {
         }
     }
 
-    public boolean deleteChat(String chatId) {
-        try{
-            // Validate input parameters
-            if (!validateId(chatId) || !chatRepo.existsById(chatId)) {
-                logger.warn("Cannot delete chat: ID is either null, empty, or does not exist");
+    public boolean deleteChat(String creatorId, String chatId) {
+        try {
+            // make sure chat exists
+            if (!chatRepo.existsById(chatId)) {
+                logger.warn("No chat to delete: chat {} does not exist", chatId);
+                return false;
+            }
+
+            // Make sure creatorId is same as chat's creator ID
+            if (!chatRepo.findChatById(chatId).getCreatorId().equals(creatorId)) {
+                logger.warn("Cannot delete chat: user {} was not chat creator", creatorId);
                 return false;
             }
 
@@ -166,13 +144,7 @@ public class ChatDbService {
     }
 
     public boolean addMemberToGroupChat(String chatId, String userId) {
-        try{
-            // validate chat and user IDs
-            if (!validateId(chatId) || !validateId(userId)) {
-                logger.warn("Cannot add member to group chat: user ID or chat ID is null or empty");
-                return false;
-            }
-
+        try {
             // Make sure both chat and user exist
             if (!userRepo.existsById(userId) || !chatRepo.existsById(chatId)) {
                 logger.warn("Cannot add member to group chat: user ID or chat ID does not exist");
@@ -207,13 +179,7 @@ public class ChatDbService {
     }
 
     public boolean removeMemberFromGroupChat(String chatId, String userId) {
-        try{
-            // validate chat and user IDs
-            if (!validateId(chatId) || !validateId(userId)) {
-                logger.warn("Cannot remove member to group chat: user ID or chat ID is null or empty");
-                return false;
-            }
-
+        try {
             // Make sure both chat and user exist
             if (!userRepo.existsById(userId) || !chatRepo.existsById(chatId)) {
                 logger.warn("Cannot remove member to group chat: user ID or chat ID does not exist");
@@ -227,10 +193,16 @@ public class ChatDbService {
                 return false;
             }
 
-            // Check that user is  a chat member
+            // Check that user is a chat member
             if (!chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId.trim(), userId.trim())) {
                 logger.info("Cannot remove member: user {} is not a member of chat {}", userId, chatId);
                 return true;
+            }
+
+            // Check that user is not creator
+            if (userId.equals(chatRepo.findChatById(chatId).getCreatorId())) {
+                logger.warn("Cannot remove member: user {} is chat creator", userId);
+                return false;
             }
 
             // Remove user from chat
@@ -251,8 +223,20 @@ public class ChatDbService {
         }
     }
 
-    private boolean validateId(String Id) {
-        return Id != null && !Id.trim().isEmpty();
+    public List<Chat> getUserChats(String userId) {
+        try {
+            if (!userRepo.existsById(userId)) {
+                logger.warn("Cannot retrieve list of user's chats: user does not exist");
+                return List.of();
+            }
+
+            // Retrieve chats from database
+            return chatParticipantRepo.findChatsByUserUserId(userId);
+
+        } catch (Exception e) {
+            logger.error("Failed to retrieve list of user's chats: {}", e.getMessage());
+            return List.of();
+        }
     }
 
     private String generateChatId(String userId1, String userId2) {

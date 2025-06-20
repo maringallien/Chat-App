@@ -2,7 +2,7 @@ package com.MarinGallien.JavaChatApp.java_chat_app.WebSocketServer;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.OnlineStatusMessage;
 import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.WebSocketMessage;
-import com.MarinGallien.JavaChatApp.java_chat_app.Database.DatabaseServices.WebSocketDatabaseService;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.DatabaseServices.WebSocketDbService;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.OnlineStatus;
 import com.MarinGallien.JavaChatApp.java_chat_app.OfflineMessageService.OfflineMessageService;
@@ -25,14 +25,14 @@ import java.util.Set;
 public class WebSocketHandler {
     // Parameters
     private static final Logger logger = LoggerFactory.getLogger(WebSocketHandler.class);
-    private final WebSocketDatabaseService databaseService;
+    private final WebSocketDbService databaseService;
     private final StatusManager statusManager;
     private final ChatManager chatManager;
     private final SimpMessagingTemplate messagingTemplate;
     private final OfflineMessageService offlineMessageService;
 
     // Constructor
-    public WebSocketHandler(WebSocketDatabaseService databaseService, StatusManager statusManager, ChatManager chatManager,
+    public WebSocketHandler(WebSocketDbService databaseService, StatusManager statusManager, ChatManager chatManager,
                             SimpMessagingTemplate messagingTemplate, OfflineMessageService offlineMessageService) {
         this.databaseService = databaseService;
         this.statusManager = statusManager;

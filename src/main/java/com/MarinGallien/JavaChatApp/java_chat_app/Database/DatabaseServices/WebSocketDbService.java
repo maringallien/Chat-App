@@ -17,11 +17,11 @@ import java.util.List;
 
 @Service
 @Transactional
-public class WebSocketDatabaseService {
+public class WebSocketDbService {
 
     // Parameters:
 
-    private static final Logger logger = LoggerFactory.getLogger(WebSocketDatabaseService.class);
+    private static final Logger logger = LoggerFactory.getLogger(WebSocketDbService.class);
 
     @Autowired
     private MessageRepo messageRepo;

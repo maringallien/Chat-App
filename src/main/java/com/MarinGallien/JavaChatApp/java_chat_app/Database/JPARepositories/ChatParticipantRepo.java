@@ -1,5 +1,6 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories;
 
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.Chat;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.JunctionEntities.ChatParticipant;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,4 +23,6 @@ public interface ChatParticipantRepo extends JpaRepository<ChatParticipant, Stri
 
     // Check if a user is in a room
     boolean existsByChatChatIdAndUserUserId(String chatId, String userId);
+
+    List<Chat> findChatsByUserUserId(String userId);
 }
