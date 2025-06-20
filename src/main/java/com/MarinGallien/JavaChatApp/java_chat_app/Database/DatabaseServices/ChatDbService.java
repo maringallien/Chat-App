@@ -46,12 +46,12 @@ public class ChatDbService {
             // Check if private chat already exists
             if (chatRepo.existsById(privateChatId)) {
                 logger.warn("Private chat already exists between user {} and {}: chat ID {}", userId1, userId2, privateChatId);
-                return null;
+                return privateChatId;
             }
 
             // Create and save private chat
             Chat chat = new Chat(privateChatId, ChatType.SINGLE);
-            chatRepo.save(chat);
+            Chat managedChat = chatRepo.save(chat);
             logger.info("Created and saved private chat");
 
 
@@ -59,8 +59,8 @@ public class ChatDbService {
             User user1 = userRepo.findUserById(userId1);
             User user2 = userRepo.findUserById(userId2);
 
-            ChatParticipant participant1 = new ChatParticipant(chat, user1);
-            ChatParticipant participant2 = new ChatParticipant(chat, user2);
+            ChatParticipant participant1 = new ChatParticipant(managedChat, user1);
+            ChatParticipant participant2 = new ChatParticipant(managedChat, user2);
 
             chatParticipantRepo.save(participant1);
             chatParticipantRepo.save(participant2);
@@ -84,11 +84,11 @@ public class ChatDbService {
 
             // Create and save chat
             Chat gc = new Chat(ChatType.GROUP, groupName, creatorId);
-            chatRepo.save(gc);
+            Chat managedChat = chatRepo.save(gc);
 
             // Create and save as chat participant
             User creator = userRepo.findUserById(creatorId);
-            ChatParticipant creatorParticipant = new ChatParticipant(gc, creator);
+            ChatParticipant creatorParticipant = new ChatParticipant(managedChat, creator);
             chatParticipantRepo.save(creatorParticipant);
 
             // Validate each member, create participant and add to gc
@@ -101,11 +101,11 @@ public class ChatDbService {
 
                 // Create and save as chat participant
                 User user = userRepo.findUserById(id);
-                ChatParticipant participant = new ChatParticipant(gc, user);
+                ChatParticipant participant = new ChatParticipant(managedChat, user);
                 chatParticipantRepo.save(participant);
             }
 
-            return gc.getChatId();
+            return managedChat.getChatId();
 
         } catch (Exception e) {
             logger.error("Error creating group chat: {}", e.getMessage());

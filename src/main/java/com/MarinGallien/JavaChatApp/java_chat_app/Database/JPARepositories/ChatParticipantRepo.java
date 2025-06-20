@@ -24,5 +24,7 @@ public interface ChatParticipantRepo extends JpaRepository<ChatParticipant, Stri
     // Check if a user is in a room
     boolean existsByChatChatIdAndUserUserId(String chatId, String userId);
 
-    List<Chat> findChatsByUserUserId(String userId);
+    // FIXED: Added proper @Query annotation
+    @Query("SELECT cp.chat FROM ChatParticipant cp WHERE cp.user.userId = :userId")
+    List<Chat> findChatsByUserUserId(@Param("userId") String userId);
 }
