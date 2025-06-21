@@ -53,7 +53,7 @@ public class Message {
     // Relationships
 
     // Message to files relationship
-    @OneToMany(mappedBy = "message", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "message", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<File> messageFileEntities = new HashSet<>();
 
 

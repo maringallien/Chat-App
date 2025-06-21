@@ -121,20 +121,16 @@ public class ChatDbService {
                 return false;
             }
 
+            Chat chat = chatRepo.findChatById(chatId);
+
             // Make sure creatorId is same as chat's creator ID
-            if (!chatRepo.findChatById(chatId).getCreatorId().equals(creatorId)) {
+            if (!chat.getCreatorId().equals(creatorId)) {
                 logger.warn("Cannot delete chat: user {} was not chat creator", creatorId);
                 return false;
             }
 
             // Save the number of chats deleted (should only be 1)
-            int deletedCount = chatRepo.deleteByChatId(chatId.trim());
-
-            // Check that something was deleted
-            if (deletedCount <= 0) {
-                logger.warn("Failed to delete chat {}: no rows affected", chatId);
-                return false;
-            }
+            chatRepo.delete(chat);
 
             logger.info("Successfully deleted chat {}", chatId);
             return true;
