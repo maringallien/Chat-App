@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -147,12 +148,14 @@ public class ChatDbServiceTests {
     // ==========================================================================
 
     @Test
-    @DirtiesContext
+    @Transactional
     void deleteGc_ExistingChat_DeletesSuccessfully() {
         // Given
         String gcId = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
         assertNotNull(gcId);
         assertTrue(chatRepo.existsById(gcId));
+
+        entityManager.flush();
 
         // When
         boolean deleted = chatDbService.deleteChat(user1.getUserId(), gcId);
@@ -161,7 +164,6 @@ public class ChatDbServiceTests {
         assertTrue(deleted);
 
         entityManager.flush();
-        entityManager.clear();
 
         assertFalse(chatRepo.existsById(gcId));
     }
