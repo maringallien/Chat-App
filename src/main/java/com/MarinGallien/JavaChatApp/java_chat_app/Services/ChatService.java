@@ -197,7 +197,7 @@ public class ChatService {
         }
     }
 
-
+    // SHOULD NOT BE TAKING AN EVENT IF NOT A LISTENER
     public List<Chat> handleGetUserChatsRequest(GetUserChatsRequest event) {
         try {
             // Validate input parameters
