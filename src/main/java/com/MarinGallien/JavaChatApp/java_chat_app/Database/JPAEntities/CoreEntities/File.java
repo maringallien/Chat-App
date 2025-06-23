@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Table(name = "files")
 public class File {
     // Columns
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "file_id")

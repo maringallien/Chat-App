@@ -82,14 +82,16 @@ public class MessageDbService {
 
             if (!chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId, senderId)){
                 logger.warn("Failed to retrieve messages: user {} is not a participant of chat {}", senderId, chatId);
-                return null;
+                return List.of();
             }
 
-            return messageRepo.findByChatChatIdOrderBySentAtAsc(chatId);
+            List<Message> messages = messageRepo.findByChatChatIdOrderBySentAtAsc(chatId);
+
+            return messages!= null ? messages : List.of();
 
         } catch (Exception e) {
             logger.error("Failed to retrieve messages: {}", e.getMessage());
-            return null;
+            return List.of();
         }
     }
 }

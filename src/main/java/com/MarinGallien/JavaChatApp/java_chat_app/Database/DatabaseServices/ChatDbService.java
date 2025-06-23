@@ -237,6 +237,19 @@ public class ChatDbService {
         }
     }
 
+    // Retrieve all chat-user mappings in a List of objects array where [0] = chatId and [1] = userId
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public List<Object[]> getAllChatParticipantMappings() {
+        try {
+            List<Object[]> mappings = chatParticipantRepo.findAllChatUserMappings();
+            logger.info("Retrieved {} chat-participant mappings from database", mappings.size());
+            return mappings;
+        } catch (Exception e) {
+            logger.warn("Error retrieving chat-participant mappings: {}", e.getMessage());
+            return List.of();
+        }
+    }
+
     private String generateChatId(String userId1, String userId2) {
         String[] sortedIds = {userId1, userId2};
         Arrays.sort(sortedIds);
