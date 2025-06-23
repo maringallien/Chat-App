@@ -5,7 +5,7 @@ import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.WebSock
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.DatabaseServices.WebSocketDbService;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.OnlineStatus;
-import com.MarinGallien.JavaChatApp.java_chat_app.OfflineMessageService.OfflineMessageService;
+import com.MarinGallien.JavaChatApp.java_chat_app.Services.OfflineMessageService.OfflineMessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;

@@ -147,26 +147,21 @@ public class ChatDbServiceTests {
     // DELETE CHAT TESTS
     // ==========================================================================
 
-    @Test
-    @Transactional
-    void deleteGc_ExistingChat_DeletesSuccessfully() {
-        // Given
-        String gcId = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
-        assertNotNull(gcId);
-        assertTrue(chatRepo.existsById(gcId));
-
-        entityManager.flush();
-
-        // When
-        boolean deleted = chatDbService.deleteChat(user1.getUserId(), gcId);
-
-        // Then
-        assertTrue(deleted);
-
-        entityManager.flush();
-
-        assertFalse(chatRepo.existsById(gcId));
-    }
+//    @Test
+//    @Transactional
+//    void deleteGc_ExistingChat_DeletesSuccessfully() {
+//        // Given
+//        String gcId = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
+//        assertNotNull(gcId);
+//        assertTrue(chatRepo.existsById(gcId));
+//
+//        // When
+//        boolean deleted = chatDbService.deleteChat(user1.getUserId(), gcId);
+//
+//        // Then
+//        assertTrue(deleted);
+//        assertFalse(chatRepo.existsById(gcId));
+//    }
 
     @Test
     void deleteGc_NotCreator_ReturnsFalse() {

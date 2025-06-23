@@ -1,9 +1,8 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.OfflineMessageService;
+package com.MarinGallien.JavaChatApp.java_chat_app.Services.OfflineMessageService;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.WebSocketMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

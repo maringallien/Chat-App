@@ -1,14 +1,16 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.UserService;
+package com.MarinGallien.JavaChatApp.java_chat_app.Services;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.DatabaseServices.ChatDbService;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.Chat;
 import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.EventBusService;
+import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents.Notifications.ChatCreated;
+import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents.Notifications.ChatDeleted;
+import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents.Notifications.MemberAddedToChat;
+import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents.Notifications.MemberRemovedFromChat;
 import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents.Requests.*;
-import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents.Notifications.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 

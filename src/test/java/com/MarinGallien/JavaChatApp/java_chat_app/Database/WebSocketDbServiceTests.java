@@ -42,7 +42,9 @@
 //    private WebSocketDbService service;
 //
 //    private User testUser;
+//    private User testUser2;
 //    private Chat testChat;
+//    private String chatId;
 //    private WebSocketMessage testMessage;
 //    private Message testMessageEntity;
 //
@@ -50,11 +52,15 @@
 //    void setUp() {
 //        // Create test user and set ID for easier testing
 //        testUser = new User("testuser", "test@email.com", "password");
+//        testUser2 = new User("testuser2", "test2@email.com", "password2");
+//
 //        testUser.setUserId("user123");
+//        testUser2.setUserId("user456");
+//
 //
 //        // Create test chat and set ID for easier testing
-//        testChat = new Chat(ChatType.SINGLE);
-//        testChat.setChatId("chat123");
+//        chatId = "PRIVATE_" + testUser.getUserId() + "_" + testUser2.getUserId();
+//        testChat = new Chat(chatId, ChatType.SINGLE);
 //
 //        // Create test message DTO entity
 //        testMessage = new WebSocketMessage("user123", "chat123", "Hello", "user456");
@@ -68,9 +74,9 @@
 //    void saveMessage_ValidMessage_ReturnsMessage() {
 //        // Given
 //        when(userRepo.existsById("user123")).thenReturn(true);
-//        when(chatRepo.existsById("chat123")).thenReturn(true);
-//        when(chatParticipantRepo.existsByChatChatIdAndUserUserId("chat123", "user123")).thenReturn(true);
-//        when(chatRepo.findChatById("chat123")).thenReturn(testChat);
+//        when(chatRepo.existsById(chatId)).thenReturn(true);
+//        when(chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId, "user123")).thenReturn(true);
+//        when(chatRepo.findChatById(chatId)).thenReturn(testChat);
 //        when(userRepo.findUserById("user123")).thenReturn(testUser);
 //        when(messageRepo.save(any(Message.class))).thenReturn(testMessageEntity);
 //

@@ -1,9 +1,5 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents;
 
-import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents.Notifications.ChatCreated;
-import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents.Notifications.ChatDeleted;
-import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents.Notifications.MemberAddedToChat;
-import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents.Notifications.MemberRemovedFromChat;
 import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents.Requests.*;
 
 // Sealed interface for all chat events
