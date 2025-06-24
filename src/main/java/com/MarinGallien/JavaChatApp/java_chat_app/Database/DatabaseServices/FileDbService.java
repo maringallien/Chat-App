@@ -1,0 +1,267 @@
+package com.MarinGallien.JavaChatApp.java_chat_app.Database.DatabaseServices;
+
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.Chat;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.File;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.Message;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.User;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories.*;
+import com.MarinGallien.JavaChatApp.java_chat_app.Enums.MessageType;
+import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+@Transactional
+public class FileDbService {
+
+    private Logger logger = LoggerFactory.getLogger(FileDbService.class);
+
+    @Autowired
+    FileRepo fileRepo;
+
+    @Autowired
+    UserRepo userRepo;
+
+    @Autowired
+    ChatRepo chatRepo;
+
+    @Autowired
+    ChatParticipantRepo chatParticipantRepo;
+
+    @Autowired
+    MessageRepo messageRepo;
+
+    public File uploadFile(String userId, String chatId, MultipartFile file) {
+        try {
+            // Input validation
+            if (!userRepo.existsById(userId) || !chatRepo.existsById(chatId)) {
+                logger.warn("Failed to upload file: user {} does not exist", userId);
+                return null;
+            }
+
+            if (!chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId, userId)) {
+                logger.warn("Failed to upload file: user {} is not a member of chat {}", userId, chatId);
+                return null;
+            }
+
+            if (file == null || file.isEmpty()) {
+                logger.warn("Failed to upload file: file is null or empty");
+                return null;
+            }
+
+            // Save file to disk
+            String filePath = saveFileToDisk(file);
+            if (filePath == null) {
+                logger.warn("Failed to save file to disk");
+                return null;
+            }
+
+            // Create file entity
+            User uploader = userRepo.findUserById(userId);
+            File newFile = new File(
+                    file.getOriginalFilename(),
+                    file.getSize(),
+                    file.getContentType(),
+                    filePath,
+                    uploader
+            );
+
+            // Save file to database
+            File savedFile = fileRepo.save(newFile);
+
+            // Associate with chat
+            associateWithChat(savedFile, chatId);
+
+            logger.info("Successfully saved file {} to chat {}", file.getOriginalFilename(), chatId);
+            return newFile;
+
+        } catch (Exception e) {
+            logger.error("Failed to upload file: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    private String saveFileToDisk(MultipartFile file) {
+        try {
+            // Generate unique fileName
+            String originalFileName = file.getOriginalFilename();
+            String extension = getFileExtension(originalFileName);
+            String uniqueFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + extension;
+
+            // Create upload directory if it doesn't already exist
+            String uploadDir = "uploads/";
+            Path uploadPath = Paths.get(uploadDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            // Save file
+            Path filePath = uploadPath.resolve(uniqueFileName);
+            file.transferTo(filePath.toFile());
+
+            return filePath.toString();
+        } catch (Exception e) {
+            logger.error("Failed to save file to disk: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    private String getFileExtension(String filename) {
+        if (filename != null && filename.contains(".")) {
+            return filename.substring(filename.lastIndexOf("."));
+        }
+        return "";
+    }
+
+    private void associateWithChat(File file, String chatId) {
+        Chat chat = chatRepo.findChatById(chatId);
+        Message fileMessage = new Message(
+                file.getUploader(),
+                chat,
+                "File: " + file.getFilename(),
+                MessageType.TEXT_MESSAGE
+        );
+
+        Message savedMessage = messageRepo.save(fileMessage);
+        fileRepo.save(file);
+    }
+
+    public Resource downloadFile(String userId, String chatId, String fileId) {
+        try {
+            // Input validation
+            if (!userRepo.existsById(userId) || !chatRepo.existsById(chatId) || !fileRepo.existsById(fileId)) {
+                logger.warn("Failed to download file: user {} or file {} does not exist", userId, fileId);
+                return null;
+            }
+
+            if (!chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId, userId)) {
+                logger.warn("Failed to download file: user {} is not a member of chat {}", userId, chatId);
+                return null;
+            }
+
+            // Retrieve file metadata from database
+            File file = fileRepo.findById(fileId).orElse(null);
+            if (file == null) {
+                logger.warn("File {} not found in database", fileId);
+                return null;
+            }
+
+            // Check that the file belongs to the chat
+            String fileChatId = file.getMessage().getChat().getChatId();
+            if (!fileChatId.equals(chatId)){
+                logger.warn("Failed to download file: file {} does not belong to chat {}", fileId, chatId);
+                return null;
+            }
+
+            // Check that file exists on disk
+            Path filepath = Paths.get(file.getFilePath());
+            if (!Files.exists(filepath)) {
+                logger.warn("Failed to download file: file {} not found on disk", fileId);
+                return null;
+            }
+
+            // Create a streaming resource
+            InputStream inputStream = Files.newInputStream(filepath);
+            Resource resource = new InputStreamResource(inputStream);
+
+            logger.info("Successfully prepared file {} for download by user {}", fileId, userId);
+
+            return resource;
+
+        } catch (Exception e) {
+            logger.error("Failed to download file: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public Boolean deleteFile(String userId, String chatId, String fileId) {
+        try {
+            // Input validation
+            if (!userRepo.existsById(userId) || !chatRepo.existsById(chatId) || !fileRepo.existsById(fileId)) {
+                logger.warn("Failed to delete file: user {}, chat {}, or file {} does not exist", userId, chatId, fileId);
+                return null;
+            }
+
+            if (!chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId, userId)) {
+                logger.warn("Failed to delete file: user {} is not a member of chat {}", userId, chatId);
+                return null;
+            }
+
+            // Retrieve file metadata
+            File file = fileRepo.findById(fileId).orElse(null);
+
+            // Verify it is not null
+            if (file == null) {
+                logger.warn("Failed to delete file: file {} does not exist", fileId);
+                return false;
+            }
+
+            // Make sure the file belongs to the chat
+            String fileChatId = file.getMessage().getChat().getChatId();
+            if (!fileChatId.equals(chatId)) {
+                logger.warn("Failed to delete file: file {} does not belong to chat {}", fileId, chatId);
+                return false;
+            }
+
+            // Make sure user can delete it - only creator can delete
+            if (!file.getUploader().getUserId().equals(userId)){
+                logger.warn("Failed to delete file: user {} did not create the file", userId);
+            }
+
+            fileRepo.delete(file);
+
+            // Delete file from file system - don't return false if that fails because file was still deleted from db
+            Path filepath = Paths.get(file.getFilePath());
+            if (!Files.exists(filepath)) {
+               logger.warn("Failed to delete file from filesystem: {}", filepath);
+            }
+
+            Files.delete(filepath);
+            logger.info("Deleted file from filesystem: {}", filepath);
+            return true;
+
+        } catch (Exception e) {
+            logger.error("Failed to delete file: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public List<File> getChatFiles(String userId, String chatId) {
+        try {
+            // Input validation
+            if (!userRepo.existsById(userId) || !chatRepo.existsById(chatId)) {
+                logger.warn("Failed to retrieve files list: user {} or file {} does not exist", userId, chatId);
+                return null;
+            }
+
+            if (!chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId, userId)) {
+                logger.warn("Failed to retrieve files list: user {} is not a member of chat {}", userId, chatId);
+                return List.of();
+            }
+
+            // Get all files for this chat
+            List<File> chatFiles = fileRepo.findByMessageChatChatId(chatId);
+
+            logger.info("Successfully retrieved {} files for chat {}", chatFiles.size(), chatId);
+            return chatFiles;
+
+        } catch (Exception e) {
+            logger.error("Failed to retrieve files list: {}", e.getMessage());
+            return List.of();
+        }
+    }
+}
