@@ -2,10 +2,14 @@ package com.MarinGallien.JavaChatApp.java_chat_app.Services;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.DatabaseServices.FileDbService;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.File;
+import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents.Requests.DeleteChatRequest;
+import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.FileEvents.DeleteFileRequest;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -72,27 +76,29 @@ public class FileService {
         }
     }
 
-    public boolean deleteFile(String userId, String chatId, String fileId) {
+    @EventListener
+    @Async("eventTaskExecutor")
+    public void deleteFile(DeleteFileRequest event) {
         try {
             // Validate inputs
-            if (!validateId(userId) || !validateId(chatId) || !validateId(fileId)) {
+            if (!validateId(event.userId()) || !validateId(event.chatId()) || !validateId(event.fileId())) {
                 logger.warn("Failed to delete file: user, chat, or file ID is null or empty");
-                return false;
+                return;
             }
 
-            boolean deleted = fileDbService.deleteFile(userId, chatId, fileId);
+            boolean deleted = fileDbService.deleteFile(event.userId(), event.chatId(), event.fileId());
 
             if (!deleted) {
                 logger.warn("Failed to delete file");
-                return false;
+                return;
             }
 
             logger.info("Successfully deleted file");
-            return true;
+            return;
 
         } catch (Exception e) {
             logger.error("Failed to delete file: {}", e.getMessage());
-            return false;
+            return;
         }
     }
 

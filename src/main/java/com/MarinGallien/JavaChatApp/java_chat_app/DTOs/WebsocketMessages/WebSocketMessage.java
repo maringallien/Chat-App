@@ -26,9 +26,7 @@ public class WebSocketMessage extends BaseMessage {
     public String getRecipientID() {return recipientID; }
 
     // Setters
-    public void setContent(String content) {
-        this.content = content;
-    }
+    public void setContent(String content) {this.content = content;}
     public void setChatID(String chatID) { this.chatID = chatID; }
     public void setRecipientID(String recipientID) { this.recipientID = recipientID; }
 

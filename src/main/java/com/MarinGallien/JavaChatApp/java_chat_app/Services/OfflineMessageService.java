@@ -1,4 +1,4 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.Services.OfflineMessageService;
+package com.MarinGallien.JavaChatApp.java_chat_app.Services;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.WebSocketMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
