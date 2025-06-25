@@ -74,4 +74,10 @@ public class UserDbService {
             return false;
         }
     }
+
+    // Simple utility method to allow AuthService to retrieve a user without direct db access
+    public User findUserByEmail(String email) {
+        return userRepo.findUserByEmail(email);
+    }
+
 }
