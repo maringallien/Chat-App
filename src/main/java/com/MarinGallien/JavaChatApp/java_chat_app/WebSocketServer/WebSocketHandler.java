@@ -2,10 +2,13 @@ package com.MarinGallien.JavaChatApp.java_chat_app.WebSocketServer;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.OnlineStatusMessage;
 import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.WebSocketMessage;
-import com.MarinGallien.JavaChatApp.java_chat_app.Database.DatabaseServices.WebSocketDbService;
+
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.OnlineStatus;
+import com.MarinGallien.JavaChatApp.java_chat_app.Services.ContactService;
+import com.MarinGallien.JavaChatApp.java_chat_app.Services.MessageService;
 import com.MarinGallien.JavaChatApp.java_chat_app.Services.OfflineMessageService;
+import com.MarinGallien.JavaChatApp.java_chat_app.Services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -25,16 +28,25 @@ import java.util.Set;
 public class WebSocketHandler {
     // Parameters
     private static final Logger logger = LoggerFactory.getLogger(WebSocketHandler.class);
-    private final WebSocketDbService databaseService;
+    private final MessageService messageService;
+    private final ContactService contactService;
+    private final UserService userService;
     private final StatusManager statusManager;
     private final ChatManager chatManager;
     private final SimpMessagingTemplate messagingTemplate;
     private final OfflineMessageService offlineMessageService;
 
     // Constructor
-    public WebSocketHandler(WebSocketDbService databaseService, StatusManager statusManager, ChatManager chatManager,
-                            SimpMessagingTemplate messagingTemplate, OfflineMessageService offlineMessageService) {
-        this.databaseService = databaseService;
+    public WebSocketHandler(MessageService messageService,
+                            ContactService contactService,
+                            UserService userService,
+                            StatusManager statusManager,
+                            ChatManager chatManager,
+                            SimpMessagingTemplate messagingTemplate,
+                            OfflineMessageService offlineMessageService) {
+        this.contactService = contactService;
+        this.messageService = messageService;
+        this.userService = userService;
         this.statusManager = statusManager;
         this.chatManager = chatManager;
         this.messagingTemplate = messagingTemplate;
@@ -42,26 +54,29 @@ public class WebSocketHandler {
     }
 
 
-    // THIS METHOD needs to be  updated because it does not handle offline users
     // Handles text messages sent to specific chat chats
     @MessageMapping("/chat/{chatId}")
     public void handleTextMessage(@DestinationVariable String chatId, @Payload WebSocketMessage message) {
         try {
             String senderId = message.getSenderID();
+            String messageChatId = message.getChatID();
+
             logger.info("Processing text message from {} to chat {}", senderId, chatId);
 
             // Save message to database and return
-            databaseService.saveMessage(message);
+            messageService.saveMessage(senderId, chatId, message.getContent());
 
-            String messageChatId = message.getChatID();
+            // Forward message to all chat participants
             Set<String> chatParticipants = chatManager.getChatParticipants(messageChatId);
 
             for (String userId : chatParticipants) {
+                // If user is online - forward
                 if (statusManager.isOnline(userId)) {
                     messagingTemplate.convertAndSendToUser(userId, "/queue/messages", message);
                 } else {
-                    // Store message in Redis queue for offline user
+                    // If user is offline - store message in Redis queue
                     boolean stored = offlineMessageService.storeOfflineMessage(userId, message);
+                    // Make sure message was stored
                     if (!stored) {
                         logger.warn("Failed to queue message for user {}", userId);
                     }
@@ -75,12 +90,11 @@ public class WebSocketHandler {
     }
 
 
-
     // Method notifies a user's contacts of a status change
     private void notifyContactsOfStatusChange(String userId, OnlineStatus status) {
         try {
             // Retrieve list of contacts from the database
-            List<String> contactIds = databaseService.getContacts(userId);
+            List<String> contactIds = contactService.getUserContacts(userId);
 
             // Create a status message
             OnlineStatusMessage statusMessage = new OnlineStatusMessage(status, userId);
@@ -133,17 +147,16 @@ public class WebSocketHandler {
                 return;
             }
 
-            // NEED TO CHECK USER ID EXISTS
-
             // Update user status in database
-            boolean statusUpdated = databaseService.saveStatus(userId, OnlineStatus.ONLINE);
+            OnlineStatus status = userService.updateStatus(userId, OnlineStatus.ONLINE);
+
+            // Continue even if status update fails, but log error
+            if (status != OnlineStatus.ONLINE) {
+                logger.warn("Failed to update status to ONLINE for user {}", userId);
+            }
 
             // Update status in status manager
             statusManager.setUserOnline(userId);
-
-            if (!statusUpdated) {
-                logger.warn("Failed to update status to ONLINE for user {}", userId);
-            }
 
             // Notify contacts of status change
             notifyContactsOfStatusChange(userId, OnlineStatus.ONLINE);
@@ -168,18 +181,16 @@ public class WebSocketHandler {
                 return;
             }
 
-            // NEED TO CHECK USER ID EXISTS
-
             // Update user status in database
-            boolean statusUpdated = databaseService.saveStatus(userId, OnlineStatus.OFFLINE);
+            OnlineStatus status = userService.updateStatus(userId, OnlineStatus.ONLINE);
+
+            // Continue even if status update fails, but log error
+            if (status != OnlineStatus.ONLINE) {
+                logger.warn("Failed to update user status to OFFLINE for user {}", userId);
+            }
 
             // Update status in status manager
             statusManager.setUserOffline(userId);
-
-            if (!statusUpdated) {
-                logger.warn("Failed to update user status to OFFLINE for user {}", userId);
-                return;
-            }
 
             // Notify contacts of status change
             notifyContactsOfStatusChange(userId, OnlineStatus.OFFLINE);

@@ -2,8 +2,6 @@ package com.MarinGallien.JavaChatApp.java_chat_app.Services;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.DatabaseServices.FileDbService;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.File;
-import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents.Requests.DeleteChatRequest;
-import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.FileEvents.DeleteFileRequest;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.slf4j.Logger;
@@ -23,32 +21,32 @@ public class FileService {
     @Autowired
     FileDbService fileDbService;
 
-    public boolean uploadFile(String userId, String chatId, MultipartFile file) {
+    public File uploadFile(String userId, String chatId, MultipartFile file) {
         try {
             // Validate inputs
             if (!validateId(userId) || !validateId(chatId)) {
                 logger.warn("Failed to upload file: user or chat ID is null or empty");
-                return false;
+                return null;
             }
 
             if (file == null || file.isEmpty()) {
                 logger.warn("Failed to upload file: file is null or empty");
-                return false;
+                return null;
             }
 
             File uploadedFile = fileDbService.uploadFile(userId, chatId, file);
 
             if (uploadedFile == null) {
                 logger.warn("Failed to upload file");
-                return false;
+                return null;
             }
 
             logger.info("Successfully uploaded file");
-            return true;
+            return uploadedFile;
 
         } catch (Exception e) {
             logger.error("Failed to upload file: {}", e.getMessage());
-            return false;
+            return null;
         }
     }
 
@@ -78,27 +76,27 @@ public class FileService {
 
     @EventListener
     @Async("eventTaskExecutor")
-    public void deleteFile(DeleteFileRequest event) {
+    public boolean deleteFile(String userId, String chatId, String fileId) {
         try {
             // Validate inputs
-            if (!validateId(event.userId()) || !validateId(event.chatId()) || !validateId(event.fileId())) {
+            if (!validateId(userId) || !validateId(chatId) || !validateId(fileId)) {
                 logger.warn("Failed to delete file: user, chat, or file ID is null or empty");
-                return;
+                return false;
             }
 
-            boolean deleted = fileDbService.deleteFile(event.userId(), event.chatId(), event.fileId());
+            boolean deleted = fileDbService.deleteFile(userId, chatId, fileId);
 
             if (!deleted) {
                 logger.warn("Failed to delete file");
-                return;
+                return false;
             }
 
             logger.info("Successfully deleted file");
-            return;
+            return true;
 
         } catch (Exception e) {
             logger.error("Failed to delete file: {}", e.getMessage());
-            return;
+            return false;
         }
     }
 

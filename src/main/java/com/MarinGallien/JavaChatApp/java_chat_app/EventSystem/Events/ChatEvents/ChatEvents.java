@@ -1,7 +1,5 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents;
 
-import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents.Requests.*;
-
 // Sealed interface for all chat events
 public interface ChatEvents{
 

@@ -2,7 +2,7 @@ package com.MarinGallien.JavaChatApp.java_chat_app.Services;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.DatabaseServices.UserDbService;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.User;
-import com.MarinGallien.JavaChatApp.java_chat_app.Services.AuthService.AuthService;
+import com.MarinGallien.JavaChatApp.java_chat_app.Enums.OnlineStatus;
 import com.MarinGallien.JavaChatApp.java_chat_app.Services.AuthService.JWTService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-    private static Logger logger = LoggerFactory.getLogger(AuthService.class);
+    private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
     UserDbService userDbService;
@@ -32,7 +32,7 @@ public class UserService {
     @Autowired
     private JWTService jwtService;
 
-    public User register(String username, String email, String password) {
+    public User createUser(String username, String email, String password) {
         try {
             // Validate input
             if (!validateString(username) || !validateEmail(email) || !validateString(password)) {
@@ -64,7 +64,7 @@ public class UserService {
         }
     }
 
-    public User login(String email, String password) {
+    public Boolean login(String email, String password) {
         try {
             // Validate input parameters
             if (!validateEmail(email) || !validateString(password)) {
@@ -72,25 +72,153 @@ public class UserService {
                 return null;
             }
 
-            boolean validCredentials = userDbService.validateCredentials(email, password);
+            Boolean loggedIn = userDbService.login(email, password);
 
-            if(!validCredentials) {
-                logger.warn("Failed to login: invalid credentials for email {}", email);
-                return null;
-            }
-
-            User user = userDbService.findUserByEmail(email);
-
-            if (user == null) {
+            if (!loggedIn) {
                 logger.error("User found during validation but not found during retrieval");
                 return null;
             }
 
-            logger.info("Successful login for user {} with email {}", user.getUsername(), user.getEmail());
-            return user;
+            logger.info("Successful login for user with email {}", email);
+            return loggedIn;
 
         } catch (Exception e) {
             logger.error("Error occurred when logging in: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public boolean deleteUser(String userId, String password) {
+        try {
+            // Validate input
+            if (!validateId(userId) || !validateString(password)) {
+                logger.warn("Failed to delete user: invalid input parameters");
+                return false;
+            }
+
+            // Call database service
+            boolean deleted = userDbService.deleteUser(userId, password);
+
+            if (!deleted) {
+                logger.warn("Failed to delete user {}", userId);
+                return false;
+            }
+
+            logger.info("Successfully deleted user {}", userId);
+            return true;
+
+        } catch (Exception e) {
+            logger.error("Error deleting user: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public String updateUsername(String userId, String username) {
+        try {
+            // Validate input
+            if (!validateId(userId) || !validateString(username)) {
+                logger.warn("Failed to update username: invalid input parameters");
+                return null;
+            }
+
+            if (username.length() <= 3 || username.length() >= 50) {
+                logger.warn("Failed to update username: username must be between 3 and 50 characters");
+                return null;
+            }
+
+            // Call database service
+            String updatedUsername = userDbService.updateUsername(userId, username);
+
+            if (updatedUsername == null) {
+                logger.warn("Failed to update username for user {}", userId);
+                return null;
+            }
+
+            logger.info("Successfully updated username for user {}", userId);
+            return updatedUsername;
+
+        } catch (Exception e) {
+            logger.error("Error updating username: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public String updateEmail(String userId, String email) {
+        try {
+            // Validate input
+            if (!validateId(userId) || !validateEmail(email)) {
+                logger.warn("Failed to update email: invalid input parameters");
+                return null;
+            }
+
+            // Call database service
+            String updatedEmail = userDbService.updateEmail(userId, email);
+
+            if (updatedEmail == null) {
+                logger.warn("Failed to update email for user {}", userId);
+                return null;
+            }
+
+            logger.info("Successfully updated email for user {}", userId);
+            return updatedEmail;
+
+        } catch (Exception e) {
+            logger.error("Error updating email: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public boolean updatePassword(String userId, String oldPassword, String newPassword) {
+        try {
+            // Validate input
+            if (!validateId(userId) || !validateString(oldPassword) || !validateString(newPassword)) {
+                logger.warn("Failed to update password: invalid input parameters");
+                return false;
+            }
+
+            if (newPassword.length() <= 6) {
+                logger.warn("Failed to update password: password must be at least 6 characters");
+                return false;
+            }
+
+            // Call database service with new password
+            boolean updated = userDbService.updatePassword(userId, oldPassword, newPassword);
+
+            if (!updated) {
+                logger.warn("Failed to update password for user {}", userId);
+                return false;
+            }
+
+            logger.info("Successfully updated password for user {}", userId);
+            return true;
+
+        } catch (Exception e) {
+            logger.error("Error updating password: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public OnlineStatus updateStatus(String userId, OnlineStatus status) {
+        try {
+            // Validate input
+            if (!validateId(userId) || status == null) {
+                logger.warn("Failed to update status: invalid input parameters");
+                return null;
+            }
+
+            // Call database service
+            OnlineStatus updatedStatus = userDbService.updateStatus(userId, status);
+
+            if (updatedStatus == null) {
+                logger.warn("Failed to update status for user {}", userId);
+                return null;
+            }
+
+            logger.info("Successfully updated status for user {} to {}", userId, updatedStatus);
+            return updatedStatus;
+
+        } catch (Exception e) {
+            logger.error("Error updating status: {}", e.getMessage());
             return null;
         }
     }

@@ -2,6 +2,7 @@ package com.MarinGallien.JavaChatApp.java_chat_app.Database.DatabaseServices;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.User;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories.UserRepo;
+import com.MarinGallien.JavaChatApp.java_chat_app.Enums.OnlineStatus;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,170 @@ public class UserDbService {
         }
     }
 
+    public boolean login(String email, String password) {
+        try {
+            if (!validateCredentials(email, password)) {
+                logger.info("Failed login attempt: invalid credentials");
+                return false;
+            }
+
+            logger.info("Successfully logged-in user");
+            return true;
+
+        } catch (Exception e) {
+            logger.error("Failed login attempt");
+            return true;
+        }
+    }
+
+    public boolean deleteUser(String userId, String password) {
+        try {
+            // Validate input
+            if (!userRepo.existsById(userId)) {
+                logger.warn("Failed to delete user account: user {} does not exist", userId);
+                return false;
+            }
+
+            // Make sure password is correct
+            User user = userRepo.findUserById(userId);
+            if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+                logger.warn("Failed to delete user:provided password is wrong");
+                return false;
+            }
+
+            // Delete user
+            userRepo.delete(user);
+
+            logger.info("Successfully deleted user {} from database", userId);
+            return true;
+
+        } catch (Exception e) {
+            logger.error("Error deleting user");
+            return false;
+        }
+    }
+
+    public String updateUsername(String userId, String username) {
+        try {
+            // Validate input
+            if (!userRepo.existsById(userId)) {
+                logger.warn("Failed to update username: user {} does not exist", userId);
+                return null;
+            }
+
+            // Make sure new username is different
+            if (userRepo.findUserById(userId).getUsername().equals(username.trim())) {
+                logger.warn("Failed to update username: current and new usernames are identical");
+                return null;
+            }
+
+            User user = userRepo.findUserById(userId);
+
+            // Update username
+            user.setUserId(username);
+            userRepo.save(user);
+
+            return user.getUsername();
+
+        } catch (Exception e) {
+            logger.error("Error updating username");
+            return null;
+        }
+    }
+
+    public String updateEmail(String userId, String email) {
+        try {
+            // Validate input
+            if (!userRepo.existsById(userId)) {
+                logger.warn("Failed to update email: user {} does not exist", userId);
+                return null;
+            }
+
+            // Make sure new email is different
+            if (userRepo.findUserById(userId).getEmail().equals(email.trim())) {
+                logger.warn("Failed to update email: current and new emails are identical");
+                return null;
+            }
+
+            User user = userRepo.findUserById(userId);
+
+            // update email
+            user.setEmail(email);
+            userRepo.save(user);
+
+            logger.info("Successfully updated user's email to {}", email);
+
+            return user.getEmail();
+
+        } catch (Exception e) {
+            logger.error("Error updating email");
+            return null;
+        }
+    }
+
+    public boolean updatePassword(String userId, String oldPassword, String newPassword) {
+        try {
+            // Validate input
+            if (!userRepo.existsById(userId)) {
+                logger.warn("Failed to update password: user {} does not exist", userId);
+                return false;
+            }
+
+            // First verify old password is correct
+            User user = userRepo.findUserById(userId);
+            if (validateCredentials(user.getEmail(), oldPassword)) {
+                logger.warn("Failed to update password: old password is incorrect");
+                return false;
+            }
+
+            // Make sure password is different
+            if (passwordEncoder.matches(newPassword, user.getPasswordHash())) {
+                logger.warn("Failed to update password: current and new passwords are identical");
+                return false;
+            }
+
+            // Hash new password
+            String hashedNewPassword = passwordEncoder.encode(newPassword);
+
+            // Store new password
+            user.setPasswordHash(hashedNewPassword);
+
+            logger.info("Successfully updated password for user {}", userId);
+            return true;
+
+        } catch (Exception e) {
+            logger.error("Error updating password");
+            return false;
+        }
+    }
+
+    public OnlineStatus updateStatus(String userId, OnlineStatus status) {
+        try {
+            // Validate input
+            if (!userRepo.existsById(userId)) {
+                logger.warn("Failed to update status: user {} does not exist", userId);
+                return null;
+            }
+
+            if (status == null) {
+                logger.warn("Failed to update status: status is null");
+            }
+
+            User user = userRepo.findUserById(userId);
+
+            // Update the status
+            user.setStatus(status);
+            userRepo.save(user);
+
+            logger.info("Successfully updated user status to {}", status);
+            return user.getStatus();
+
+        } catch (Exception e) {
+            logger.error("Error updating status");
+            return null;
+        }
+    }
+
     public boolean validateCredentials(String email, String password) {
         try {
             User user = userRepo.findUserByEmail(email);
@@ -74,10 +239,4 @@ public class UserDbService {
             return false;
         }
     }
-
-    // Simple utility method to allow AuthService to retrieve a user without direct db access
-    public User findUserByEmail(String email) {
-        return userRepo.findUserByEmail(email);
-    }
-
 }

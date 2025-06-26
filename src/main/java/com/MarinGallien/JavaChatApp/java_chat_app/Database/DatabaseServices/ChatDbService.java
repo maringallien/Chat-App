@@ -32,7 +32,9 @@ public class ChatDbService {
     @Autowired
     private ChatParticipantRepo chatParticipantRepo;
 
-    public String createPrivateChat(String userId1, String userId2) {
+
+
+    public Chat createPrivateChat(String userId1, String userId2) {
         try {
             // Check if IDs exist
             if (!userRepo.existsById(userId1) || !userRepo.existsById(userId2)) {
@@ -46,7 +48,7 @@ public class ChatDbService {
             // Check if private chat already exists
             if (chatRepo.existsById(privateChatId)) {
                 logger.warn("Private chat already exists between user {} and {}: chat ID {}", userId1, userId2, privateChatId);
-                return privateChatId;
+                return chatRepo.findChatById(privateChatId);
             }
 
             // Create and save private chat
@@ -67,7 +69,7 @@ public class ChatDbService {
 
             logger.info("Successfully created private chat between user {} and {}: chat ID {}", userId1, userId2, privateChatId);
 
-            return privateChatId;
+            return managedChat;
 
         } catch (Exception e) {
             logger.error("Failed to create private chat: {}", e.getMessage());
@@ -75,7 +77,7 @@ public class ChatDbService {
         }
     }
 
-    public String createGroupChat(String creatorId, Set<String> participants, String groupName) {
+    public Chat createGroupChat(String creatorId, Set<String> participants, String groupName) {
         try {
             if (!userRepo.existsById(creatorId)) {
                 logger.warn("Cannot create chat: user {} does not exist", creatorId);
@@ -105,7 +107,7 @@ public class ChatDbService {
                 chatParticipantRepo.save(participant);
             }
 
-            return managedChat.getChatId();
+            return managedChat;
 
         } catch (Exception e) {
             logger.error("Error creating group chat: {}", e.getMessage());

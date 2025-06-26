@@ -25,35 +25,27 @@ public class MessageService {
     @Autowired
     MessageDbService messageDbService;
 
-    @EventListener
-    @Async("eventTaskExecutor")
-    public void saveMessage(SaveMessageRequest event) {
+    public Message saveMessage(String senderId, String chatId, String content) {
         try {
-            // Validate input parameters
-            if (event == null) {
-                logger.warn("Failed to save message: message is null");
-                return;
-            }
-
-            if (!validateId(event.senderId()) || !validateId(event.chatId()) ||
-                    event.content() == null || event.content().isEmpty()) {
+            if (!validateId(senderId) || !validateId(chatId) || content == null || content.isEmpty()) {
                 logger.warn("Failed to save message: missing required fields");
-                return;
+                return null;
             }
 
             // Save message to database
-            Message message = messageDbService.saveMessage(event.senderId(), event.chatId(), event.content());
+            Message message = messageDbService.saveMessage(senderId, chatId, content);
 
             // Make sure something was saved
-            if (message != null) {
-                logger.info("Successfully saved message to the database");
-            } else {
+            if (message == null) {
                 logger.info("Failed to save message to the database");
             }
 
+            logger.info("Successfully saved message to the database");
+            return message;
+
         } catch (Exception e) {
             logger.error("Failed to same message: {}", e.getMessage());
-            return;
+            return null;
         }
     }
 
