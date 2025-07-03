@@ -2,12 +2,14 @@ package com.MarinGallien.JavaChatApp.java_chat_app.Services;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.DatabaseServices.ContactDbService;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.JunctionEntities.Contact;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
+@Transactional
 public class ContactService{
 
     private static Logger logger = LoggerFactory.getLogger(ContactService.class);

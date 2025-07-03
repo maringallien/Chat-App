@@ -4,12 +4,16 @@ import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntit
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.JunctionEntities.Contact;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories.ContactRepo;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories.UserRepo;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
+@Transactional
 public class ContactDbService {
 
     private static Logger logger = LoggerFactory.getLogger(ContactDbService.class);
