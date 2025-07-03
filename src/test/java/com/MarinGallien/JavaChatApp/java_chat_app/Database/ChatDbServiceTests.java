@@ -6,16 +6,12 @@ import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntit
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories.ChatParticipantRepo;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories.ChatRepo;
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.ChatType;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.Commit;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -76,8 +72,9 @@ public class ChatDbServiceTests {
     @Test
     void createPrivateChat_ValidUsers_CreatesChat() {
         // Given
-        String pcId = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
-        assertNotNull(pcId);
+        Chat privChat = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
+        assertNotNull(privChat);
+        String pcId = privChat.getChatId();
         assertTrue(chatRepo.existsById(pcId));
 
         // Then
@@ -91,25 +88,25 @@ public class ChatDbServiceTests {
     @Test
     void createPrivateChat_NonExistentUser_ReturnsFalse() {
         // When
-        String chatId = chatDbService.createPrivateChat("fake_id", user2.getUserId());
+        Chat chat = chatDbService.createPrivateChat("fake_id", user2.getUserId());
 
         // Then
-        assertNull(chatId);
+        assertNull(chat);
     }
 
     @Test
     void createPrivateChat_AlreadyExists_ReturnsFalse() {
         // Given
-        String pcId = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
-        assertNotNull(pcId);
-        assertTrue(chatRepo.existsById(pcId));
+        Chat chat = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
+        assertNotNull(chat);
+        assertTrue(chatRepo.existsById(chat.getChatId()));
 
         // When
-        String secondChatId = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
+        Chat secondChat = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
 
         // Then
-        assertNotNull(secondChatId);
-        assertEquals(pcId, secondChatId);
+        assertNotNull(secondChat);
+        assertEquals(chat.getChatId(), secondChat.getChatId());
     }
 
     // ==========================================================================
@@ -119,34 +116,36 @@ public class ChatDbServiceTests {
     @Test
     void crateGroupChat_ValidInputs_CreatesChat() {
         // When
-        String chatId = chatDbService.createGroupChat(user1.getUserId(), members, "Test Group");
-        Chat chat = chatRepo.findChatById(chatId);
+        Chat chat = chatDbService.createGroupChat(user1.getUserId(), members, "Test Group");
+        Chat retrievedChat = chatRepo.findChatById(chat.getChatId());
 
         // Then
-        assertNotNull(chatId);
-        assertTrue(chatRepo.existsById(chatId));
+        assertNotNull(retrievedChat);
+        String retrievedChatId = retrievedChat.getChatId();
+        assertTrue(chatRepo.existsById(retrievedChatId));
         assertEquals("Test Group", chat.getChatName());
         assertEquals(ChatType.GROUP, chat.getChatType());
         assertEquals(user1.getUserId(), chat.getCreatorId());
 
-        assertTrue(chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId, user1.getUserId()));
-        assertTrue(chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId, user2.getUserId()));
-        assertTrue(chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId, user3.getUserId()));
+        assertTrue(chatParticipantRepo.existsByChatChatIdAndUserUserId(retrievedChatId, user1.getUserId()));
+        assertTrue(chatParticipantRepo.existsByChatChatIdAndUserUserId(retrievedChatId, user2.getUserId()));
+        assertTrue(chatParticipantRepo.existsByChatChatIdAndUserUserId(retrievedChatId, user3.getUserId()));
     }
 
     @Test
     void createGroupChat_NonExistentCreator_ReturnsNull() {
         // When
-        String chatId = chatDbService.createGroupChat("nonexistent_userId", members, "Test Group");
+        Chat chat = chatDbService.createGroupChat("nonexistent_userId", members, "Test Group");
 
         // Then
-        assertNull(chatId);
+        assertNull(chat);
     }
 
     // ==========================================================================
     // DELETE CHAT TESTS
     // ==========================================================================
 
+    // Test below not working due to context issues - creating and deleting database entity in the same test issue
 //    @Test
 //    @Transactional
 //    void deleteGc_ExistingChat_DeletesSuccessfully() {
@@ -166,7 +165,8 @@ public class ChatDbServiceTests {
     @Test
     void deleteGc_NotCreator_ReturnsFalse() {
         // Given
-        String gcId = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
+        Chat gc = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
+        String gcId = gc.getChatId();
         assertTrue(chatRepo.existsById(gcId));
 
         // When
@@ -193,22 +193,25 @@ public class ChatDbServiceTests {
     void addMemberToGc_ValidInputs_AddsMember() {
         // Given
         Set<String> testMembers = Set.of(user2.getUserId());
-        String chatId = chatDbService.createGroupChat(user1.getUserId(), testMembers, "test_chat");
-        assertNotNull(chatId);
-        assertTrue(chatRepo.existsById(chatId));
+        Chat gc = chatDbService.createGroupChat(user1.getUserId(), testMembers, "test_chat");
+        assertNotNull(gc);
+        String gcId = gc.getChatId();
+        assertTrue(chatRepo.existsById(gcId));
 
         // When
-        boolean added = chatDbService.addMemberToGroupChat(chatId, user3.getUserId());
+        boolean added = chatDbService.addMemberToGroupChat(gcId, user3.getUserId());
 
         // Then
         assertTrue(added);
-        assertTrue(chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId, user3.getUserId()));
+        assertTrue(chatParticipantRepo.existsByChatChatIdAndUserUserId(gcId, user3.getUserId()));
     }
 
     @Test
     void addMemberToGc_AlreadyMember_ReturnsTrue() {
         // Given
-        String gcId = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
+        Chat gc = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
+        assertNotNull(gc);
+        String gcId = gc.getChatId();
         assertTrue(chatRepo.existsById(gcId));
 
         // When
@@ -231,7 +234,9 @@ public class ChatDbServiceTests {
     @Test
     void addMemberToGc_NonExistentUser_ReturnsFalse() {
         // Given
-        String gcId = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
+        Chat gc = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
+        assertNotNull(gc);
+        String gcId = gc.getChatId();
         assertTrue(chatRepo.existsById(gcId));
 
         // When
@@ -245,8 +250,9 @@ public class ChatDbServiceTests {
     @Test
     void addMemberToGc_PrivateChat_ReturnsFalse() {
         // Given
-        String pcId = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
-        assertNotNull(pcId);
+        Chat pc = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
+        assertNotNull(pc);
+        String pcId = pc.getChatId();
         assertTrue(chatRepo.existsById(pcId));
 
         // When
@@ -264,7 +270,9 @@ public class ChatDbServiceTests {
     @Test
     void removeMemberFromGc_ValidInputs_RemovesMember() {
         // Given
-        String gcId = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
+        Chat gc = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
+        assertNotNull(gc);
+        String gcId = gc.getChatId();
         assertTrue(chatRepo.existsById(gcId));
         assertTrue(chatParticipantRepo.existsByChatChatIdAndUserUserId(gcId, user3.getUserId()));
 
@@ -289,8 +297,9 @@ public class ChatDbServiceTests {
     @Test
     void removeMember_NonExistentUser_ReturnsFalse() {
         // Given
-        String gcId = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
-        assertNotNull(gcId);
+        Chat gc = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
+        assertNotNull(gc);
+        String gcId = gc.getChatId();
         assertTrue(chatRepo.existsById(gcId));
 
         // When
@@ -303,8 +312,9 @@ public class ChatDbServiceTests {
     @Test
     void removeMember_PrivateChat_ReturnsFalse() {
         // Given
-        String pcId = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
-        assertNotNull(pcId);
+        Chat pc = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
+        assertNotNull(pc);
+        String pcId = pc.getChatId();
         assertTrue(chatRepo.existsById(pcId));
         assertTrue(chatParticipantRepo.existsByChatChatIdAndUserUserId(pcId, user1.getUserId()));
 
@@ -320,12 +330,13 @@ public class ChatDbServiceTests {
     void removeMember_NotMember_ReturnsFalse() {
         // Given
         Set<String> testMembers = Set.of(user2.getUserId());
-        String chatId = chatDbService.createGroupChat(user1.getUserId(), testMembers, "test_chat");
-        assertNotNull(chatId);
-        assertTrue(chatRepo.existsById(chatId));
+        Chat gc = chatDbService.createGroupChat(user1.getUserId(), testMembers, "test_chat");
+        assertNotNull(gc);
+        String gcId = gc.getChatId();
+        assertTrue(chatRepo.existsById(gcId));
 
         // When
-        boolean removed = chatDbService.removeMemberFromGroupChat(chatId, user3.getUserId());
+        boolean removed = chatDbService.removeMemberFromGroupChat(gcId, user3.getUserId());
 
         // Then
         assertTrue(removed);
@@ -334,8 +345,9 @@ public class ChatDbServiceTests {
     @Test
     void removeMember_MemberIsCreator_ReturnsFalse() {
         // Given
-        String gcId = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
-        assertNotNull(gcId);
+        Chat gc = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
+        assertNotNull(gc);
+        String gcId = gc.getChatId();
         assertTrue(chatRepo.existsById(gcId));
 
         // When
@@ -352,12 +364,14 @@ public class ChatDbServiceTests {
     @Test
     void getChats_ValidInputs_ReturnsEmptyList() {
         // Given
-        String gcId = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
-        assertNotNull(gcId);
+        Chat gc = chatDbService.createGroupChat(user1.getUserId(), members, "test_gc");
+        assertNotNull(gc);
+        String gcId = gc.getChatId();
         assertTrue(chatRepo.existsById(gcId));
 
-        String pcId = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
-        assertNotNull(pcId);
+        Chat pc = chatDbService.createPrivateChat(user1.getUserId(), user2.getUserId());
+        assertNotNull(pc);
+        String pcId = pc.getChatId();
         assertTrue(chatRepo.existsById(pcId));
 
         // When
