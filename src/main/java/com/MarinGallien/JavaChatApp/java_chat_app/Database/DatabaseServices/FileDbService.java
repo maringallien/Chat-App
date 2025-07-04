@@ -49,7 +49,7 @@ public class FileDbService {
         try {
             // Input validation
             if (!userRepo.existsById(userId) || !chatRepo.existsById(chatId)) {
-                logger.warn("Failed to upload file: user {} does not exist", userId);
+                logger.warn("Failed to upload file: user {} or chat {} does not exist", userId, chatId);
                 return null;
             }
 
@@ -63,15 +63,27 @@ public class FileDbService {
                 return null;
             }
 
-            // Save file to disk
+            // Save file to disk first
             String filePath = saveFileToDisk(file);
             if (filePath == null) {
                 logger.warn("Failed to save file to disk");
                 return null;
             }
 
-            // Create file entity
+            // Get entities from database
             User uploader = userRepo.findUserById(userId);
+            Chat chat = chatRepo.findChatById(chatId);
+
+            // Create and save MESSAGE first (required for file foreign key)
+            Message fileMessage = new Message(
+                    uploader,
+                    chat,
+                    "File: " + file.getOriginalFilename(),
+                    MessageType.TEXT_MESSAGE
+            );
+            Message savedMessage = messageRepo.save(fileMessage);
+
+            // Create file entity WITH message reference
             File newFile = new File(
                     file.getOriginalFilename(),
                     file.getSize(),
@@ -80,14 +92,18 @@ public class FileDbService {
                     uploader
             );
 
+            // Set the message before saving
+            newFile.setMessage(savedMessage);
+
             // Save file to database
             File savedFile = fileRepo.save(newFile);
 
-            // Associate with chat
-            associateWithChat(savedFile, chatId);
+            // Add file to message's file collection (bidirectional relationship)
+            savedMessage.addFile(savedFile);
+            messageRepo.save(savedMessage);
 
             logger.info("Successfully saved file {} to chat {}", file.getOriginalFilename(), chatId);
-            return newFile;
+            return savedFile;
 
         } catch (Exception e) {
             logger.error("Failed to upload file: {}", e.getMessage());
@@ -125,19 +141,6 @@ public class FileDbService {
             return filename.substring(filename.lastIndexOf("."));
         }
         return "";
-    }
-
-    private void associateWithChat(File file, String chatId) {
-        Chat chat = chatRepo.findChatById(chatId);
-        Message fileMessage = new Message(
-                file.getUploader(),
-                chat,
-                "File: " + file.getFilename(),
-                MessageType.TEXT_MESSAGE
-        );
-
-        Message savedMessage = messageRepo.save(fileMessage);
-        fileRepo.save(file);
     }
 
     public Resource downloadFile(String userId, String chatId, String fileId) {
@@ -193,12 +196,12 @@ public class FileDbService {
             // Input validation
             if (!userRepo.existsById(userId) || !chatRepo.existsById(chatId) || !fileRepo.existsById(fileId)) {
                 logger.warn("Failed to delete file: user {}, chat {}, or file {} does not exist", userId, chatId, fileId);
-                return null;
+                return false;
             }
 
             if (!chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId, userId)) {
                 logger.warn("Failed to delete file: user {} is not a member of chat {}", userId, chatId);
-                return null;
+                return false;
             }
 
             // Retrieve file metadata
@@ -220,9 +223,20 @@ public class FileDbService {
             // Make sure user can delete it - only creator can delete
             if (!file.getUploader().getUserId().equals(userId)){
                 logger.warn("Failed to delete file: user {} did not create the file", userId);
+                return false;
             }
 
-            fileRepo.delete(file);
+            // Get the message associated with this file
+            Message associatedMessage = file.getMessage();
+
+            // Delete the MESSAGE (this will cascade delete the file)
+            messageRepo.delete(associatedMessage);
+
+            // Verify deletion succeeded
+            if (fileRepo.existsById(fileId)) {
+                logger.error("Failed to delete file {} from database", fileId);
+                return false;
+            }
 
             // Delete file from file system - don't return false if that fails because file was still deleted from db
             Path filepath = Paths.get(file.getFilePath());
@@ -245,7 +259,7 @@ public class FileDbService {
             // Input validation
             if (!userRepo.existsById(userId) || !chatRepo.existsById(chatId)) {
                 logger.warn("Failed to retrieve files list: user {} or file {} does not exist", userId, chatId);
-                return null;
+                return List.of();
             }
 
             if (!chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId, userId)) {
@@ -255,6 +269,11 @@ public class FileDbService {
 
             // Get all files for this chat
             List<File> chatFiles = fileRepo.findByMessageChatChatId(chatId);
+
+            if (chatFiles == null) {
+                logger.warn("Failed to retrieve files for chat {}", chatId);
+                return List.of();
+            }
 
             logger.info("Successfully retrieved {} files for chat {}", chatFiles.size(), chatId);
             return chatFiles;

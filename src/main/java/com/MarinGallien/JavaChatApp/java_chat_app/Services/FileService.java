@@ -53,7 +53,7 @@ public class FileService {
     public Resource downloadFile(String userId, String chatId, String fileId) {
         try {
             // Validate inputs
-            if (!validateId(userId) || !validateId(fileId)) {
+            if (!validateId(userId) || !validateId(fileId) || !validateId(chatId)) {
                 logger.warn("Failed to download file: user or file ID is null or empty");
                 return null;
             }
@@ -105,14 +105,14 @@ public class FileService {
             // Validate inputs
             if (!validateId(userId) || !validateId(chatId)) {
                 logger.warn("Failed to retrieve files list: user or chat ID is null or empty");
-                return null;
+                return List.of();
             }
 
             List<File> chatFiles = fileDbService.getChatFiles(userId, chatId);
 
             if (chatFiles == null) {
                 logger.warn("Failed to retrieve list of files from chat {}", chatId);
-                return null;
+                return List.of();
             }
 
             logger.info("Successfully retrieved list of files from chat {}", chatId);
@@ -120,7 +120,7 @@ public class FileService {
 
         } catch (Exception e) {
             logger.error("Failed to retrieve files list: {}", e.getMessage());
-            return null;
+            return List.of();
         }
     }
 

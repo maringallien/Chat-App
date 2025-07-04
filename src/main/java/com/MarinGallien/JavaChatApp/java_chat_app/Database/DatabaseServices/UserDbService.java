@@ -112,7 +112,7 @@ public class UserDbService {
             User user = userRepo.findUserById(userId);
 
             // Update username
-            user.setUserId(username);
+            user.setUsername(username);
             userRepo.save(user);
 
             return user.getUsername();
@@ -163,7 +163,7 @@ public class UserDbService {
 
             // First verify old password is correct
             User user = userRepo.findUserById(userId);
-            if (validateCredentials(user.getEmail(), oldPassword)) {
+            if (!validateCredentials(user.getEmail(), oldPassword)) {
                 logger.warn("Failed to update password: old password is incorrect");
                 return false;
             }

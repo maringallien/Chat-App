@@ -28,7 +28,7 @@ public class ChatService {
     private EventBusService eventBus;
 
 
-    public Chat handleCreatePrivateChatRequest(String userId1, String userId2) {
+    public Chat createPrivateChat(String userId1, String userId2) {
         try {
             // Validate input parameters
             if (!validateId(userId1) || !validateId(userId2)) {
@@ -63,7 +63,7 @@ public class ChatService {
         }
     }
 
-    public Chat handleCreateGroupChatRequest(String creatorId, Set<String> memberIds, String chatName) {
+    public Chat createGroupChat(String creatorId, Set<String> memberIds, String chatName) {
         try {
             // Validate creator ID
             if (!validateId(creatorId)) {
@@ -86,7 +86,7 @@ public class ChatService {
             }
 
             // Validate chatName
-            if (chatName == null || chatName.isEmpty()) {
+            if (chatName == null || chatName.trim().isEmpty()) {
                 logger.warn("Error processing event: chat name is null or empty");
                 return null;
             }
@@ -115,7 +115,7 @@ public class ChatService {
         }
     }
 
-    public boolean handleDeleteChatRequest(String creatorId, String chatId) {
+    public boolean DeleteChat(String creatorId, String chatId) {
         try {
             // Validate input parameters
             if (!validateId(creatorId) || !validateId(chatId)) {
@@ -144,7 +144,7 @@ public class ChatService {
         }
     }
 
-    public boolean handleAddMemberRequest(String creatorId, String userId, String chatId) {
+    public boolean AddMember(String creatorId, String userId, String chatId) {
         try {
             // Validate input parameters
             if (!validateId(creatorId) || !validateId(userId) || !validateId(chatId)) {
@@ -173,7 +173,7 @@ public class ChatService {
         }
     }
 
-    public boolean handleRemoveMemberRequest(String creatorId, String userId, String chatId) {
+    public boolean RemoveMember(String creatorId, String userId, String chatId) {
         try {
             // Validate input parameters
             if (!validateId(creatorId) || !validateId(userId) || !validateId(chatId)) {
@@ -202,7 +202,7 @@ public class ChatService {
         }
     }
 
-    public List<Chat> handleGetUserChatsRequest(String userId) {
+    public List<Chat> GetUserChats(String userId) {
         try {
             // Validate input parameters
             if (!validateId(userId)) {
