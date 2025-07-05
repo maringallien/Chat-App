@@ -1,2 +1,3 @@
+. Remove as much @Autowired as possible
 . Create http Server
 . Create client app

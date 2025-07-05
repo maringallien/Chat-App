@@ -36,6 +36,7 @@ public class Chat {
     public String getChatId() {return chatId;}
     public Long getCreatedAt() {return createdAt;}
 
+
     // Check user ID is valid
     private boolean checkId(String ID) {
        return ID != null && !ID.trim().isEmpty();

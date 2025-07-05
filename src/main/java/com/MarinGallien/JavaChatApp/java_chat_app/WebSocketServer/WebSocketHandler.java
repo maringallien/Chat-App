@@ -5,10 +5,7 @@ import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.WebSock
 
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.OnlineStatus;
-import com.MarinGallien.JavaChatApp.java_chat_app.Services.ContactService;
-import com.MarinGallien.JavaChatApp.java_chat_app.Services.MessageService;
-import com.MarinGallien.JavaChatApp.java_chat_app.Services.OfflineMessageService;
-import com.MarinGallien.JavaChatApp.java_chat_app.Services.UserService;
+import com.MarinGallien.JavaChatApp.java_chat_app.Services.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -30,7 +27,7 @@ public class WebSocketHandler {
     private static final Logger logger = LoggerFactory.getLogger(WebSocketHandler.class);
     private final MessageService messageService;
     private final ContactService contactService;
-    private final UserService userService;
+    private final SessionService sessionService;
     private final StatusManager statusManager;
     private final ChatManager chatManager;
     private final SimpMessagingTemplate messagingTemplate;
@@ -39,14 +36,14 @@ public class WebSocketHandler {
     // Constructor
     public WebSocketHandler(MessageService messageService,
                             ContactService contactService,
-                            UserService userService,
+                            SessionService sessionService,
                             StatusManager statusManager,
                             ChatManager chatManager,
                             SimpMessagingTemplate messagingTemplate,
                             OfflineMessageService offlineMessageService) {
         this.contactService = contactService;
         this.messageService = messageService;
-        this.userService = userService;
+        this.sessionService = sessionService;
         this.statusManager = statusManager;
         this.chatManager = chatManager;
         this.messagingTemplate = messagingTemplate;
@@ -148,7 +145,7 @@ public class WebSocketHandler {
             }
 
             // Update user status in database
-            OnlineStatus status = userService.updateStatus(userId, OnlineStatus.ONLINE);
+            OnlineStatus status = sessionService.updateUserStatus(userId, OnlineStatus.ONLINE);
 
             // Continue even if status update fails, but log error
             if (status != OnlineStatus.ONLINE) {
@@ -182,7 +179,7 @@ public class WebSocketHandler {
             }
 
             // Update user status in database
-            OnlineStatus status = userService.updateStatus(userId, OnlineStatus.ONLINE);
+            OnlineStatus status = sessionService.updateUserStatus(userId, OnlineStatus.ONLINE);
 
             // Continue even if status update fails, but log error
             if (status != OnlineStatus.ONLINE) {

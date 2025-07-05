@@ -76,7 +76,7 @@ public class OfflineMessageService {
 
         try {
             // Validate input parameters
-            if (validateId(userId)) {
+            if (!validateId(userId)) {
                 logger.warn("Could not retrieve pending messages: user ID is null or empty");
                 return messages;
             }

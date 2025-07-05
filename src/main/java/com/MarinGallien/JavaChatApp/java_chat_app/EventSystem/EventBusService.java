@@ -16,6 +16,10 @@ public class EventBusService {
 
     public void publishEvent(Object event) {
         try {
+            if (event == null) {
+                logger.warn("Failed to publish event: event is null");
+                return;
+            }
             eventPublisher.publishEvent(event);
         } catch (Exception e) {
             logger.error("Failed to publish even");

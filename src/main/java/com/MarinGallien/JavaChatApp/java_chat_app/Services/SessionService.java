@@ -15,17 +15,17 @@ public class SessionService {
     @Autowired
     SessionDbService sessionDbService;
 
-    public boolean updateUserStatus(String userId, OnlineStatus status) {
+    public OnlineStatus updateUserStatus(String userId, OnlineStatus status) {
         try {
             // Validate inputs
             if (!validateId(userId)) {
                 logger.warn("Failed to update user status: user ID is null or empty");
-                return false;
+                return null;
             }
 
             if (status == null) {
                 logger.warn("Failed to update user status: provided status is null");
-                return false;
+                return null;
             }
 
             // Update database
@@ -34,15 +34,15 @@ public class SessionService {
             // Check that update was successful
             if (newStatus == null || newStatus != status) {
                 logger.info("Failed to update user's status");
-                return false;
+                return null;
             }
 
             logger.info("Successfully updated user status to {}", newStatus);
-            return true;
+            return newStatus;
 
         } catch (Exception e) {
             logger.error("Error occurred when updating user status: {}", e.getMessage());
-            return false;
+            return null;
         }
     }
 

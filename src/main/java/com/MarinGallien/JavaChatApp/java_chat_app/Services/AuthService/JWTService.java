@@ -28,6 +28,12 @@ public class JWTService {
     // Generate JWT token for authenticated user
     public String generateToken(String userId, String username) {
         try {
+            // Validate input parameters
+            if (userId == null || username == null) {
+                logger.error("Cannot generate token: userId or username is null");
+                return null;
+            }
+
             // Set expiration date
             Instant now = Instant.now();
             Instant expiration = now.plus(tokenExpirationHours, ChronoUnit.HOURS);

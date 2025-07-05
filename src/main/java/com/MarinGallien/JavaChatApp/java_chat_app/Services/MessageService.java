@@ -1,19 +1,10 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.Services;
 
-import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.WebSocketMessage;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.DatabaseServices.MessageDbService;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.Message;
-import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.JunctionEntities.ChatParticipant;
-import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories.ChatParticipantRepo;
-import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories.MessageRepo;
-import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories.UserRepo;
-import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.MessageEvents.SaveMessageRequest;
-import io.netty.handler.codec.MessageAggregator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +18,7 @@ public class MessageService {
 
     public Message saveMessage(String senderId, String chatId, String content) {
         try {
-            if (!validateId(senderId) || !validateId(chatId) || content == null || content.isEmpty()) {
+            if (!validateId(senderId) || !validateId(chatId) || content == null || content.trim().isEmpty()) {
                 logger.warn("Failed to save message: missing required fields");
                 return null;
             }

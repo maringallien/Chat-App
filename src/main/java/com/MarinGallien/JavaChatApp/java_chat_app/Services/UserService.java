@@ -40,7 +40,7 @@ public class UserService {
                 return null;
             }
 
-            if (username.length() <= 3 || username.length() >= 50 || password.length() <= 6) {
+            if (username.length() < 3 || username.length() > 50 || password.length() < 6) {
                 logger.warn("Registration failed: invalid registration input");
                 return null;
             }
@@ -121,7 +121,7 @@ public class UserService {
                 return null;
             }
 
-            if (username.length() <= 3 || username.length() >= 50) {
+            if (username.length() < 3 || username.length() > 50) {
                 logger.warn("Failed to update username: username must be between 3 and 50 characters");
                 return null;
             }
@@ -176,7 +176,7 @@ public class UserService {
                 return false;
             }
 
-            if (newPassword.length() <= 6) {
+            if (newPassword.length() < 6) {
                 logger.warn("Failed to update password: password must be at least 6 characters");
                 return false;
             }
@@ -195,31 +195,6 @@ public class UserService {
         } catch (Exception e) {
             logger.error("Error updating password: {}", e.getMessage());
             return false;
-        }
-    }
-
-    public OnlineStatus updateStatus(String userId, OnlineStatus status) {
-        try {
-            // Validate input
-            if (!validateId(userId) || status == null) {
-                logger.warn("Failed to update status: invalid input parameters");
-                return null;
-            }
-
-            // Call database service
-            OnlineStatus updatedStatus = userDbService.updateStatus(userId, status);
-
-            if (updatedStatus == null) {
-                logger.warn("Failed to update status for user {}", userId);
-                return null;
-            }
-
-            logger.info("Successfully updated status for user {} to {}", userId, updatedStatus);
-            return updatedStatus;
-
-        } catch (Exception e) {
-            logger.error("Error updating status: {}", e.getMessage());
-            return null;
         }
     }
 

@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -28,29 +27,29 @@ public class ChatManager {
     //  . USER LEAVING CHAT
 
     // Creates a chat of 2 members
-    public String createPrivateChat(String userID1, String userID2) {
+    public String createPrivateChat(String userId1, String userId2) {
         // Validate input parameters
-        if (!checkId(userID1)){
+        if (!validateId(userId1)){
             logger.warn("Cannot create private chat: userID1 is null or empty");
             return null;
         }
 
-        if (!checkId(userID1)){
+        if (!validateId(userId1)){
             logger.warn("Cannot create private chat: userID2 is null or empty");
             return null;
         }
 
-        if (userID1.trim().equals(userID2.trim())){
+        if (userId1.trim().equals(userId2.trim())){
             logger.warn("Cannot create private chat: userID1 and userID2 are the same");
             return null;
         }
 
         // Create a private chat ID for single user chats to avoid duplicates
-        String privateChatId = genPrivateChatId(userID1, userID2);
+        String privateChatId = genPrivateChatId(userId1, userId2);
 
         // Check if the chat already exists
         if (chatExists(privateChatId)){
-            logger.debug("A private chat already exists between user {} and {}: {}", userID1, userID2, privateChatId);
+            logger.debug("A private chat already exists between user {} and {}: {}", userId1, userId2, privateChatId);
             return privateChatId;
         }
 
@@ -58,8 +57,8 @@ public class ChatManager {
         Chat privateChat = new Chat(privateChatId);
 
         // Add users to the chat
-        privateChat.addMember(userID1);
-        privateChat.addMember(userID2);
+        privateChat.addMember(userId1);
+        privateChat.addMember(userId2);
 
         // Add chat to chats map
         chats.put(privateChatId, privateChat);
@@ -68,21 +67,10 @@ public class ChatManager {
         return privateChatId;
     }
 
-    // Check user ID is valid
-    private boolean checkId(String userID) {
-        return userID != null && !userID.trim().isEmpty();
-    }
-
-    private String genPrivateChatId(String userID1, String userID2) {
-        String[] sortedIDs = {userID1, userID2};
-        Arrays.sort(sortedIDs);
-        return "PRIVATE_" + sortedIDs[0] + "_" + sortedIDs[1];
-    }
-
     // Creates a chat of >3 members
-    public String createGroupChat(String creatorID, Set<String> initialMembers) {
+    public String createGroupChat(String creatorId, Set<String> initialMembers) {
         // Validate input parameters
-        if (!checkId(creatorID)){
+        if (!validateId(creatorId)){
             logger.warn("Cannot create group chat: creator ID is null or empty");
             return null;
         }
@@ -95,14 +83,14 @@ public class ChatManager {
 
         // Create the chat and add creator to it
         Chat groupChat = new Chat();
-        groupChat.addMember(creatorID.trim());
+        groupChat.addMember(creatorId.trim());
 
         // Add each member to chat and make sure creator ID is not one of them. Set prevents duplicates internally
         for (String userID : initialMembers){
-            if (checkId(userID) && !userID.trim().equals(creatorID.trim())){
+            if (validateId(userID) && !userID.trim().equals(creatorId.trim())){
                 groupChat.addMember(userID.trim());
             } else {
-                logger.warn("User ID {} could not be added to chat because ID was null or empty");
+                logger.warn("User ID {} could not be added to chat because ID was null or empty", userID);
             }
         }
 
@@ -111,27 +99,27 @@ public class ChatManager {
         chats.put(groupChatId, groupChat);
 
         logger.info("Created group chat {} with creator {} and {} initial members",
-                groupChatId, creatorID, initialMembers.size());
+                groupChatId, creatorId, initialMembers.size());
 
         return groupChatId;
     }
 
     // Deletes a single chat
-    public boolean deleteChat(String chatID) {
-        if (!checkId(chatID)){
+    public boolean deleteChat(String chatId) {
+        if (!validateId(chatId)){
             logger.warn("Could not delete chat: chat ID is null or empty");
             return false;
         }
 
 
-        Chat removedChat = chats.remove(chatID.trim());
+        Chat removedChat = chats.remove(chatId.trim());
         removedChat.clearChat();
 
         if (removedChat != null) {
-            logger.info("chat {} with {} participants was successfully removed", chatID, removedChat.getMembersCount());
+            logger.info("chat {} with {} participants was successfully removed", chatId, removedChat.getMembersCount());
             return true;
         } else {
-            logger.warn("chat {} could not be removed because it does not exist", chatID);
+            logger.warn("chat {} could not be removed because it does not exist", chatId);
             return false;
         }
     }
@@ -144,21 +132,24 @@ public class ChatManager {
         return chats.get(chatId).getMembers();
     }
 
+    private String genPrivateChatId(String userId1, String userId2) {
+        String[] sortedIDs = {userId1, userId2};
+        Arrays.sort(sortedIDs);
+        return "PRIVATE_" + sortedIDs[0] + "_" + sortedIDs[1];
+    }
+
     // Checks if the chat exists
     public boolean chatExists(String chatID) {
-        if (!checkId(chatID)) {
+        if (!validateId(chatID)) {
             logger.warn("Could not check if chat exists because chat ID is null or empty");
             return false;
         }
         return chats.containsKey(chatID);
     }
 
-    // Override toString for debugging
-    @Override
-    public String toString() {
-        return "chatManager{" +
-                "total chats=" + chats.size() +
-                ", chats=" + chats.keySet() +
-                '}';
+    // Check user ID is valid
+    private boolean validateId(String userId) {
+        return userId != null && !userId.trim().isEmpty();
     }
+
 }
