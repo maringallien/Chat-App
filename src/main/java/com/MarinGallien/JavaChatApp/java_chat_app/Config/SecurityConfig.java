@@ -15,8 +15,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JWTAuthFilter jwtAuthFilter;
+    private final JWTAuthFilter jwtAuthFilter;
+
+    public SecurityConfig(JWTAuthFilter jwtAuthFilter) {
+        this.jwtAuthFilter = jwtAuthFilter;
+    }
 
     // Create password encoder to securely hash and verify passwords
     @Bean

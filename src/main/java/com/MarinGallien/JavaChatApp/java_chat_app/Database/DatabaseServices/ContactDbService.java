@@ -18,11 +18,13 @@ public class ContactDbService {
 
     private static Logger logger = LoggerFactory.getLogger(ContactDbService.class);
 
-    @Autowired
-    UserRepo userRepo;
+    private final UserRepo userRepo;
+    private final ContactRepo contactRepo;
 
-    @Autowired
-    ContactRepo contactRepo;
+    public ContactDbService(UserRepo userRepo, ContactRepo contactRepo) {
+        this.userRepo = userRepo;
+        this.contactRepo = contactRepo;
+    }
 
     public Contact createContact(String userId, String contactUserId) {
         try {

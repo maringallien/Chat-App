@@ -23,17 +23,18 @@ public class MessageDbService {
 
     private static Logger logger = LoggerFactory.getLogger(MessageDbService.class);
 
-    @Autowired
-    MessageRepo messageRepo;
+    private final MessageRepo messageRepo;
+    private final ChatParticipantRepo chatParticipantRepo;
+    private final UserRepo userRepo;
+    private final ChatRepo chatRepo;
 
-    @Autowired
-    ChatParticipantRepo chatParticipantRepo;
-
-    @Autowired
-    UserRepo userRepo;
-
-    @Autowired
-    ChatRepo chatRepo;
+    public MessageDbService(MessageRepo messageRepo, ChatParticipantRepo chatParticipantRepo, UserRepo userRepo,
+                            ChatRepo chatRepo) {
+        this.messageRepo = messageRepo;
+        this.chatParticipantRepo = chatParticipantRepo;
+        this.userRepo = userRepo;
+        this.chatRepo = chatRepo;
+    }
 
     public Message saveMessage (String senderId, String chatId, String content) {
         try {

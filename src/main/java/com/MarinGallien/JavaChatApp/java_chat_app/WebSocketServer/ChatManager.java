@@ -24,12 +24,11 @@ public class ChatManager {
 
     // Thread safe map to store chatID:Set<userID>
     private final Map<String, Chat> chats = new ConcurrentHashMap<>();
+    private final ChatDbService chatDbService;
 
-    @Autowired
-    private ChatDbService chatDbService;
-
-    // Constructor
-    public ChatManager(){}
+    public ChatManager(ChatDbService chatDbService) {
+        this.chatDbService = chatDbService;
+    }
 
     // ========== INITIALIZATION ==========
     @PostConstruct

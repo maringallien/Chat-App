@@ -30,20 +30,21 @@ public class FileDbService {
 
     private Logger logger = LoggerFactory.getLogger(FileDbService.class);
 
-    @Autowired
-    FileRepo fileRepo;
+    private final FileRepo fileRepo;
+    private final UserRepo userRepo;
+    private final ChatRepo chatRepo;
+    private final ChatParticipantRepo chatParticipantRepo;
+    private final MessageRepo messageRepo;
 
-    @Autowired
-    UserRepo userRepo;
-
-    @Autowired
-    ChatRepo chatRepo;
-
-    @Autowired
-    ChatParticipantRepo chatParticipantRepo;
-
-    @Autowired
-    MessageRepo messageRepo;
+    public FileDbService(Logger logger, FileRepo fileRepo, UserRepo userRepo, ChatRepo chatRepo,
+                         ChatParticipantRepo chatParticipantRepo, MessageRepo messageRepo) {
+        this.logger = logger;
+        this.fileRepo = fileRepo;
+        this.userRepo = userRepo;
+        this.chatRepo = chatRepo;
+        this.chatParticipantRepo = chatParticipantRepo;
+        this.messageRepo = messageRepo;
+    }
 
     public File uploadFile(String userId, String chatId, MultipartFile file) {
         try {

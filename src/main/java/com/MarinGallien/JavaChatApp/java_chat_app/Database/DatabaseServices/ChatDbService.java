@@ -23,16 +23,15 @@ public class ChatDbService {
 
     private static Logger logger = LoggerFactory.getLogger(ChatDbService.class);
 
-    @Autowired
     private ChatRepo chatRepo;
-
-    @Autowired
     private UserRepo userRepo;
-
-    @Autowired
     private ChatParticipantRepo chatParticipantRepo;
 
-
+    public ChatDbService(ChatRepo chatRepo, UserRepo userRepo, ChatParticipantRepo chatParticipantRepo) {
+        this.chatRepo = chatRepo;
+        this.userRepo = userRepo;
+        this.chatParticipantRepo = chatParticipantRepo;
+    }
 
     public Chat createPrivateChat(String userId1, String userId2) {
         try {

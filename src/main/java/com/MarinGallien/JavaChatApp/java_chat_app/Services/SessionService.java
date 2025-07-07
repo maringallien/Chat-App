@@ -12,8 +12,11 @@ public class SessionService {
 
     private static Logger logger = LoggerFactory.getLogger(SessionService.class);
 
-    @Autowired
-    SessionDbService sessionDbService;
+    private final SessionDbService sessionDbService;
+
+    public SessionService(SessionDbService sessionDbService) {
+        this.sessionDbService = sessionDbService;
+    }
 
     public OnlineStatus updateUserStatus(String userId, OnlineStatus status) {
         try {

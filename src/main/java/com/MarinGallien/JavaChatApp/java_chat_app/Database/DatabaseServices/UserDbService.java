@@ -16,11 +16,13 @@ public class UserDbService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserDbService.class);
 
-    @Autowired
-    UserRepo userRepo;
+    private final UserRepo userRepo;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    public UserDbService(UserRepo userRepo, PasswordEncoder passwordEncoder) {
+        this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     // Creates a new user with encrypted password
     public User createUser(String username, String email, String password) {

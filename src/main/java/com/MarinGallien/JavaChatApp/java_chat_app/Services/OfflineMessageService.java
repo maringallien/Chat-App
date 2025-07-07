@@ -20,11 +20,13 @@ public class OfflineMessageService {
     private static final long MAX_USER_MESSAGES = 1000;
     private static final int BATCH_SIZE = 50;
 
-    @Autowired
-    private RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    public OfflineMessageService(RedisTemplate<String, String> redisTemplate, ObjectMapper objectMapper) {
+        this.redisTemplate = redisTemplate;
+        this.objectMapper = objectMapper;
+    }
 
     public boolean storeOfflineMessage(String userId, WebSocketMessage message) {
         try {

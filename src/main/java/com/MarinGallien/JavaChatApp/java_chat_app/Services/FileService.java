@@ -18,8 +18,11 @@ public class FileService {
 
     private static Logger logger = LoggerFactory.getLogger(FileService.class);
 
-    @Autowired
-    FileDbService fileDbService;
+    private final FileDbService fileDbService;
+
+    public FileService(FileDbService fileDbService) {
+        this.fileDbService = fileDbService;
+    }
 
     public File uploadFile(String userId, String chatId, MultipartFile file) {
         try {

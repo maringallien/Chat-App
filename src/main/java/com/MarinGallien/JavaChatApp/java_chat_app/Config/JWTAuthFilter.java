@@ -24,11 +24,13 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JWTAuthFilter.class);
 
-    @Autowired
     private JWTService jwtService;
-
-    @Autowired
     private UserRepo userRepo;
+
+    public JWTAuthFilter(JWTService jwtService, UserRepo userRepo) {
+        this.jwtService = jwtService;
+        this.userRepo = userRepo;
+    }
 
     @Override
     protected void doFilterInternal(

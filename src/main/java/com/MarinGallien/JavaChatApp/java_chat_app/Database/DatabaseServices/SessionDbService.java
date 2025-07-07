@@ -15,8 +15,11 @@ public class SessionDbService {
 
     private static Logger logger = LoggerFactory.getLogger(SessionDbService.class);
 
-    @Autowired
-    UserRepo userRepo;
+    private final UserRepo userRepo;
+
+    public SessionDbService(UserRepo userRepo) {
+        this.userRepo = userRepo;
+    }
 
     public OnlineStatus updateStatus(String userId, OnlineStatus status) {
         try {

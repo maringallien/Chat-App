@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserSessionInterceptor implements ChannelInterceptor {
+
     private static final Logger logger = LoggerFactory.getLogger(UserSessionInterceptor.class);
 
     @Override

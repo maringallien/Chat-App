@@ -13,8 +13,11 @@ import java.util.List;
 public class MessageService {
     private static Logger logger = LoggerFactory.getLogger(MessageDbService.class);
 
-    @Autowired
-    MessageDbService messageDbService;
+    private final MessageDbService messageDbService;
+
+    public MessageService(MessageDbService messageDbService) {
+        this.messageDbService = messageDbService;
+    }
 
     public Message saveMessage(String senderId, String chatId, String content) {
         try {

@@ -21,12 +21,13 @@ public class ChatService {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatService.class);
 
-    @Autowired
-    private ChatDbService chatDbService;
+    private final ChatDbService chatDbService;
+    private final EventBusService eventBus;
 
-    @Autowired
-    private EventBusService eventBus;
-
+    public ChatService(ChatDbService chatDbService, EventBusService eventBus) {
+        this.chatDbService = chatDbService;
+        this.eventBus = eventBus;
+    }
 
     public Chat createPrivateChat(String userId1, String userId2) {
         try {

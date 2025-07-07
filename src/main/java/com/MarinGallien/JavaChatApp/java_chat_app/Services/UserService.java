@@ -26,11 +26,13 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    @Autowired
-    UserDbService userDbService;
+    private final UserDbService userDbService;
+    private final JWTService jwtService;
 
-    @Autowired
-    private JWTService jwtService;
+    public UserService(UserDbService userDbService, JWTService jwtService) {
+        this.userDbService = userDbService;
+        this.jwtService = jwtService;
+    }
 
     public User createUser(String username, String email, String password) {
         try {

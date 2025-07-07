@@ -14,8 +14,11 @@ public class ContactService{
 
     private static Logger logger = LoggerFactory.getLogger(ContactService.class);
 
-    @Autowired
-    ContactDbService contactDbService;
+    private final ContactDbService contactDbService;
+
+    public ContactService(ContactDbService contactDbService) {
+        this.contactDbService = contactDbService;
+    }
 
     public Contact createContact(String userId, String contactUserId) {
         try {
