@@ -1,7 +1,6 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.Services;
 
-import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.WebSocketMessage;
-import com.MarinGallien.JavaChatApp.java_chat_app.Enums.MessageType;
+import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.WebsocketMessages.WebSocketMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;

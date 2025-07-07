@@ -1,6 +1,6 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages;
+package com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.WebsocketMessages;
 
-import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.BaseMessage;
+import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.BaseMessage;
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.MessageType;
 import jakarta.validation.constraints.NotBlank;
 

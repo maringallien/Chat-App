@@ -1,7 +1,7 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.WebSocketServer;
 
-import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.OnlineStatusMessage;
-import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.WebSocketMessage;
+import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.WebsocketMessages.OnlineStatusMessage;
+import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.WebsocketMessages.WebSocketMessage;
 
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.OnlineStatus;

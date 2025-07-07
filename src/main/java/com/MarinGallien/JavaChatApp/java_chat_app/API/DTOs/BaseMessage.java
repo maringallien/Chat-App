@@ -1,4 +1,4 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.DTOs;
+package com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.MessageType;
 import jakarta.validation.constraints.NotBlank;

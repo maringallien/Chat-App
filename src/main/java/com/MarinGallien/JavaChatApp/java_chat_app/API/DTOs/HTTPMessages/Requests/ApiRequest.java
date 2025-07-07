@@ -1,4 +1,4 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.DTOs.HTTPMessages.Requests;
+package com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Requests;
 
 
 public interface ApiRequest {
