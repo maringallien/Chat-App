@@ -3,11 +3,11 @@ package com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Request
 import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Requests.ApiRequest;
 import jakarta.validation.constraints.NotBlank;
 
-public record RemoveMemberRequest(
+public record AddOrRemoveMemberRequest(
         @NotBlank(message = "Creator ID is required")
         String creatorId,
 
-        @NotBlank(message = "User ID to remove is required")
+        @NotBlank(message = "User ID is required")
         String userId,
 
         @NotBlank(message = "Chat ID is required")

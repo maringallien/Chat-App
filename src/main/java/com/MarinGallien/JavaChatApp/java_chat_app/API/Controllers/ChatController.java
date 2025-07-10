@@ -124,7 +124,7 @@ public class ChatController {
 
     @PostMapping("/member/add")
     public ResponseEntity<GenericResponse> addMemberToChat(
-            @Valid @RequestBody AddMemberRequest request,
+            @Valid @RequestBody AddOrRemoveMemberRequest request,
             BindingResult bindingResult) {
 
         try {
@@ -156,7 +156,7 @@ public class ChatController {
 
     @PostMapping("/member/remove")
     public ResponseEntity<GenericResponse> removeMemberFromChat(
-            @Valid @RequestBody AddMemberRequest request,
+            @Valid @RequestBody AddOrRemoveMemberRequest request,
             BindingResult bindingResult) {
 
         try {
