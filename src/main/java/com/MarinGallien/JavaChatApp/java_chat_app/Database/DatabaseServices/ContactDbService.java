@@ -97,14 +97,14 @@ public class ContactDbService {
         }
     }
 
-    public List<String> getUserContacts(String userId) {
+    public List<User> getUserContacts(String userId) {
         try {
             if (!userRepo.existsById(userId)) {
                 logger.warn("Failed to retrieve contacts list: used ID does not exist");
                 return List.of();
             }
 
-            List<String> contacts = contactRepo.findContactUserIdsByUserId(userId);
+            List<User> contacts = contactRepo.findContactUserIdsByUserId(userId);
 
             // If operation fails, return empty list
             if (contacts == null) {

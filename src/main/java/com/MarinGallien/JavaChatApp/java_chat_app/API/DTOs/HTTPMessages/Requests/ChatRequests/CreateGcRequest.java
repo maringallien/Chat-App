@@ -1,6 +1,6 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Requests.ChatRequests;
 
-import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Requests.ApiRequest;
+import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.ApiReqResInterface;
 import jakarta.validation.constraints.*;
 import java.util.Set;
 
@@ -15,4 +15,4 @@ public record CreateGcRequest(
         @NotBlank(message = "Chat name is required")
         @Size(max = 100, message = "Chat name cannot exceed 100 characters")
         String chatName
-) implements ApiRequest {}
+) implements ApiReqResInterface {}

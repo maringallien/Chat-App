@@ -1,6 +1,7 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.Services;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.DatabaseServices.ContactDbService;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.User;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.JunctionEntities.Contact;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -80,7 +81,7 @@ public class ContactService{
         }
     }
 
-    public List<String> getUserContacts(String userId) {
+    public List<User> getUserContacts(String userId) {
         try {
             if (!validateId(userId)) {
                 logger.warn("Failed to retrieve contacts list: used ID is null or empty");

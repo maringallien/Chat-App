@@ -128,7 +128,7 @@ public class ChatController {
             BindingResult bindingResult) {
 
         try {
-            // Check if input has any errors and send error message if it does
+            // Return if input has any errors
             if (bindingResult.hasErrors()) {
                 logger.warn("Invalid request to add member to chat: input parameter(s) null or empty");
                 return ResponseEntity.badRequest().body(new GenericResponse(false, "Invalid request parameters"));
@@ -160,8 +160,7 @@ public class ChatController {
             BindingResult bindingResult) {
 
         try {
-
-            // Check if input has any errors and send error message if it does
+            // Return if input has any errors
             if (bindingResult.hasErrors()) {
                 logger.warn("Invalid request to remove member from chat: input parameter(s) null or empty");
                 return ResponseEntity.badRequest().body(new GenericResponse(false, "Invalid request parameters"));
@@ -187,17 +186,17 @@ public class ChatController {
         }
     }
 
-    @PostMapping("/user")
+    @GetMapping("/chats")
     public ResponseEntity<GetUserChatsResponse> getUserChats(
             @Valid @RequestBody GetUserChatsRequest request,
             BindingResult bindingResult) {
 
         try {
-            // Check if input has any errors and send error message if it does
+            // Return if input has any errors
             if (bindingResult.hasErrors()) {
                 logger.warn("Invalid request to retrieve user's chats: input parameter(s) null or empty");
                 return ResponseEntity.badRequest()
-                        .body(new GetUserChatsResponse(false, "Invalid request parameters", request.userId(), List.of()));
+                        .body(new GetUserChatsResponse(false, "Invalid request parameters", List.of()));
             }
 
             // Delegate to chatService
@@ -207,17 +206,17 @@ public class ChatController {
             if (userChats == null || userChats.isEmpty()) {
                 logger.warn("No chats were found");
                 return ResponseEntity.badRequest()
-                        .body(new GetUserChatsResponse(false, "No chats found", request.userId(), List.of()));
+                        .body(new GetUserChatsResponse(false, "No chats found", List.of()));
             }
 
             logger.info("Successfully retrieved user's chats");
             return ResponseEntity.ok()
-                    .body(new GetUserChatsResponse(true, "Successfully retrieved user's chats", request.userId(), userChats));
+                    .body(new GetUserChatsResponse(true, "Successfully retrieved user's chats", userChats));
 
         } catch (Exception e) {
             logger.error("Failed to retrieve user's chats");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new GetUserChatsResponse(false, "Internal server error", request.userId(), List.of()));
+                    .body(new GetUserChatsResponse(false, "Internal server error", List.of()));
         }
     }
 

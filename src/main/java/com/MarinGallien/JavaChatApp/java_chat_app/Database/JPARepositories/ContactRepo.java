@@ -1,5 +1,6 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories;
 
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.User;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.JunctionEntities.Contact;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,8 +12,8 @@ import java.util.List;
 @Repository
 public interface ContactRepo extends JpaRepository<Contact, String> {
     // Retrieves the user IDs of a user's contacts
-    @Query("SELECT c.contactUser.userId FROM Contact c WHERE c.user.userId = :userId")
-    List<String> findContactUserIdsByUserId(@Param("userId") String userId);
+    @Query("SELECT c.contactUser FROM Contact c WHERE c.user.userId = :userId")
+    List<User> findContactUserIdsByUserId(@Param("userId") String userId);
 
     @Query("SELECT COUNT(c) > 0 FROM Contact c WHERE " +
             "(c.user.userId = :userId1 AND c.contactUser.userId = :userId2) OR " +
