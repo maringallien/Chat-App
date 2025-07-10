@@ -9,7 +9,6 @@ import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents.
 import com.MarinGallien.JavaChatApp.java_chat_app.EventSystem.Events.ChatEvents.MemberRemovedFromChat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -116,7 +115,7 @@ public class ChatService {
         }
     }
 
-    public boolean DeleteChat(String creatorId, String chatId) {
+    public boolean deleteChat(String creatorId, String chatId) {
         try {
             // Validate input parameters
             if (!validateId(creatorId) || !validateId(chatId)) {
@@ -145,7 +144,7 @@ public class ChatService {
         }
     }
 
-    public boolean AddMember(String creatorId, String userId, String chatId) {
+    public boolean addMember(String creatorId, String userId, String chatId) {
         try {
             // Validate input parameters
             if (!validateId(creatorId) || !validateId(userId) || !validateId(chatId)) {
@@ -174,7 +173,7 @@ public class ChatService {
         }
     }
 
-    public boolean RemoveMember(String creatorId, String userId, String chatId) {
+    public boolean removeMember(String creatorId, String userId, String chatId) {
         try {
             // Validate input parameters
             if (!validateId(creatorId) || !validateId(userId) || !validateId(chatId)) {
@@ -203,7 +202,7 @@ public class ChatService {
         }
     }
 
-    public List<Chat> GetUserChats(String userId) {
+    public List<Chat> getUserChats(String userId) {
         try {
             // Validate input parameters
             if (!validateId(userId)) {

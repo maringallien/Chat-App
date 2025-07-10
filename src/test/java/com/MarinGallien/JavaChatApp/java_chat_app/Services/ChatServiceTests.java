@@ -175,7 +175,7 @@ public class ChatServiceTests {
         when(chatDbService.deleteChat(user1Id, groupChatId)).thenReturn(true);
 
         // When
-        boolean result = chatService.DeleteChat(user1Id, groupChatId);
+        boolean result = chatService.deleteChat(user1Id, groupChatId);
 
         // Then
         assertTrue(result);
@@ -186,16 +186,16 @@ public class ChatServiceTests {
     @Test
     void deleteChat_InvalidParameters_ReturnsFalse() {
         // Test all null parameters
-        assertFalse(chatService.DeleteChat(null, groupChatId));
-        assertFalse(chatService.DeleteChat(user1Id, null));
+        assertFalse(chatService.deleteChat(null, groupChatId));
+        assertFalse(chatService.deleteChat(user1Id, null));
 
         // Test all empty parameters
-        assertFalse(chatService.DeleteChat("", groupChatId));
-        assertFalse(chatService.DeleteChat(user1Id, ""));
+        assertFalse(chatService.deleteChat("", groupChatId));
+        assertFalse(chatService.deleteChat(user1Id, ""));
 
         // Test all whitespace parameters
-        assertFalse(chatService.DeleteChat("   ", groupChatId));
-        assertFalse(chatService.DeleteChat(user1Id, "   "));
+        assertFalse(chatService.deleteChat("   ", groupChatId));
+        assertFalse(chatService.deleteChat(user1Id, "   "));
 
         // Verify no database calls or events were made
         verify(chatDbService, never()).deleteChat(any(), any());
@@ -208,7 +208,7 @@ public class ChatServiceTests {
         when(chatDbService.deleteChat(user1Id, groupChatId)).thenReturn(false);
 
         // When
-        boolean result = chatService.DeleteChat(user1Id, groupChatId);
+        boolean result = chatService.deleteChat(user1Id, groupChatId);
 
         // Then
         assertFalse(result);
@@ -226,7 +226,7 @@ public class ChatServiceTests {
         when(chatDbService.addMemberToGroupChat(groupChatId, user3Id)).thenReturn(true);
 
         // When
-        boolean result = chatService.AddMember(user1Id, user3Id, groupChatId);
+        boolean result = chatService.addMember(user1Id, user3Id, groupChatId);
 
         // Then
         assertTrue(result);
@@ -237,19 +237,19 @@ public class ChatServiceTests {
     @Test
     void addMember_InvalidParameters_ReturnsFalse() {
         // Test all null parameters
-        assertFalse(chatService.AddMember(null, user3Id, groupChatId));
-        assertFalse(chatService.AddMember(user1Id, null, groupChatId));
-        assertFalse(chatService.AddMember(user1Id, user3Id, null));
+        assertFalse(chatService.addMember(null, user3Id, groupChatId));
+        assertFalse(chatService.addMember(user1Id, null, groupChatId));
+        assertFalse(chatService.addMember(user1Id, user3Id, null));
 
         // Test all empty parameters
-        assertFalse(chatService.AddMember("", user3Id, groupChatId));
-        assertFalse(chatService.AddMember(user1Id, "", groupChatId));
-        assertFalse(chatService.AddMember(user1Id, user3Id, ""));
+        assertFalse(chatService.addMember("", user3Id, groupChatId));
+        assertFalse(chatService.addMember(user1Id, "", groupChatId));
+        assertFalse(chatService.addMember(user1Id, user3Id, ""));
 
         // Test all whitespace parameters
-        assertFalse(chatService.AddMember("   ", user3Id, groupChatId));
-        assertFalse(chatService.AddMember(user1Id, "   ", groupChatId));
-        assertFalse(chatService.AddMember(user1Id, user3Id, "   "));
+        assertFalse(chatService.addMember("   ", user3Id, groupChatId));
+        assertFalse(chatService.addMember(user1Id, "   ", groupChatId));
+        assertFalse(chatService.addMember(user1Id, user3Id, "   "));
 
         // Verify no database calls or events were made
         verify(chatDbService, never()).addMemberToGroupChat(any(), any());
@@ -262,7 +262,7 @@ public class ChatServiceTests {
         when(chatDbService.addMemberToGroupChat(groupChatId, user3Id)).thenReturn(false);
 
         // When
-        boolean result = chatService.AddMember(user1Id, user3Id, groupChatId);
+        boolean result = chatService.addMember(user1Id, user3Id, groupChatId);
 
         // Then
         assertFalse(result);
@@ -280,7 +280,7 @@ public class ChatServiceTests {
         when(chatDbService.removeMemberFromGroupChat(groupChatId, user3Id)).thenReturn(true);
 
         // When
-        boolean result = chatService.RemoveMember(user1Id, user3Id, groupChatId);
+        boolean result = chatService.removeMember(user1Id, user3Id, groupChatId);
 
         // Then
         assertTrue(result);
@@ -291,19 +291,19 @@ public class ChatServiceTests {
     @Test
     void removeMember_InvalidParameters_ReturnsFalse() {
         // Test all null parameters
-        assertFalse(chatService.RemoveMember(null, user3Id, groupChatId));
-        assertFalse(chatService.RemoveMember(user1Id, null, groupChatId));
-        assertFalse(chatService.RemoveMember(user1Id, user3Id, null));
+        assertFalse(chatService.removeMember(null, user3Id, groupChatId));
+        assertFalse(chatService.removeMember(user1Id, null, groupChatId));
+        assertFalse(chatService.removeMember(user1Id, user3Id, null));
 
         // Test all empty parameters
-        assertFalse(chatService.RemoveMember("", user3Id, groupChatId));
-        assertFalse(chatService.RemoveMember(user1Id, "", groupChatId));
-        assertFalse(chatService.RemoveMember(user1Id, user3Id, ""));
+        assertFalse(chatService.removeMember("", user3Id, groupChatId));
+        assertFalse(chatService.removeMember(user1Id, "", groupChatId));
+        assertFalse(chatService.removeMember(user1Id, user3Id, ""));
 
         // Test all whitespace parameters
-        assertFalse(chatService.RemoveMember("   ", user3Id, groupChatId));
-        assertFalse(chatService.RemoveMember(user1Id, "   ", groupChatId));
-        assertFalse(chatService.RemoveMember(user1Id, user3Id, "   "));
+        assertFalse(chatService.removeMember("   ", user3Id, groupChatId));
+        assertFalse(chatService.removeMember(user1Id, "   ", groupChatId));
+        assertFalse(chatService.removeMember(user1Id, user3Id, "   "));
 
         // Verify no database calls or events were made
         verify(chatDbService, never()).removeMemberFromGroupChat(any(), any());
@@ -316,7 +316,7 @@ public class ChatServiceTests {
         when(chatDbService.removeMemberFromGroupChat(groupChatId, user3Id)).thenReturn(false);
 
         // When
-        boolean result = chatService.RemoveMember(user1Id, user3Id, groupChatId);
+        boolean result = chatService.removeMember(user1Id, user3Id, groupChatId);
 
         // Then
         assertFalse(result);
@@ -335,7 +335,7 @@ public class ChatServiceTests {
         when(chatDbService.getUserChats(user1Id)).thenReturn(userChats);
 
         // When
-        List<Chat> result = chatService.GetUserChats(user1Id);
+        List<Chat> result = chatService.getUserChats(user1Id);
 
         // Then
         assertNotNull(result);
@@ -349,13 +349,13 @@ public class ChatServiceTests {
     @Test
     void getUserChatsRequest_InvalidParameters_ReturnsNull() {
         // Test null user ID
-        assertNull(chatService.GetUserChats(null));
+        assertNull(chatService.getUserChats(null));
 
         // Test empty user ID
-        assertNull(chatService.GetUserChats(""));
+        assertNull(chatService.getUserChats(""));
 
         // Test whitespace user ID
-        assertNull(chatService.GetUserChats("   "));
+        assertNull(chatService.getUserChats("   "));
 
         // Verify no database calls were made
         verify(chatDbService, never()).getUserChats(any());
@@ -367,7 +367,7 @@ public class ChatServiceTests {
         when(chatDbService.getUserChats(user1Id)).thenReturn(List.of());
 
         // When
-        List<Chat> result = chatService.GetUserChats(user1Id);
+        List<Chat> result = chatService.getUserChats(user1Id);
 
         // Then
         assertNull(result);
