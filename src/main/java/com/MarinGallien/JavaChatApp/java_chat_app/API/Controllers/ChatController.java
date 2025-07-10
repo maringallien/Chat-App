@@ -2,6 +2,7 @@ package com.MarinGallien.JavaChatApp.java_chat_app.API.Controllers;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Requests.ChatRequests.*;
 import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Responses.ChatResponses.*;
+import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Responses.GenericResponse;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.Chat;
 import com.MarinGallien.JavaChatApp.java_chat_app.Services.ChatService;
 import jakarta.validation.Valid;
@@ -26,7 +27,7 @@ public class ChatController {
     }
 
     @PostMapping("/private")
-    public ResponseEntity<CreatePcResponse> createPrivateChat(
+    public ResponseEntity<GenericResponse> createPrivateChat(
             @Valid @RequestBody CreatePcRequest request,
             BindingResult bindingResult) {
 
@@ -34,7 +35,7 @@ public class ChatController {
             // Check if input has any errors and send error message if it does
             if (bindingResult.hasErrors()) {
                 logger.warn("Invalid request to create private chat: input parameter(s) null or empty");
-                return ResponseEntity.badRequest().body(new CreatePcResponse(false, "Invalid request parameters"));
+                return ResponseEntity.badRequest().body(new GenericResponse(false, "Invalid request parameters"));
             }
 
             // Delegate to ChatService
@@ -43,22 +44,22 @@ public class ChatController {
             // If chat creation failed, send error message
             if (createdChat == null) {
                 logger.error("Failed to create private chat");
-                return ResponseEntity.badRequest().body(new CreatePcResponse(false, "Failed to create private chat"));
+                return ResponseEntity.badRequest().body(new GenericResponse(false, "Failed to create private chat"));
             }
 
             // Send success response message
             logger.info("Successfully create new private chat {}", createdChat.getChatId());
-            return ResponseEntity.ok().body(new CreatePcResponse(true, "Private chat created successfully"));
+            return ResponseEntity.ok().body(new GenericResponse(true, "Private chat created successfully"));
 
         } catch (Exception e) {
             logger.error("Error handling request to create private chat: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new CreatePcResponse(false, "Internal server error"));
+                    .body(new GenericResponse(false, "Internal server error"));
         }
     }
 
     @PostMapping("/group")
-    public ResponseEntity<CreateGcResponse> createGroupChat(
+    public ResponseEntity<GenericResponse> createGroupChat(
             @Valid @RequestBody CreateGcRequest request,
             BindingResult bindingResult) {
 
@@ -66,7 +67,7 @@ public class ChatController {
             // Check if input has any errors and send error message if it does
             if (bindingResult.hasErrors()) {
                 logger.warn("Invalid request to create group chat: input parameter(s) null or empty");
-                return ResponseEntity.badRequest().body(new CreateGcResponse(false, "Invalid request parameters"));
+                return ResponseEntity.badRequest().body(new GenericResponse(false, "Invalid request parameters"));
             }
 
             // Delegate to ChatService
@@ -75,22 +76,22 @@ public class ChatController {
             // If chat creation failed, send error message
             if (createdChat == null) {
                 logger.error("Failed to create group chat");
-                return ResponseEntity.badRequest().body(new CreateGcResponse(false, "Failed to create private chat"));
+                return ResponseEntity.badRequest().body(new GenericResponse(false, "Failed to create private chat"));
             }
 
             // Send success response message
             logger.info("Successfully create new group chat {}", createdChat.getChatId());
-            return ResponseEntity.ok().body(new CreateGcResponse(true, "Private chat created successfully"));
+            return ResponseEntity.ok().body(new GenericResponse(true, "Private chat created successfully"));
 
         } catch (Exception e) {
             logger.error("Failed to create group chat");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new CreateGcResponse(false, "Internal server error"));
+                .body(new GenericResponse(false, "Internal server error"));
         }
     }
 
     @DeleteMapping
-    public ResponseEntity<DeleteChatResponse> deleteChat(
+    public ResponseEntity<GenericResponse> deleteChat(
             @Valid @RequestBody DeleteChatRequest request,
             BindingResult bindingResult) {
 
@@ -98,7 +99,7 @@ public class ChatController {
             // Check if input has any errors and send error message if it does
             if (bindingResult.hasErrors()) {
                 logger.warn("Invalid request to delete chat: input parameter(s) null or empty");
-                return ResponseEntity.badRequest().body(new DeleteChatResponse(false, "Invalid request parameters"));
+                return ResponseEntity.badRequest().body(new GenericResponse(false, "Invalid request parameters"));
             }
 
             // Delegate to ChatService
@@ -107,22 +108,22 @@ public class ChatController {
             // If chat creation failed, send error message
             if (!deleted) {
                 logger.error("Failed to delete chat");
-                return ResponseEntity.badRequest().body(new DeleteChatResponse(false, "Failed to create private chat"));
+                return ResponseEntity.badRequest().body(new GenericResponse(false, "Failed to create private chat"));
             }
 
             // Send success response message
             logger.info("Successfully deleted chat {}", request.chatId());
-            return ResponseEntity.ok().body(new DeleteChatResponse(true, "Private chat created successfully"));
+            return ResponseEntity.ok().body(new GenericResponse(true, "Private chat created successfully"));
 
         } catch (Exception e) {
             logger.error("Failed to delete chat");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new DeleteChatResponse(false, "Internal server error"));
+                    .body(new GenericResponse(false, "Internal server error"));
         }
     }
 
     @PostMapping("/member/add")
-    public ResponseEntity<AddMemberResponse> addMemberToChat(
+    public ResponseEntity<GenericResponse> addMemberToChat(
             @Valid @RequestBody AddMemberRequest request,
             BindingResult bindingResult) {
 
@@ -130,7 +131,7 @@ public class ChatController {
             // Check if input has any errors and send error message if it does
             if (bindingResult.hasErrors()) {
                 logger.warn("Invalid request to add member to chat: input parameter(s) null or empty");
-                return ResponseEntity.badRequest().body(new AddMemberResponse(false, "Invalid request parameters"));
+                return ResponseEntity.badRequest().body(new GenericResponse(false, "Invalid request parameters"));
             }
 
             // Delegate to chatService
@@ -139,22 +140,22 @@ public class ChatController {
             //If chat creation failed, send error message
             if (!added) {
                 logger.error("Failed to add member to chat");
-                return ResponseEntity.badRequest().body(new AddMemberResponse(false, "Failed to create private chat"));
+                return ResponseEntity.badRequest().body(new GenericResponse(false, "Failed to create private chat"));
             }
 
             // Send success response message
             logger.info("Successfully added member to chat {}", request.chatId());
-            return ResponseEntity.ok().body(new AddMemberResponse(true, "Private chat created successfully"));
+            return ResponseEntity.ok().body(new GenericResponse(true, "Private chat created successfully"));
 
         } catch (Exception e) {
             logger.error("Failed to add member to chat");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new AddMemberResponse(false, "Internal server error"));
+                    .body(new GenericResponse(false, "Internal server error"));
         }
     }
 
     @PostMapping("/member/remove")
-    public ResponseEntity<RemoveMemberResponse> removeMemberFromChat(
+    public ResponseEntity<GenericResponse> removeMemberFromChat(
             @Valid @RequestBody AddMemberRequest request,
             BindingResult bindingResult) {
 
@@ -163,7 +164,7 @@ public class ChatController {
             // Check if input has any errors and send error message if it does
             if (bindingResult.hasErrors()) {
                 logger.warn("Invalid request to remove member from chat: input parameter(s) null or empty");
-                return ResponseEntity.badRequest().body(new RemoveMemberResponse(false, "Invalid request parameters"));
+                return ResponseEntity.badRequest().body(new GenericResponse(false, "Invalid request parameters"));
             }
 
             // Delegate to chatService
@@ -172,17 +173,17 @@ public class ChatController {
             // If chat creation failed, send error message
             if (!removed) {
                 logger.error("Failed to remove member from chat");
-                return ResponseEntity.badRequest().body(new RemoveMemberResponse(false, "Failed to create private chat"));
+                return ResponseEntity.badRequest().body(new GenericResponse(false, "Failed to create private chat"));
             }
 
             // Send success response message
             logger.info("Successfully removed member from chat {}", request.chatId());
-            return ResponseEntity.ok().body(new RemoveMemberResponse(true, "Private chat created successfully"));
+            return ResponseEntity.ok().body(new GenericResponse(true, "Private chat created successfully"));
 
         } catch (Exception e) {
             logger.error("Failed to remove member to chat");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new RemoveMemberResponse(false, "Internal server error"));
+                    .body(new GenericResponse(false, "Internal server error"));
         }
     }
 

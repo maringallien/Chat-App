@@ -28,7 +28,7 @@ public class ChatManagerTests {
 
     @BeforeEach
     void setUp() {
-        chatManager = new ChatManager();
+        chatManager = new ChatManager(chatDbService);
         ReflectionTestUtils.setField(chatManager, "chatDbService", chatDbService);
 
         when(chatDbService.getAllChatParticipantMappings()).thenReturn(List.of());
@@ -163,7 +163,7 @@ public class ChatManagerTests {
                 new Object[]{"chat2", "user3"}
         );
 
-        ChatManager freshManager = new ChatManager();
+        ChatManager freshManager = new ChatManager(chatDbService);
         ReflectionTestUtils.setField(freshManager, "chatDbService", chatDbService);
         when(chatDbService.getAllChatParticipantMappings()).thenReturn(mockMappings);
 
@@ -178,7 +178,7 @@ public class ChatManagerTests {
     @Test
     void initializeChatManager_EmptyDatabase_NoChatsLoaded() {
         // Given
-        ChatManager freshManager = new ChatManager();
+        ChatManager freshManager = new ChatManager(chatDbService);
         ReflectionTestUtils.setField(freshManager, "chatDbService", chatDbService);
         when(chatDbService.getAllChatParticipantMappings()).thenReturn(List.of());
 
