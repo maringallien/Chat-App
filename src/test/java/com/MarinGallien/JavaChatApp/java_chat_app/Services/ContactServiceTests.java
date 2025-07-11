@@ -1,6 +1,7 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.Services;
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.DatabaseServices.ContactDbService;
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.User;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.JunctionEntities.Contact;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,9 @@ public class ContactServiceTests {
     private ContactService contactService;
 
     private Contact testContact;
+    private User testUser1;
+    private User testUser2;
+    private User testUser3;
     private String user1Id = "user1";
     private String user2Id = "user2";
     private String user3Id = "user3";
@@ -145,17 +149,17 @@ public class ContactServiceTests {
     @Test
     void getUserContacts_ValidInputs_ReturnsContactsList() {
         // Given
-        List<String> contactIds = List.of(user2Id, user3Id);
-        when(contactDbService.getUserContacts(user1Id)).thenReturn(contactIds);
+        List<User> contactUsers = List.of(testUser2, testUser3);
+        when(contactDbService.getUserContacts(user1Id)).thenReturn(contactUsers);
 
         // When
-        List<String> result = contactService.getUserContacts(user1Id);
+        List<User> result = contactService.getUserContacts(user1Id);
 
         // Then
         assertNotNull(result);
         assertEquals(2, result.size());
-        assertTrue(result.contains(user2Id));
-        assertTrue(result.contains(user3Id));
+        assertTrue(result.contains(testUser2));
+        assertTrue(result.contains(testUser3));
         verify(contactDbService).getUserContacts(user1Id);
     }
 
@@ -180,7 +184,7 @@ public class ContactServiceTests {
         when(contactDbService.getUserContacts(user1Id)).thenReturn(List.of());
 
         // When
-        List<String> result = contactService.getUserContacts(user1Id);
+        List<User> result = contactService.getUserContacts(user1Id);
 
         // Then
         assertNotNull(result);
