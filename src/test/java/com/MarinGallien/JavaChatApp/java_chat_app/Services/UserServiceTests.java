@@ -110,15 +110,20 @@ public class UserServiceTests {
     @Test
     void login_ValidInputs_ReturnsTrue() {
         // Given
+        User mockUser = new User("testuser", email, "hashedPassword");
         when(userDbService.login(email, password)).thenReturn(true);
+        when(userDbService.getUserByEmail(email)).thenReturn(mockUser);
+        when(jwtService.generateToken(mockUser.getUserId(), mockUser.getUsername())).thenReturn("jwt.token.here");
 
         // When
-        Boolean result = userService.login(email, password);
+        String token = userService.login(email, password);
 
         // Then
-        assertNotNull(result);
-        assertTrue(result);
+        assertNotNull(token);
+        assertEquals("jwt.token.here", token);
         verify(userDbService).login(email, password);
+        verify(userDbService).getUserByEmail(email);
+        verify(jwtService).generateToken(mockUser.getUserId(), mockUser.getUsername());
     }
 
     @Test
@@ -140,6 +145,7 @@ public class UserServiceTests {
 
         // Verify no database calls were made
         verify(userDbService, never()).login(any(), any());
+        verify(jwtService, never()).generateToken(any(), any());
     }
 
     @Test
@@ -148,11 +154,47 @@ public class UserServiceTests {
         when(userDbService.login(email, password)).thenReturn(false);
 
         // When
-        Boolean result = userService.login(email, password);
+        String token = userService.login(email, password);
 
         // Then
-        assertNull(result);
+        assertNull(token);
         verify(userDbService).login(email, password);
+        verify(userDbService, never()).getUserByEmail(any());
+        verify(jwtService, never()).generateToken(any(), any());
+    }
+
+    @Test
+    void login_UserNotFoundAfterValidation_ReturnsNull() {
+        // Given
+        when(userDbService.login(email, password)).thenReturn(true);
+        when(userDbService.getUserByEmail(email)).thenReturn(null);
+
+        // When
+        String token = userService.login(email, password);
+
+        // Then
+        assertNull(token);
+        verify(userDbService).login(email, password);
+        verify(userDbService).getUserByEmail(email);
+        verify(jwtService, never()).generateToken(any(), any());
+    }
+
+    @Test
+    void login_JwtGenerationFailure_ReturnsNull() {
+        // Given
+        User mockUser = new User("testuser", email, "hashedPassword");
+        when(userDbService.login(email, password)).thenReturn(true);
+        when(userDbService.getUserByEmail(email)).thenReturn(mockUser);
+        when(jwtService.generateToken(mockUser.getUserId(), mockUser.getUsername())).thenReturn(null);
+
+        // When
+        String token = userService.login(email, password);
+
+        // Then
+        assertNull(token);
+        verify(userDbService).login(email, password);
+        verify(userDbService).getUserByEmail(email);
+        verify(jwtService).generateToken(mockUser.getUserId(), mockUser.getUsername());
     }
 
     // ==========================================================================
@@ -391,10 +433,10 @@ public class UserServiceTests {
                 .thenThrow(new RuntimeException("Database error"));
 
         // When
-        Boolean result = userService.login(email, password);
+        String token = userService.login(email, password);
 
         // Then
-        assertNull(result);
+        assertNull(token);
         verify(userDbService).login(email, password);
     }
 

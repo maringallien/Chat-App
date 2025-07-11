@@ -4,6 +4,7 @@ import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.WebsocketMessages.Onl
 import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.WebsocketMessages.WebSocketMessage;
 
 
+import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.User;
 import com.MarinGallien.JavaChatApp.java_chat_app.Enums.OnlineStatus;
 import com.MarinGallien.JavaChatApp.java_chat_app.Services.*;
 import org.slf4j.Logger;
@@ -91,15 +92,15 @@ public class WebSocketHandler {
     private void notifyContactsOfStatusChange(String userId, OnlineStatus status) {
         try {
             // Retrieve list of contacts from the database
-            List<String> contactIds = contactService.getUserContacts(userId);
+            List<User> contactUsers = contactService.getUserContacts(userId);
 
             // Create a status message
             OnlineStatusMessage statusMessage = new OnlineStatusMessage(status, userId);
 
             // Broadcast status message to each contact
-            for (String contactId : contactIds) {
+            for (User user: contactUsers) {
                 messagingTemplate.convertAndSendToUser(
-                        contactId,
+                        user.getUserId(),
                         "/queue/presence",
                         statusMessage
                 );

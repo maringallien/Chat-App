@@ -19,15 +19,15 @@ public class MessageService {
         this.messageDbService = messageDbService;
     }
 
-    public Message saveMessage(String senderId, String chatId, String content) {
+    public Message saveMessage(String userId, String chatId, String content) {
         try {
-            if (!validateId(senderId) || !validateId(chatId) || content == null || content.trim().isEmpty()) {
+            if (!validateId(userId) || !validateId(chatId) || content == null || content.trim().isEmpty()) {
                 logger.warn("Failed to save message: missing required fields");
                 return null;
             }
 
             // Save message to database
-            Message message = messageDbService.saveMessage(senderId, chatId, content);
+            Message message = messageDbService.saveMessage(userId, chatId, content);
 
             // Make sure something was saved
             if (message == null) {

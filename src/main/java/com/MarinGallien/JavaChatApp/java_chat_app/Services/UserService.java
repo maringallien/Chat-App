@@ -9,19 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/**
- * User service needs methods to handle:
- * crating account
- * closing account
- *
- * updating username
- * updating email
- * updating password
- * updating status
- *
- */
-
-
 @Service
 public class UserService {
     private static Logger logger = LoggerFactory.getLogger(UserService.class);
@@ -66,7 +53,7 @@ public class UserService {
         }
     }
 
-    public Boolean login(String email, String password) {
+    public String login(String email, String password) {
         try {
             // Validate input parameters
             if (!validateEmail(email) || !validateString(password)) {
@@ -76,13 +63,30 @@ public class UserService {
 
             Boolean loggedIn = userDbService.login(email, password);
 
+            // Make sure user was logged in
             if (!loggedIn) {
                 logger.error("User found during validation but not found during retrieval");
                 return null;
             }
 
+            // Retrieve user details for JWT generation
+            User user = userDbService.getUserByEmail(email);
+
+            if (user == null) {
+                logger.warn("Failed to retrieve user by email");
+                return null;
+            }
+
+            // Generate JWT token
+            String token = jwtService.generateToken(user.getUserId(), user.getUsername());
+
+            if (token == null) {
+                logger.warn("Failed to generate token for user {}", user.getUserId());
+                return null;
+            }
+
             logger.info("Successful login for user with email {}", email);
-            return loggedIn;
+            return token;
 
         } catch (Exception e) {
             logger.error("Error occurred when logging in: {}", e.getMessage());

@@ -241,4 +241,22 @@ public class UserDbService {
             return false;
         }
     }
+
+    public User getUserByEmail(String email) {
+        try {
+            User user = userRepo.findUserByEmail(email);
+
+            if (user == null) {
+                logger.warn("No user found with email: {}", email);
+                return null;
+            }
+
+            logger.info("Successfully retrieve user with email {}", email);
+            return user;
+
+        } catch (Exception e) {
+            logger.error("Failed to retrieve user by email: {}", e.getMessage());
+            return null;
+        }
+    }
 }

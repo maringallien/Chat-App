@@ -117,7 +117,7 @@ public class ContactController {
             }
 
             // Send success response message
-            logger.info("Successfully retrieved contacts list");
+            logger.info("Sending back contacts list");
             return ResponseEntity.ok()
                     .body(new GetUserContactsResponse(true, "Successfully retrieved contacts list", contacts));
         } catch (Exception e) {

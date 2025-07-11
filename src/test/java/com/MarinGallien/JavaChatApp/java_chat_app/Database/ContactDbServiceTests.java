@@ -130,19 +130,19 @@ public class ContactDbServiceTests {
         contactDbService.createContact(user1.getUserId(), user3.getUserId());
 
         // When
-        List<String> contacts = contactDbService.getUserContacts(user1.getUserId());
+        List<User> contacts = contactDbService.getUserContacts(user1.getUserId());
 
         // Then
         assertNotNull(contacts);
         assertEquals(2, contacts.size());
-        assertTrue(contacts.contains(user2.getUserId()));
-        assertTrue(contacts.contains(user3.getUserId()));
+        assertTrue(contacts.contains(user1));
+        assertTrue(contacts.contains(user3));
     }
 
     @Test
     void getUserContacts_UserWithNoContacts_ReturnsEmptyList() {
         // When
-        List<String> contacts = contactDbService.getUserContacts(user1.getUserId());
+        List<User> contacts = contactDbService.getUserContacts(user1.getUserId());
 
         // Then
         assertNotNull(contacts);
@@ -152,7 +152,7 @@ public class ContactDbServiceTests {
     @Test
     void getUserContacts_NonExistentUser_ReturnsEmptyList() {
         // When
-        List<String> contacts = contactDbService.getUserContacts("fake_user_id");
+        List<User> contacts = contactDbService.getUserContacts("fake_user_id");
 
         // Then
         assertNotNull(contacts);

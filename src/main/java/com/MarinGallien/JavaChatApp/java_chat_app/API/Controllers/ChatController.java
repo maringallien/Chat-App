@@ -209,7 +209,7 @@ public class ChatController {
                         .body(new GetUserChatsResponse(false, "No chats found", List.of()));
             }
 
-            logger.info("Successfully retrieved user's chats");
+            logger.info("Sending back user's chats");
             return ResponseEntity.ok()
                     .body(new GetUserChatsResponse(true, "Successfully retrieved user's chats", userChats));
 
