@@ -13,7 +13,6 @@ public enum MessageType {
     // Returns the string value of message type for JSON serialization
     public String getValue() {return value;}
 
-    // Overrides toString to return custom string value for the enum name
     @Override
     public String toString() {return value;}
     

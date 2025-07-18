@@ -1,2 +1,1 @@
-. Create http Server
-. Create client app
+. Update code to be less repetitive by using lambda and helper methods

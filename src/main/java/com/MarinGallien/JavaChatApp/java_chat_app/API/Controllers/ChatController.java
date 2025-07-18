@@ -1,8 +1,8 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.API.Controllers;
 
-import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Requests.ChatRequests.*;
-import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Responses.ChatResponses.*;
-import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Responses.GenericResponse;
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.HTTPMessages.Requests.ChatRequests.*;
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.HTTPMessages.Responses.ChatResponses.GetUserChatsResponse;
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.HTTPMessages.Responses.GenericResponse;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.Chat;
 import com.MarinGallien.JavaChatApp.java_chat_app.Services.ChatService;
 import jakarta.validation.Valid;

@@ -1,7 +1,7 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.WebSocketServer;
 
-import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.WebsocketMessages.OnlineStatusMessage;
-import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.WebsocketMessages.WebSocketMessage;
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.OnlineStatusMessage;
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.WebsocketMessages.WebSocketMessage;
 
 
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.User;
@@ -87,52 +87,6 @@ public class WebSocketHandler {
         }
     }
 
-
-    // Method notifies a user's contacts of a status change
-    private void notifyContactsOfStatusChange(String userId, OnlineStatus status) {
-        try {
-            // Retrieve list of contacts from the database
-            List<User> contactUsers = contactService.getUserContacts(userId);
-
-            // Create a status message
-            OnlineStatusMessage statusMessage = new OnlineStatusMessage(status, userId);
-
-            // Broadcast status message to each contact
-            for (User user: contactUsers) {
-                messagingTemplate.convertAndSendToUser(
-                        user.getUserId(),
-                        "/queue/presence",
-                        statusMessage
-                );
-            }
-        } catch (Exception e) {
-            logger.error("Error notifying contacts of status change for user: {}", userId);
-        }
-    }
-
-    private void deliverPendingMessages(String userId) {
-        try {
-            // Check if the user has any pending messages
-            if (!offlineMessageService.hasPendingMessages(userId)) {
-                logger.info("No pending messages for user {}", userId);
-                return;
-            }
-
-            // Retrieve all pending messages
-            List<WebSocketMessage> pendingMessages = offlineMessageService.retrievePendingMessages(userId);
-
-            // Send each message to the user
-            for (WebSocketMessage message : pendingMessages) {
-                messagingTemplate.convertAndSendToUser(userId, "/queue/messages", message);
-            }
-
-            logger.info("Successfully delivered pending messages to user {}", userId);
-
-        } catch (Exception e) {
-            logger.error("Failed to deliver pending messages to user {}", userId);
-        }
-    }
-
     // Handle connection - Save user ID in session attributes and update online status in database
     @EventListener
     public void handleWebSocketConnectEvent(SessionConnectEvent event) {
@@ -180,7 +134,7 @@ public class WebSocketHandler {
             }
 
             // Update user status in database
-            OnlineStatus status = sessionService.updateUserStatus(userId, OnlineStatus.ONLINE);
+            OnlineStatus status = sessionService.updateUserStatus(userId, OnlineStatus.OFFLINE);
 
             // Continue even if status update fails, but log error
             if (status != OnlineStatus.ONLINE) {
@@ -195,6 +149,51 @@ public class WebSocketHandler {
 
         } catch (Exception e) {
             logger.warn("Error handling websocket disconnection", e);
+        }
+    }
+
+    // Method notifies a user's contacts of a status change
+    private void notifyContactsOfStatusChange(String userId, OnlineStatus status) {
+        try {
+            // Retrieve list of contacts from the database
+            List<User> contactUsers = contactService.getUserContacts(userId);
+
+            // Create a status message
+            OnlineStatusMessage statusMessage = new OnlineStatusMessage(status, userId);
+
+            // Broadcast status message to each contact
+            for (User user: contactUsers) {
+                messagingTemplate.convertAndSendToUser(
+                        user.getUserId(),
+                        "/queue/presence",
+                        statusMessage
+                );
+            }
+        } catch (Exception e) {
+            logger.error("Error notifying contacts of status change for user: {}", userId);
+        }
+    }
+
+    private void deliverPendingMessages(String userId) {
+        try {
+            // Check if the user has any pending messages
+            if (!offlineMessageService.hasPendingMessages(userId)) {
+                logger.info("No pending messages for user {}", userId);
+                return;
+            }
+
+            // Retrieve all pending messages
+            List<WebSocketMessage> pendingMessages = offlineMessageService.retrievePendingMessages(userId);
+
+            // Send each message to the user
+            for (WebSocketMessage message : pendingMessages) {
+                messagingTemplate.convertAndSendToUser(userId, "/queue/messages", message);
+            }
+
+            logger.info("Successfully delivered pending messages to user {}", userId);
+
+        } catch (Exception e) {
+            logger.error("Failed to deliver pending messages to user {}", userId);
         }
     }
 

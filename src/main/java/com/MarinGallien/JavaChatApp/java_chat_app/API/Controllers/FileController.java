@@ -1,15 +1,13 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.API.Controllers;
 
-import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Requests.FileRequests.DeleteFileRequest;
-import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Requests.FileRequests.DownloadFileRequest;
-import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Requests.FileRequests.GetChatFilesRequest;
-import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Responses.FileResponses.GetChatFilesResponse;
-import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Responses.GenericResponse;
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.HTTPMessages.Requests.FileRequests.DeleteFileRequest;
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.HTTPMessages.Requests.FileRequests.DownloadFileRequest;
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.HTTPMessages.Requests.FileRequests.GetChatFilesRequest;
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.HTTPMessages.Responses.FileResponses.GetChatFilesResponse;
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.HTTPMessages.Responses.GenericResponse;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.File;
 import com.MarinGallien.JavaChatApp.java_chat_app.Services.FileService;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
-import org.hibernate.sql.Delete;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;

@@ -1,9 +1,9 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.API.Controllers;
 
-import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Requests.ContactRequests.CreateOrRemoveContactRequest;
-import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Requests.ContactRequests.GetUserContactsRequest;
-import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Responses.ContactResponses.GetUserContactsResponse;
-import com.MarinGallien.JavaChatApp.java_chat_app.API.DTOs.HTTPMessages.Responses.GenericResponse;
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.HTTPMessages.Requests.ContactRequests.CreateOrRemoveContactRequest;
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.HTTPMessages.Requests.ContactRequests.GetUserContactsRequest;
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.HTTPMessages.Responses.ContactResponses.GetUserContactsResponse;
+import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.HTTPMessages.Responses.GenericResponse;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.CoreEntities.User;
 import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPAEntities.JunctionEntities.Contact;
 import com.MarinGallien.JavaChatApp.java_chat_app.Services.ContactService;
