@@ -1,6 +1,5 @@
 package Controllers;
 
-import DTOs.HTTPMessages.Requests.ChatRequests.*;
 import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.HTTPMessages.Requests.ChatRequests.*;
 import DTOs.HTTPMessages.Responses.ChatResponses.GetUserChatsResponse;
 import DTOs.HTTPMessages.Responses.GenericResponse;

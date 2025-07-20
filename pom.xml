@@ -23,8 +23,6 @@
         <module>server</module>
         <module>client</module>
         <module>shared</module>
-        <module>shared</module>
-        <module>shared</module>
     </modules>
 
     <!-- Child modules can use these dependencies -->
