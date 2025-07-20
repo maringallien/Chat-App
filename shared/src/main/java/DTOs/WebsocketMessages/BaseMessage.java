@@ -1,4 +1,4 @@
-package DTOs;
+package DTOs.WebsocketMessages;
 
 import Enums.MessageType;
 import jakarta.validation.constraints.NotBlank;

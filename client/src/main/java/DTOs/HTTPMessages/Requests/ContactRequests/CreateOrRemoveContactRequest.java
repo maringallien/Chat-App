@@ -1,6 +1,6 @@
 package DTOs.HTTPMessages.Requests.ContactRequests;
 
-import DTOs.HTTPMessages.ApiReqResInterface;
+import DTOs.HTTPMessages.Requests.ApiReqResInterface;
 import jakarta.validation.constraints.NotBlank;
 
 public record CreateOrRemoveContactRequest(

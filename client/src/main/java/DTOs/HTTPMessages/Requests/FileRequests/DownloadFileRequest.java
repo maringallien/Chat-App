@@ -1,6 +1,6 @@
 package DTOs.HTTPMessages.Requests.FileRequests;
 
-import DTOs.HTTPMessages.ApiReqResInterface;
+import DTOs.HTTPMessages.Requests.ApiReqResInterface;
 import jakarta.validation.constraints.NotBlank;
 
 public record DownloadFileRequest(

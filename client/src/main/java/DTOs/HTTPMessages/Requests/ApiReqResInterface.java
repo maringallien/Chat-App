@@ -1,4 +1,4 @@
-package DTOs.HTTPMessages;
+package DTOs.HTTPMessages.Requests;
 
 public interface ApiReqResInterface {
     // Marker interface for all API responses

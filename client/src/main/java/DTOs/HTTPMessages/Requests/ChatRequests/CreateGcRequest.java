@@ -1,6 +1,6 @@
 package DTOs.HTTPMessages.Requests.ChatRequests;
 
-import DTOs.HTTPMessages.ApiReqResInterface;
+import DTOs.HTTPMessages.Requests.ApiReqResInterface;
 import jakarta.validation.constraints.*;
 import java.util.Set;
 

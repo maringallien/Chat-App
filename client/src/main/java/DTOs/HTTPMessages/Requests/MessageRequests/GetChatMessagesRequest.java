@@ -1,6 +1,6 @@
 package DTOs.HTTPMessages.Requests.MessageRequests;
 
-import DTOs.HTTPMessages.ApiReqResInterface;
+import DTOs.HTTPMessages.Requests.ApiReqResInterface;
 import jakarta.validation.constraints.NotBlank;
 
 public record GetChatMessagesRequest(
