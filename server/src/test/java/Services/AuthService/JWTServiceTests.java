@@ -1,4 +1,4 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.Services.AuthService;
+package Services.AuthService;
 
 import Services.AuthService.JWTService;
 import org.junit.jupiter.api.BeforeEach;

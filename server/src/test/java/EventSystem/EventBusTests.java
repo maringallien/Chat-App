@@ -1,4 +1,4 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.EventSystem;
+package EventSystem;
 
 import EventSystem.EventBusService;
 import org.junit.jupiter.api.BeforeEach;

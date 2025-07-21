@@ -8,10 +8,12 @@ import Mappers.UserMapper;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Transactional
+@Service
 public class ContactService{
 
     private static Logger logger = LoggerFactory.getLogger(ContactService.class);
@@ -95,6 +97,8 @@ public class ContactService{
                 logger.warn("Failed to retrieve contacts list: used ID is null or empty");
                 return List.of();
             }
+
+
 
             // Convert to DTO and return
             List<User> users = contactDbService.getUserContacts(userId);

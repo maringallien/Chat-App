@@ -1,4 +1,4 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.WebSocketServer;
+package WebSocketServer;
 
 import Database.DatabaseServices.ChatDbService;
 import EventSystem.Events.ChatEvents.ChatCreated;

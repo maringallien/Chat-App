@@ -1,4 +1,4 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.WebSocketServer;
+package WebSocketServer;
 
 import WebSocketServer.Chat;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package com.MarinGallien.JavaChatApp.java_chat_app.Services;
+package Services;
 
 import Database.DatabaseServices.UserDbService;
 import Database.JPAEntities.CoreEntities.User;
