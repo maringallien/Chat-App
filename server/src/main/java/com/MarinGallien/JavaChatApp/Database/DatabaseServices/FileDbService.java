@@ -4,7 +4,6 @@ import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.Chat;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.File;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.Message;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.User;
-import com.MarinGallien.JavaChatApp.Config.Database.JPARepositories.*;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.*;
 import com.MarinGallien.JavaChatApp.Enums.MessageType;
 import jakarta.transaction.Transactional;
