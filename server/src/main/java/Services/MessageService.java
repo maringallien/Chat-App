@@ -1,7 +1,9 @@
 package Services;
 
+import DTOs.DataEntities.MessageDTO;
 import Database.DatabaseServices.MessageDbService;
 import Database.JPAEntities.CoreEntities.Message;
+import Mappers.MessageMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,9 +15,11 @@ public class MessageService {
     private static Logger logger = LoggerFactory.getLogger(MessageDbService.class);
 
     private final MessageDbService messageDbService;
+    private final MessageMapper messageMapper;
 
-    public MessageService(MessageDbService messageDbService) {
+    public MessageService(MessageDbService messageDbService, MessageMapper messageMapper) {
         this.messageDbService = messageDbService;
+        this.messageMapper = messageMapper;
     }
 
     public Message saveMessage(String userId, String chatId, String content) {
@@ -42,7 +46,7 @@ public class MessageService {
         }
     }
 
-    public List<Message> getChatMessages(String userId, String chatId) {
+    public List<MessageDTO> getChatMessages(String userId, String chatId) {
         try {
             if (!validateId(userId) || !validateId(chatId)) {
                 logger.warn("Failed to save message: sender or chat ID is null or empty");
@@ -59,7 +63,8 @@ public class MessageService {
                 logger.info("No messages were found in this chat");
             }
 
-            return messages;
+            // Convert to DTO and return
+            return messageMapper.toDTOList(messages);
 
         } catch (Exception e) {
             logger.error("Failed to retrieve messages: {}", e.getMessage());

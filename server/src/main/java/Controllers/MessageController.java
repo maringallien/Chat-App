@@ -1,5 +1,6 @@
 package Controllers;
 
+import DTOs.DataEntities.MessageDTO;
 import DTOs.HTTPMessages.Requests.MessageRequests.GetChatMessagesRequest;
 import DTOs.HTTPMessages.Responses.MessageReponses.GetChatMessagesResponse;
 import Database.JPAEntities.CoreEntities.Message;
@@ -42,7 +43,7 @@ public class MessageController {
             }
 
             // Delegate to MessageService
-            List<Message> messages = messageService.getChatMessages(request.userId(), request.chatId());
+            List<MessageDTO> messages = messageService.getChatMessages(request.userId(), request.chatId());
 
             // Send response back
             return ResponseEntity.ok()

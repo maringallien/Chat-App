@@ -1,5 +1,6 @@
 package Services;
 
+import DTOs.DataEntities.ChatDTO;
 import Database.DatabaseServices.ChatDbService;
 import Database.JPAEntities.CoreEntities.Chat;
 import EventSystem.EventBusService;
@@ -7,6 +8,7 @@ import EventSystem.Events.ChatEvents.ChatCreated;
 import EventSystem.Events.ChatEvents.ChatDeleted;
 import EventSystem.Events.ChatEvents.MemberAddedToChat;
 import EventSystem.Events.ChatEvents.MemberRemovedFromChat;
+import Mappers.ChatMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,10 +24,12 @@ public class ChatService {
 
     private final ChatDbService chatDbService;
     private final EventBusService eventBus;
+    private final ChatMapper chatMapper;
 
-    public ChatService(ChatDbService chatDbService, EventBusService eventBus) {
+    public ChatService(ChatDbService chatDbService, EventBusService eventBus, ChatMapper chatMapper) {
         this.chatDbService = chatDbService;
         this.eventBus = eventBus;
+        this.chatMapper = chatMapper;
     }
 
     public Chat createPrivateChat(String userId1, String userId2) {
@@ -202,7 +206,7 @@ public class ChatService {
         }
     }
 
-    public List<Chat> getUserChats(String userId) {
+    public List<ChatDTO> getUserChats(String userId) {
         try {
             // Validate input parameters
             if (!validateId(userId)) {
@@ -218,7 +222,8 @@ public class ChatService {
                 return null;
             }
 
-            return chats;
+            // Convert to DTO and return
+            return chatMapper.toDTOList(chats);
 
         } catch (Exception e) {
             logger.error("Error processing chats list request");

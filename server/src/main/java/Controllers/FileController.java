@@ -1,5 +1,6 @@
 package Controllers;
 
+import DTOs.DataEntities.FileDTO;
 import DTOs.HTTPMessages.Requests.FileRequests.DeleteFileRequest;
 import DTOs.HTTPMessages.Requests.FileRequests.DownloadFileRequest;
 import DTOs.HTTPMessages.Requests.FileRequests.GetChatFilesRequest;
@@ -148,7 +149,7 @@ public class FileController {
             }
 
             // Delegate to FileService
-            List<File> chatFiles = fileService.getChatFiles(request.userId(), request.chatId());
+            List<FileDTO> chatFiles = fileService.getChatFiles(request.userId(), request.chatId());
 
             // Check if retrieval was successful
             if (chatFiles == null) {

@@ -1,7 +1,9 @@
 package Services;
 
+import DTOs.DataEntities.FileDTO;
 import Database.DatabaseServices.FileDbService;
 import Database.JPAEntities.CoreEntities.File;
+import Mappers.FileMapper;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.slf4j.Logger;
@@ -18,9 +20,11 @@ public class FileService {
     private static Logger logger = LoggerFactory.getLogger(FileService.class);
 
     private final FileDbService fileDbService;
+    private final FileMapper fileMapper;
 
-    public FileService(FileDbService fileDbService) {
+    public FileService(FileDbService fileDbService, FileMapper fileMapper) {
         this.fileDbService = fileDbService;
+        this.fileMapper = fileMapper;
     }
 
     public File uploadFile(String userId, String chatId, MultipartFile file) {
@@ -102,7 +106,7 @@ public class FileService {
         }
     }
 
-    public List<File> getChatFiles(String userId, String chatId) {
+    public List<FileDTO> getChatFiles(String userId, String chatId) {
         try {
             // Validate inputs
             if (!validateId(userId) || !validateId(chatId)) {
@@ -117,8 +121,9 @@ public class FileService {
                 return List.of();
             }
 
+            // Convert to DTO and return
             logger.info("Successfully retrieved list of files from chat {}", chatId);
-            return chatFiles;
+            return fileMapper.toDTOList(chatFiles);
 
         } catch (Exception e) {
             logger.error("Failed to retrieve files list: {}", e.getMessage());

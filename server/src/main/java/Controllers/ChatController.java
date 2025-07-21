@@ -1,6 +1,8 @@
 package Controllers;
 
-import com.MarinGallien.JavaChatApp.java_chat_app.DTOs.HTTPMessages.Requests.ChatRequests.*;
+
+import DTOs.DataEntities.ChatDTO;
+import DTOs.HTTPMessages.Requests.ChatRequests.*;
 import DTOs.HTTPMessages.Responses.ChatResponses.GetUserChatsResponse;
 import DTOs.HTTPMessages.Responses.GenericResponse;
 import Database.JPAEntities.CoreEntities.Chat;
@@ -200,7 +202,7 @@ public class ChatController {
             }
 
             // Delegate to chatService
-            List<Chat> userChats = chatService.getUserChats(request.userId());
+            List<ChatDTO> userChats = chatService.getUserChats(request.userId());
 
             // Handle no chats found
             if (userChats == null || userChats.isEmpty()) {

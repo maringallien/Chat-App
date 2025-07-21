@@ -1,8 +1,10 @@
 package Services;
 
+import DTOs.DataEntities.UserDTO;
 import Database.DatabaseServices.ContactDbService;
 import Database.JPAEntities.CoreEntities.User;
 import Database.JPAEntities.JunctionEntities.Contact;
+import Mappers.UserMapper;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +17,11 @@ public class ContactService{
     private static Logger logger = LoggerFactory.getLogger(ContactService.class);
 
     private final ContactDbService contactDbService;
+    private final UserMapper userMapper;
 
-    public ContactService(ContactDbService contactDbService) {
+    public ContactService(ContactDbService contactDbService, UserMapper userMapper) {
         this.contactDbService = contactDbService;
+        this.userMapper = userMapper;
     }
 
     public Contact createContact(String userId, String contactUserId) {
@@ -80,14 +84,16 @@ public class ContactService{
         }
     }
 
-    public List<User> getUserContacts(String userId) {
+    public List<UserDTO> getUserContacts(String userId) {
         try {
             if (!validateId(userId)) {
                 logger.warn("Failed to retrieve contacts list: used ID is null or empty");
                 return List.of();
             }
 
-            return contactDbService.getUserContacts(userId);
+            // Convert to DTO and return
+            List<User> users = contactDbService.getUserContacts(userId);
+            return userMapper.toDTOList(users);
 
         } catch (Exception e) {
             logger.error("Failed to retrieve contacts list");
