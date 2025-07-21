@@ -1,5 +1,6 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.Services;
 
+import DTOs.DataEntities.MessageDTO;
 import Database.DatabaseServices.MessageDbService;
 import Database.JPAEntities.CoreEntities.Message;
 import Services.MessageService;
@@ -99,7 +100,7 @@ public class MessageServiceTests {
         when(messageDbService.getChatMessages(senderId, chatId)).thenReturn(messagesList);
 
         // When
-        List<Message> result = messageService.getChatMessages(senderId, chatId);
+        List<MessageDTO> result = messageService.getChatMessages(senderId, chatId);
 
         // Then
         assertNotNull(result);
@@ -136,7 +137,7 @@ public class MessageServiceTests {
         when(messageDbService.getChatMessages(senderId, chatId)).thenReturn(messagesList);
 
         // When
-        List<Message> result = messageService.getChatMessages(senderId, chatId);
+        List<MessageDTO> result = messageService.getChatMessages(senderId, chatId);
 
         // Then
         assertNotNull(result);
@@ -153,7 +154,7 @@ public class MessageServiceTests {
         when(messageDbService.getChatMessages(senderId, chatId)).thenReturn(null);
 
         // When
-        List<Message> result = messageService.getChatMessages(senderId, chatId);
+        List<MessageDTO> result = messageService.getChatMessages(senderId, chatId);
 
         // Then
         assertNotNull(result);
@@ -186,7 +187,7 @@ public class MessageServiceTests {
                 .thenThrow(new RuntimeException("Database error"));
 
         // When
-        List<Message> result = messageService.getChatMessages(senderId, chatId);
+        List<MessageDTO> result = messageService.getChatMessages(senderId, chatId);
 
         // Then
         assertNotNull(result);

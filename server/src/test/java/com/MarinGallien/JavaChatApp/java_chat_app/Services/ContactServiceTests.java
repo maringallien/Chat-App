@@ -1,5 +1,6 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.Services;
 
+import DTOs.DataEntities.UserDTO;
 import Database.DatabaseServices.ContactDbService;
 import Database.JPAEntities.CoreEntities.User;
 import Database.JPAEntities.JunctionEntities.Contact;
@@ -148,13 +149,13 @@ public class ContactServiceTests {
     // ==========================================================================
 
     @Test
-    void getUserContacts_ValidInputs_ReturnsContactsList() {
+    void getUserContacts_ValidInputs_ReturnsContactsDTOsList() {
         // Given
         List<User> contactUsers = List.of(testUser2, testUser3);
         when(contactDbService.getUserContacts(user1Id)).thenReturn(contactUsers);
 
         // When
-        List<User> result = contactService.getUserContacts(user1Id);
+        List<UserDTO> result = contactService.getUserContactsDTOs(user1Id);
 
         // Then
         assertNotNull(result);
@@ -165,27 +166,27 @@ public class ContactServiceTests {
     }
 
     @Test
-    void getUserContacts_InvalidParameters_ReturnsEmptyList() {
+    void getUserContacts_DTOs_InvalidParameters_ReturnsEmptyList() {
         // Test all null parameters
-        assertTrue(contactService.getUserContacts(null).isEmpty());
+        assertTrue(contactService.getUserContactsDTOs(null).isEmpty());
 
         // Test all empty parameters
-        assertTrue(contactService.getUserContacts("").isEmpty());
+        assertTrue(contactService.getUserContactsDTOs("").isEmpty());
 
         // Test all whitespace parameters
-        assertTrue(contactService.getUserContacts("   ").isEmpty());
+        assertTrue(contactService.getUserContactsDTOs("   ").isEmpty());
 
         // Verify no database calls were made
         verify(contactDbService, never()).getUserContacts(any());
     }
 
     @Test
-    void getUserContacts_DatabaseReturnsEmpty_ReturnsEmptyList() {
+    void getUserContacts_DTOs_DatabaseReturnsEmpty_ReturnsEmptyList() {
         // Given
         when(contactDbService.getUserContacts(user1Id)).thenReturn(List.of());
 
         // When
-        List<User> result = contactService.getUserContacts(user1Id);
+        List<UserDTO> result = contactService.getUserContactsDTOs(user1Id);
 
         // Then
         assertNotNull(result);

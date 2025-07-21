@@ -5,7 +5,6 @@ import DTOs.HTTPMessages.Requests.ContactRequests.CreateOrRemoveContactRequest;
 import DTOs.HTTPMessages.Requests.ContactRequests.GetUserContactsRequest;
 import DTOs.HTTPMessages.Responses.ContactResponses.GetUserContactsResponse;
 import DTOs.HTTPMessages.Responses.GenericResponse;
-import Database.JPAEntities.CoreEntities.User;
 import Database.JPAEntities.JunctionEntities.Contact;
 import Services.ContactService;
 import jakarta.validation.Valid;
@@ -108,7 +107,7 @@ public class ContactController {
             }
 
             // Delegate to ContactService
-            List<UserDTO> contacts = contactService.getUserContacts(request.userId());
+            List<UserDTO> contacts = contactService.getUserContactsDTOs(request.userId());
 
             // If contacts is null, operation failed
             if (contacts == null) {

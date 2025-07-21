@@ -84,7 +84,12 @@ public class ContactService{
         }
     }
 
-    public List<UserDTO> getUserContacts(String userId) {
+    public List<UserDTO> getUserContactsDTOs(String userId) {
+            List<User> users = getUserContacts(userId);
+            return users.isEmpty() ? List.of() : userMapper.toDTOList(users);
+    }
+
+    public List<User> getUserContacts(String userId) {
         try {
             if (!validateId(userId)) {
                 logger.warn("Failed to retrieve contacts list: used ID is null or empty");
@@ -93,7 +98,7 @@ public class ContactService{
 
             // Convert to DTO and return
             List<User> users = contactDbService.getUserContacts(userId);
-            return userMapper.toDTOList(users);
+            return users;
 
         } catch (Exception e) {
             logger.error("Failed to retrieve contacts list");

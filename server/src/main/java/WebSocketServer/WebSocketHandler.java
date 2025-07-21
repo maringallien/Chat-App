@@ -10,7 +10,6 @@ import Services.ContactService;
 import Services.MessageService;
 import Services.OfflineMessageService;
 import Services.SessionService;
-import com.MarinGallien.JavaChatApp.java_chat_app.Services.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;

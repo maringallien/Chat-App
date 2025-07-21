@@ -5,7 +5,6 @@ import Database.JPAEntities.CoreEntities.File;
 import Database.JPAEntities.CoreEntities.Message;
 import Database.JPAEntities.CoreEntities.User;
 import Database.JPARepositories.*;
-import com.MarinGallien.JavaChatApp.java_chat_app.Database.JPARepositories.*;
 import Enums.MessageType;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;

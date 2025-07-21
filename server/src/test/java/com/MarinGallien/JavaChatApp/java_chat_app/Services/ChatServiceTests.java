@@ -1,5 +1,6 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.Services;
 
+import DTOs.DataEntities.ChatDTO;
 import Database.DatabaseServices.ChatDbService;
 import Database.JPAEntities.CoreEntities.Chat;
 import EventSystem.EventBusService;
@@ -336,7 +337,7 @@ public class ChatServiceTests {
         when(chatDbService.getUserChats(user1Id)).thenReturn(userChats);
 
         // When
-        List<Chat> result = chatService.getUserChats(user1Id);
+        List<ChatDTO> result = chatService.getUserChats(user1Id);
 
         // Then
         assertNotNull(result);
@@ -368,7 +369,7 @@ public class ChatServiceTests {
         when(chatDbService.getUserChats(user1Id)).thenReturn(List.of());
 
         // When
-        List<Chat> result = chatService.getUserChats(user1Id);
+        List<ChatDTO> result = chatService.getUserChats(user1Id);
 
         // Then
         assertNull(result);

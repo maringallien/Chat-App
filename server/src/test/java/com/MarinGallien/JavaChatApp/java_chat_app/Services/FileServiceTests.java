@@ -1,5 +1,6 @@
 package com.MarinGallien.JavaChatApp.java_chat_app.Services;
 
+import DTOs.DataEntities.FileDTO;
 import Database.DatabaseServices.FileDbService;
 import Database.JPAEntities.CoreEntities.File;
 import Services.FileService;
@@ -215,7 +216,7 @@ public class FileServiceTests {
         when(fileDbService.getChatFiles(userId, chatId)).thenReturn(filesList);
 
         // When
-        List<File> result = fileService.getChatFiles(userId, chatId);
+        List<FileDTO> result = fileService.getChatFiles(userId, chatId);
 
         // Then
         assertNotNull(result);
@@ -248,7 +249,7 @@ public class FileServiceTests {
         when(fileDbService.getChatFiles(userId, chatId)).thenReturn(List.of());
 
         // When
-        List<File> result = fileService.getChatFiles(userId, chatId);
+        List<FileDTO> result = fileService.getChatFiles(userId, chatId);
 
         // Then
         assertNotNull(result);
@@ -262,7 +263,7 @@ public class FileServiceTests {
         when(fileDbService.getChatFiles(userId, chatId)).thenReturn(List.of());
 
         // When
-        List<File> result = fileService.getChatFiles(userId, chatId);
+        List<FileDTO> result = fileService.getChatFiles(userId, chatId);
 
         // Then
         assertTrue(result.isEmpty());
