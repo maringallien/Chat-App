@@ -1,0 +1,29 @@
+package com.MarinGallien.JavaChatApp.Mappers;
+
+import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.Message;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Component
+public class MessageMapper {
+    public MessageDTO toDTO(Message message) {
+        return new MessageDTO(
+                message.getMessageId(),
+                message.getSender().getUserId(),
+                message.getSender().getUsername(),
+                message.getChat().getChatId(),
+                message.getContent(),
+                message.getSentAt(),
+                message.getMessageType()
+        );
+    }
+
+    public List<MessageDTO> toDTOList(List<Message> messages) {
+        return messages.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+}
