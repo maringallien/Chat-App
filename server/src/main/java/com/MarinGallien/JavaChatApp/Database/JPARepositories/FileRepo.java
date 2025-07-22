@@ -2,6 +2,7 @@ package com.MarinGallien.JavaChatApp.Database.JPARepositories;
 
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.File;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,5 +11,5 @@ import java.util.List;
 public interface FileRepo extends JpaRepository<File, String> {
 
     // Retrieves a list of files belonging to a chat
-    List<File> findByMessageChatChatId(String chatId);
+    List<File> findByMessageChatChatId(@Param("chatId") String chatId);
 }

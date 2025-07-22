@@ -65,7 +65,7 @@ public class UserDbService {
 
         } catch (Exception e) {
             logger.error("Failed login attempt");
-            return true;
+            return false;
         }
     }
 
