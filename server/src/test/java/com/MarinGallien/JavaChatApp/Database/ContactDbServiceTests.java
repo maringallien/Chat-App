@@ -135,7 +135,7 @@ public class ContactDbServiceTests {
         // Then
         assertNotNull(contacts);
         assertEquals(2, contacts.size());
-        assertTrue(contacts.contains(user1));
+        assertTrue(contacts.contains(user2));
         assertTrue(contacts.contains(user3));
     }
 

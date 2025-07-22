@@ -34,9 +34,8 @@ public class FileDbService {
     private final ChatParticipantRepo chatParticipantRepo;
     private final MessageRepo messageRepo;
 
-    public FileDbService(Logger logger, FileRepo fileRepo, UserRepo userRepo, ChatRepo chatRepo,
+    public FileDbService(FileRepo fileRepo, UserRepo userRepo, ChatRepo chatRepo,
                          ChatParticipantRepo chatParticipantRepo, MessageRepo messageRepo) {
-        this.logger = logger;
         this.fileRepo = fileRepo;
         this.userRepo = userRepo;
         this.chatRepo = chatRepo;
