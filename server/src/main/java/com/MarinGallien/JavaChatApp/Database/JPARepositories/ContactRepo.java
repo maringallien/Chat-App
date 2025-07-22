@@ -20,6 +20,6 @@ public interface ContactRepo extends JpaRepository<Contact, String> {
             "(c.user.userId = :userId2 AND c.contactUser.userId = :userId1)")
     boolean areUsersContacts(@Param("userId1") String userId1, @Param("userId2") String userId2);
 
-    @Query("SELECT c FROM Contact c WHERE c.user.userId = :usedId AND c.contactUser.userId = :contactUsedId")
-    Contact findContactById(@Param("usedId") String usedId, @Param("contactUsedId") String contactUsedId);
+    @Query("SELECT c FROM Contact c WHERE c.user.userId = :userId AND c.contactUser.userId = :contactUserId")
+    Contact findContactById(@Param("usedId") String userId, @Param("contactUsedId") String contactUserId);
 }

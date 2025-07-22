@@ -19,5 +19,5 @@ public interface ChatRepo extends JpaRepository<Chat, String> {
 
     // Find a chat by ID
     @Query("SELECT c FROM Chat c WHERE c.chatId = :chatId")
-    Chat findChatById(String chatId);
+    Chat findChatById(@Param("chatId") String chatId);
 }
