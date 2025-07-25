@@ -4,6 +4,8 @@ import com.MarinGallien.JavaChatApp.DTOs.DataEntities.UserDTO;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ContactDbService;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.User;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.JunctionEntities.Contact;
+import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
+import com.MarinGallien.JavaChatApp.Mappers.UserMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,10 +28,15 @@ public class ContactServiceTests {
     @InjectMocks
     private ContactService contactService;
 
+    @Mock
+    private UserMapper userMapper;
+
     private Contact testContact;
     private User testUser1;
     private User testUser2;
     private User testUser3;
+    private UserDTO testUserDTO2;
+    private UserDTO testUserDTO3;
     private String user1Id = "user1";
     private String user2Id = "user2";
     private String user3Id = "user3";
@@ -36,8 +44,28 @@ public class ContactServiceTests {
     @BeforeEach
     void setUp() {
         testContact = new Contact();
-        // Note: Contact entity doesn't have public setters for users in the provided code,
-        // so we'll work with the mock behavior
+
+        // Create test users with proper initialization
+        testUser1 = new User("alice", "alice@test.com", "password1");
+        testUser2 = new User("bob", "bob@test.com", "password2");
+        testUser3 = new User("charlie", "charlie@test.com", "password3");
+
+        // Create test DTOs
+        testUserDTO2 = new UserDTO(
+                user2Id,
+                "bob",
+                "bob@test.com",
+                OnlineStatus.OFFLINE,
+                LocalDateTime.now()
+        );
+
+        testUserDTO3 = new UserDTO(
+                user3Id,
+                "charlie",
+                "charlie@test.com",
+                OnlineStatus.OFFLINE,
+                LocalDateTime.now()
+        );
     }
 
     // ==========================================================================
@@ -151,7 +179,10 @@ public class ContactServiceTests {
     void getUserContacts_ValidInputs_ReturnsContactsDTOsList() {
         // Given
         List<User> contactUsers = List.of(testUser2, testUser3);
+        List<UserDTO> contactDTOs = List.of(testUserDTO2, testUserDTO3);
+
         when(contactDbService.getUserContacts(user1Id)).thenReturn(contactUsers);
+        when(userMapper.toDTOList(contactUsers)).thenReturn(contactDTOs);
 
         // When
         List<UserDTO> result = contactService.getUserContactsDTOs(user1Id);
@@ -159,9 +190,11 @@ public class ContactServiceTests {
         // Then
         assertNotNull(result);
         assertEquals(2, result.size());
-        assertTrue(result.contains(testUser2));
-        assertTrue(result.contains(testUser3));
+        assertEquals(testUserDTO2, result.get(0));
+        assertEquals(testUserDTO3, result.get(1));
+
         verify(contactDbService).getUserContacts(user1Id);
+        verify(userMapper).toDTOList(contactUsers);
     }
 
     @Test

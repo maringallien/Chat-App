@@ -3,6 +3,8 @@ package com.MarinGallien.JavaChatApp.Services;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.MessageDbService;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.Message;
+import com.MarinGallien.JavaChatApp.Enums.MessageType;
+import com.MarinGallien.JavaChatApp.Mappers.MessageMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,7 +27,11 @@ public class MessageServiceTests {
     @InjectMocks
     private MessageService messageService;
 
+    @Mock
+    private MessageMapper messageMapper;
+
     private Message testMessage;
+    private MessageDTO testMessageDTO;
     private String senderId = "user1";
     private String chatId = "chat1";
     private String content = "Hello World!";
@@ -32,8 +39,16 @@ public class MessageServiceTests {
     @BeforeEach
     void setUp() {
         testMessage = new Message();
-        // Note: Message entity fields are set via constructor and database operations
-        // so we'll work with mock behavior for testing
+
+        testMessageDTO = new MessageDTO(
+                "msg1",
+                senderId,
+                "testuser",
+                chatId,
+                content,
+                LocalDateTime.now(),
+                MessageType.TEXT_MESSAGE
+        );
     }
 
     // ==========================================================================
@@ -96,7 +111,10 @@ public class MessageServiceTests {
     void getChatMessages_ValidInputs_ReturnsMessagesList() {
         // Given
         List<Message> messagesList = List.of(testMessage);
+        List<MessageDTO> messageDTOsList = List.of(testMessageDTO);
+
         when(messageDbService.getChatMessages(senderId, chatId)).thenReturn(messagesList);
+        when(messageMapper.toDTOList(messagesList)).thenReturn(messageDTOsList);
 
         // When
         List<MessageDTO> result = messageService.getChatMessages(senderId, chatId);
@@ -104,8 +122,10 @@ public class MessageServiceTests {
         // Then
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertTrue(result.contains(testMessage));
+        assertEquals(testMessageDTO, result.get(0));
+
         verify(messageDbService).getChatMessages(senderId, chatId);
+        verify(messageMapper).toDTOList(messagesList);
     }
 
     @Test
@@ -133,7 +153,14 @@ public class MessageServiceTests {
         Message message2 = new Message();
         Message message3 = new Message();
         List<Message> messagesList = List.of(message1, message2, message3);
+
+        MessageDTO messageDTO1 = new MessageDTO("msg1", senderId, "testuser", chatId, "Message 1", LocalDateTime.now(), MessageType.TEXT_MESSAGE);
+        MessageDTO messageDTO2 = new MessageDTO("msg2", senderId, "testuser", chatId, "Message 2", LocalDateTime.now(), MessageType.TEXT_MESSAGE);
+        MessageDTO messageDTO3 = new MessageDTO("msg3", senderId, "testuser", chatId, "Message 3", LocalDateTime.now(), MessageType.TEXT_MESSAGE);
+        List<MessageDTO> messageDTOsList = List.of(messageDTO1, messageDTO2, messageDTO3);
+
         when(messageDbService.getChatMessages(senderId, chatId)).thenReturn(messagesList);
+        when(messageMapper.toDTOList(messagesList)).thenReturn(messageDTOsList);
 
         // When
         List<MessageDTO> result = messageService.getChatMessages(senderId, chatId);
@@ -141,10 +168,12 @@ public class MessageServiceTests {
         // Then
         assertNotNull(result);
         assertEquals(3, result.size());
-        assertTrue(result.contains(message1));
-        assertTrue(result.contains(message2));
-        assertTrue(result.contains(message3));
+        assertEquals(messageDTO1, result.get(0));
+        assertEquals(messageDTO2, result.get(1));
+        assertEquals(messageDTO3, result.get(2));
+
         verify(messageDbService).getChatMessages(senderId, chatId);
+        verify(messageMapper).toDTOList(messagesList);
     }
 
     @Test

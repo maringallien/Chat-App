@@ -3,6 +3,7 @@ package com.MarinGallien.JavaChatApp.Services;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.FileDTO;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.FileDbService;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.File;
+import com.MarinGallien.JavaChatApp.Mappers.FileMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +14,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,9 +30,13 @@ public class FileServiceTests {
     private FileService fileService;
 
     @Mock
+    private FileMapper fileMapper;
+
+    @Mock
     private Resource mockResource;
 
     private File testFile;
+    private FileDTO testFileDTO;
     private MultipartFile testMultipartFile;
     private String userId = "user1";
     private String chatId = "chat1";
@@ -39,6 +45,19 @@ public class FileServiceTests {
     @BeforeEach
     void setUp() {
         testFile = new File();
+
+        // Create test DTO
+        testFileDTO = new FileDTO(
+                fileId,
+                "test.txt",
+                1024L,
+                "text/plain",
+                LocalDateTime.now(),
+                userId,
+                "testuser",
+                chatId
+        );
+
         testMultipartFile = new MockMultipartFile(
                 "file",
                 "test.txt",
@@ -212,7 +231,10 @@ public class FileServiceTests {
     void getChatFiles_ValidInputs_ReturnsFilesList() {
         // Given
         List<File> filesList = List.of(testFile);
+        List<FileDTO> fileDTOsList = List.of(testFileDTO);
+
         when(fileDbService.getChatFiles(userId, chatId)).thenReturn(filesList);
+        when(fileMapper.toDTOList(filesList)).thenReturn(fileDTOsList);
 
         // When
         List<FileDTO> result = fileService.getChatFiles(userId, chatId);
@@ -220,8 +242,10 @@ public class FileServiceTests {
         // Then
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertTrue(result.contains(testFile));
+        assertEquals(testFileDTO, result.get(0));
+
         verify(fileDbService).getChatFiles(userId, chatId);
+        verify(fileMapper).toDTOList(filesList);
     }
 
     @Test

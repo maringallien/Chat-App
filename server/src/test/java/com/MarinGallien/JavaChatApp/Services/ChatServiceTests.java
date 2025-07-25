@@ -9,6 +9,7 @@ import com.MarinGallien.JavaChatApp.EventSystem.Events.ChatEvents.ChatDeleted;
 import com.MarinGallien.JavaChatApp.EventSystem.Events.ChatEvents.MemberAddedToChat;
 import com.MarinGallien.JavaChatApp.EventSystem.Events.ChatEvents.MemberRemovedFromChat;
 import com.MarinGallien.JavaChatApp.Enums.ChatType;
+import com.MarinGallien.JavaChatApp.Mappers.ChatMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -33,11 +35,18 @@ public class ChatServiceTests {
     @Mock
     private EventBusService eventBus;
 
+    @Mock
+    private ChatMapper chatMapper;
+
     @InjectMocks
     private ChatService chatService;
 
     private Chat testPrivateChat;
     private Chat testGroupChat;
+
+    private ChatDTO testPcDTO;
+    private ChatDTO testGcDTO;
+
     private String user1Id = "user1";
     private String user2Id = "user2";
     private String user3Id = "user3";
@@ -48,7 +57,27 @@ public class ChatServiceTests {
     void setUp() {
         testPrivateChat = new Chat(privateChatId, ChatType.SINGLE);
         testGroupChat = new Chat(groupChatId, ChatType.GROUP);
+
+        // Create test DTOs
+        testPcDTO = new ChatDTO(
+                privateChatId,
+                ChatType.SINGLE,
+                null,
+                null,
+                LocalDateTime.now(),
+                List.of(user1Id, user2Id)
+        );
+
+        testGcDTO = new ChatDTO(
+                groupChatId,
+                ChatType.GROUP,
+                "Test Group",
+                user1Id,
+                LocalDateTime.now(),
+                List.of(user1Id, user2Id, user3Id)
+        );
     }
+
 
     // ==========================================================================
     // CREATE PRIVATE CHAT TESTS
@@ -333,7 +362,10 @@ public class ChatServiceTests {
     void getUserChatsRequest_ValidInputs_ReturnsChats() {
         // Given
         List<Chat> userChats = List.of(testPrivateChat, testGroupChat);
+        List<ChatDTO> userChatDTOs = List.of(testPcDTO, testGcDTO);
+
         when(chatDbService.getUserChats(user1Id)).thenReturn(userChats);
+        when(chatMapper.toDTOList(userChats)).thenReturn(userChatDTOs);
 
         // When
         List<ChatDTO> result = chatService.getUserChats(user1Id);
@@ -341,8 +373,11 @@ public class ChatServiceTests {
         // Then
         assertNotNull(result);
         assertEquals(2, result.size());
+        assertEquals(testPcDTO, result.get(0));
+        assertEquals(testGcDTO, result.get(1));
 
         verify(chatDbService).getUserChats(user1Id);
+        verify(chatMapper).toDTOList(userChats);
     }
 
     @Test
