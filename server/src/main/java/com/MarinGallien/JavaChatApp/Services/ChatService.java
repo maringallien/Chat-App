@@ -211,7 +211,7 @@ public class ChatService {
             // Validate input parameters
             if (!validateId(userId)) {
                 logger.warn("Error processing event: user ID is null or empty");
-                return null;
+                return List.of();
             }
 
             // Retrieve list of chats
@@ -219,7 +219,7 @@ public class ChatService {
 
             if (chats == null || chats.isEmpty()) {
                 logger.warn("No chats were found for user {}", userId);
-                return null;
+                return List.of();
             }
 
             // Convert to DTO and return
@@ -227,7 +227,7 @@ public class ChatService {
 
         } catch (Exception e) {
             logger.error("Error processing chats list request");
-            return null;
+            return List.of();
         }
     }
 
