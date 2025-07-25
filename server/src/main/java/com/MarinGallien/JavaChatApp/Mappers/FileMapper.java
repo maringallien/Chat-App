@@ -18,9 +18,6 @@ public class FileMapper {
                 file.getFilename(),
                 file.getFileSize(),
                 file.getFileType(),
-                file.getSentAt(),
-                file.getUploader().getUserId(),
-                file.getUploader().getUsername(),
                 file.getMessage().getChat().getChatId()
         );
     }

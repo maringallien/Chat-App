@@ -53,18 +53,12 @@ public class ContactServiceTests {
         // Create test DTOs
         testUserDTO2 = new UserDTO(
                 user2Id,
-                "bob",
-                "bob@test.com",
-                OnlineStatus.OFFLINE,
-                LocalDateTime.now()
+                "bob"
         );
 
         testUserDTO3 = new UserDTO(
                 user3Id,
-                "charlie",
-                "charlie@test.com",
-                OnlineStatus.OFFLINE,
-                LocalDateTime.now()
+                "charlie"
         );
     }
 

@@ -23,7 +23,6 @@ public class ChatMapper {
                 chat.getChatType(),
                 chat.getChatName(),
                 chat.getCreatorId(),
-                chat.getCreatedAt(),
                 participantIds
         );
     }

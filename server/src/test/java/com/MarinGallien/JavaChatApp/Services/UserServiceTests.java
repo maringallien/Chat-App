@@ -35,8 +35,6 @@ public class UserServiceTests {
     @BeforeEach
     void setUp() {
         testUser = new User();
-        // Note: User entity fields are set via constructor and database operations
-        // so we'll work with mock behavior for testing
     }
 
     // ==========================================================================

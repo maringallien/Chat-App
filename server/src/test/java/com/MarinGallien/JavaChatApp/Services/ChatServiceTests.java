@@ -64,7 +64,6 @@ public class ChatServiceTests {
                 ChatType.SINGLE,
                 null,
                 null,
-                LocalDateTime.now(),
                 List.of(user1Id, user2Id)
         );
 
@@ -73,7 +72,6 @@ public class ChatServiceTests {
                 ChatType.GROUP,
                 "Test Group",
                 user1Id,
-                LocalDateTime.now(),
                 List.of(user1Id, user2Id, user3Id)
         );
     }

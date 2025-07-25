@@ -65,10 +65,6 @@ public class Chat {
         this.creatorId = creatorId;
     }
 
-
-    // NEED CONSTRUCTOR WHICH TAKES CHAT ID
-
-
     // Getters
     public String getChatId() {return chatId;}
     public ChatType getChatType() {return chatType;}

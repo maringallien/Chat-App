@@ -52,9 +52,6 @@ public class FileServiceTests {
                 "test.txt",
                 1024L,
                 "text/plain",
-                LocalDateTime.now(),
-                userId,
-                "testuser",
                 chatId
         );
 

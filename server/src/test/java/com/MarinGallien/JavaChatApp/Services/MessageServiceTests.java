@@ -43,11 +43,8 @@ public class MessageServiceTests {
         testMessageDTO = new MessageDTO(
                 "msg1",
                 senderId,
-                "testuser",
                 chatId,
-                content,
-                LocalDateTime.now(),
-                MessageType.TEXT_MESSAGE
+                content
         );
     }
 
