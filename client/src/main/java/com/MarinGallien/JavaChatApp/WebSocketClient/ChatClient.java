@@ -10,6 +10,7 @@ public class ChatClient implements WebSocketClient.MessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatClient.class);
     private final WebSocketClient webSocketClient;
+    private String userId;
 
     public ChatClient(WebSocketClient webSocketClient) {
         this.webSocketClient = webSocketClient;

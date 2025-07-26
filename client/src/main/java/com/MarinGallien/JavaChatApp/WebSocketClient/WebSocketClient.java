@@ -71,13 +71,16 @@ public class WebSocketClient {
         this.userId = userId;
         this.messageHandler = handler;
 
+        // Create WebSocket headers for HTTP-level authentication
+        WebSocketHttpHeaders webSocketHeaders = new WebSocketHttpHeaders();
+        webSocketHeaders.add("Authorization", "Bearer " + jwtToken);
+
         // Create STOMP headers with user identification and JWT authentication
         StompHeaders stompHeaders = new StompHeaders();
         stompHeaders.add("userId", userId);
-        stompHeaders.add("Authorization", "Bearer " + jwtToken);
 
         // Attempt async connection and set up subscriptions on success
-        return stompClient.connectAsync (url, stompHeaders, new SessionHandler())
+        return stompClient.connectAsync (url, webSocketHeaders, stompHeaders, new SessionHandler())
                 .thenAccept(session -> {
                     // Store the active session
                     this.session = session;
