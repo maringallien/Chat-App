@@ -4,7 +4,7 @@ import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.AuthRequests.Logi
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.AuthRequests.RegisterRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.AuthResponses.LoginResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.GenericResponse;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.User;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
 import com.MarinGallien.JavaChatApp.Services.AuthService.JWTService;
 import com.MarinGallien.JavaChatApp.Services.UserService;
 import jakarta.validation.Valid;

@@ -2,8 +2,8 @@ package com.MarinGallien.JavaChatApp.Services;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.FileDTO;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.FileDbService;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.File;
-import com.MarinGallien.JavaChatApp.Mappers.FileMapper;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.File;
+import com.MarinGallien.JavaChatApp.Database.Mappers.FileMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +14,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

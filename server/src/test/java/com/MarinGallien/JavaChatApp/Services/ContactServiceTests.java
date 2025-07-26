@@ -2,10 +2,9 @@ package com.MarinGallien.JavaChatApp.Services;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.UserDTO;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ContactDbService;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.User;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.JunctionEntities.Contact;
-import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
-import com.MarinGallien.JavaChatApp.Mappers.UserMapper;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Contact;
+import com.MarinGallien.JavaChatApp.Database.Mappers.UserMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

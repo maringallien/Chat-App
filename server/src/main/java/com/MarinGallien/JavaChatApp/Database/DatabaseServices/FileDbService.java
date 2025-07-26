@@ -1,9 +1,9 @@
 package com.MarinGallien.JavaChatApp.Database.DatabaseServices;
 
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.Chat;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.File;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.Message;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.User;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.File;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Message;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.*;
 import com.MarinGallien.JavaChatApp.Enums.MessageType;
 import jakarta.transaction.Transactional;

@@ -5,7 +5,7 @@ import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ContactRequests.C
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ContactRequests.GetUserContactsRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.ContactResponses.GetUserContactsResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.GenericResponse;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.JunctionEntities.Contact;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Contact;
 import com.MarinGallien.JavaChatApp.Services.ContactService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;

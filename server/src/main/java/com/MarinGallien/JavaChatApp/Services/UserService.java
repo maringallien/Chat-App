@@ -1,7 +1,7 @@
 package com.MarinGallien.JavaChatApp.Services;
 
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.UserDbService;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.User;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
 import com.MarinGallien.JavaChatApp.Services.AuthService.JWTService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

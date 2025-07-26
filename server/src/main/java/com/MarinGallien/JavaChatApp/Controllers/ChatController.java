@@ -5,7 +5,7 @@ import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ChatRequests.*;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.ChatResponses.GetUserChatsResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.GenericResponse;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.Chat;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
 import com.MarinGallien.JavaChatApp.Services.ChatService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;

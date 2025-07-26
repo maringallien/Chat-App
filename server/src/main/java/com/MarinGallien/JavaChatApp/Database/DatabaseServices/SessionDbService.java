@@ -1,6 +1,6 @@
 package com.MarinGallien.JavaChatApp.Database.DatabaseServices;
 
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.User;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.UserRepo;
 import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
 import jakarta.transaction.Transactional;

@@ -1,7 +1,4 @@
-package com.MarinGallien.JavaChatApp.Database.JPAEntities.JunctionEntities;
-
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.Chat;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.User;
+package com.MarinGallien.JavaChatApp.Database.JPAEntities;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;

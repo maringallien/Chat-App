@@ -2,14 +2,14 @@ package com.MarinGallien.JavaChatApp.Services;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ChatDbService;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.Chat;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
 import com.MarinGallien.JavaChatApp.EventSystem.EventBusService;
 import com.MarinGallien.JavaChatApp.EventSystem.Events.ChatEvents.ChatCreated;
 import com.MarinGallien.JavaChatApp.EventSystem.Events.ChatEvents.ChatDeleted;
 import com.MarinGallien.JavaChatApp.EventSystem.Events.ChatEvents.MemberAddedToChat;
 import com.MarinGallien.JavaChatApp.EventSystem.Events.ChatEvents.MemberRemovedFromChat;
 import com.MarinGallien.JavaChatApp.Enums.ChatType;
-import com.MarinGallien.JavaChatApp.Mappers.ChatMapper;
+import com.MarinGallien.JavaChatApp.Database.Mappers.ChatMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 

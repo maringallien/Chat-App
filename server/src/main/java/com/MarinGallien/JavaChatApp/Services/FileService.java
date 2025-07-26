@@ -2,8 +2,8 @@ package com.MarinGallien.JavaChatApp.Services;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.FileDTO;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.FileDbService;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.File;
-import com.MarinGallien.JavaChatApp.Mappers.FileMapper;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.File;
+import com.MarinGallien.JavaChatApp.Database.Mappers.FileMapper;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.slf4j.Logger;

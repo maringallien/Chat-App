@@ -1,8 +1,8 @@
 package com.MarinGallien.JavaChatApp.Database.DatabaseServices;
 
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.Chat;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.User;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.JunctionEntities.ChatParticipant;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.ChatParticipant;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.ChatParticipantRepo;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.ChatRepo;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.UserRepo;

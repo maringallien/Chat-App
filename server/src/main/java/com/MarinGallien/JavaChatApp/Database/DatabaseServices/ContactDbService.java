@@ -1,7 +1,7 @@
 package com.MarinGallien.JavaChatApp.Database.DatabaseServices;
 
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.User;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.JunctionEntities.Contact;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Contact;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.ContactRepo;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.UserRepo;
 import jakarta.transaction.Transactional;

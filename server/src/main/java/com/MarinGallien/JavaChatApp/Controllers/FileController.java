@@ -6,7 +6,7 @@ import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.FileRequests.Down
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.FileRequests.GetChatFilesRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.FileResponses.GetChatFilesResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.GenericResponse;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.File;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.File;
 import com.MarinGallien.JavaChatApp.Services.FileService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;

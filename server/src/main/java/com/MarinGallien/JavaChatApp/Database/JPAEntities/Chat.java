@@ -1,6 +1,4 @@
-package com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities;
-
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.JunctionEntities.ChatParticipant;
+package com.MarinGallien.JavaChatApp.Database.JPAEntities;
 
 import com.MarinGallien.JavaChatApp.Enums.ChatType;
 import jakarta.persistence.*;

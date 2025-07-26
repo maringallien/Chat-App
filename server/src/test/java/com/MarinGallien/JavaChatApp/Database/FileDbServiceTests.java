@@ -1,10 +1,10 @@
 package com.MarinGallien.JavaChatApp.Database;
 
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.FileDbService;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.Chat;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.File;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.User;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.JunctionEntities.ChatParticipant;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.File;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.ChatParticipant;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.FileRepo;
 import com.MarinGallien.JavaChatApp.Enums.ChatType;
 import org.junit.jupiter.api.BeforeEach;

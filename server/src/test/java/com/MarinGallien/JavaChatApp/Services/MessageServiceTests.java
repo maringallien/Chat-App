@@ -2,9 +2,9 @@ package com.MarinGallien.JavaChatApp.Services;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.MessageDbService;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.CoreEntities.Message;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Message;
 import com.MarinGallien.JavaChatApp.Enums.MessageType;
-import com.MarinGallien.JavaChatApp.Mappers.MessageMapper;
+import com.MarinGallien.JavaChatApp.Database.Mappers.MessageMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
