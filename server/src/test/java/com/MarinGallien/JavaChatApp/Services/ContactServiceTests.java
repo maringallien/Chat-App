@@ -5,6 +5,7 @@ import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ContactDbService;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.Contact;
 import com.MarinGallien.JavaChatApp.Database.Mappers.UserMapper;
+import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,12 +52,14 @@ public class ContactServiceTests {
         // Create test DTOs
         testUserDTO2 = new UserDTO(
                 user2Id,
-                "bob"
+                "bob",
+                OnlineStatus.ONLINE
         );
 
         testUserDTO3 = new UserDTO(
                 user3Id,
-                "charlie"
+                "charlie",
+                OnlineStatus.ONLINE
         );
     }
 

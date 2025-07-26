@@ -12,7 +12,8 @@ public class UserMapper {
     public UserDTO toDTO(User user) {
         return new UserDTO(
                 user.getUserId(),
-                user.getUsername()
+                user.getUsername(),
+                user.getStatus()
         );
     }
 
