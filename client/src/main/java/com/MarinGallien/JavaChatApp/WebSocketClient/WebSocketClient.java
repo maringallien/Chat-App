@@ -7,10 +7,13 @@ import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.*;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -69,12 +72,12 @@ public class WebSocketClient {
         this.messageHandler = handler;
 
         // Create STOMP headers with user identification and JWT authentication
-        StompHeaders headers = new StompHeaders();
-        headers.add("userId", userId);
-        headers.add("Authorization", "Bearer " + jwtToken);
+        StompHeaders stompHeaders = new StompHeaders();
+        stompHeaders.add("userId", userId);
+        stompHeaders.add("Authorization", "Bearer " + jwtToken);
 
         // Attempt async connection and set up subscriptions on success
-        return stompClient.connectAsync (url, headers, new SessionHandler())
+        return stompClient.connectAsync (url, stompHeaders, new SessionHandler())
                 .thenAccept(session -> {
                     // Store the active session
                     this.session = session;
