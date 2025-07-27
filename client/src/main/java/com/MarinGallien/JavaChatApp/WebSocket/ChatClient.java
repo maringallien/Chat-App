@@ -4,14 +4,15 @@ import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.OnlineStatusMessage;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.WebSocketMessage;
 import com.MarinGallien.JavaChatApp.Database.Message;
 import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
+import com.MarinGallien.JavaChatApp.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ChatClient implements WebSocketClient.MessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatClient.class);
+    private static String userId = UserSession.getUserId();
     private final WebSocketClient webSocketClient;
-    private String userId;
 
     public ChatClient(WebSocketClient webSocketClient) {
         this.webSocketClient = webSocketClient;
@@ -21,22 +22,12 @@ public class ChatClient implements WebSocketClient.MessageHandler {
     // ========== CONNECTION MANAGEMENT METHODS ==========
 
     // Start chat session
-    public void startChat(String userId, String jwtToken) {
-        // Validate inputs
-        if (userId == null || userId.trim().isEmpty()) {
-            logger.error("Cannot start chat: User ID is null or empty");
-            return;
-        }
-
-        if (jwtToken == null || jwtToken.trim().isEmpty()) {
-            logger.error("Cannot start chat: jwt token is null or empty");
-            return;
-        }
+    public void startChat() {
 
         // Attempt to connect to the WebSocket server with JWT authentication
-        webSocketClient.connect("ws://localhost:8080/ws", userId, jwtToken, this)
+        webSocketClient.connect(this)
             .thenRun(() -> {
-                System.out.println("Chat started for user: " + userId);
+                System.out.println("Chat started");
 
                 // Broadcast online status to contacts
                 webSocketClient.sendStatus(new OnlineStatusMessage(OnlineStatus.ONLINE, userId));

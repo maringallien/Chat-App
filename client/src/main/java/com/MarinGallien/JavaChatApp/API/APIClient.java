@@ -12,6 +12,7 @@ import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.ContactResponses
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.GenericResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.MessageReponses.GetChatMessagesResponse;
 
+import com.MarinGallien.JavaChatApp.UserSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,9 +74,10 @@ public class APIClient {
             // Deserialize response from JSON
             LoginResponse loginResponse = objectMapper.readValue(response.body(), LoginResponse.class);
 
-            // Store JWT token for future requests if login successful
+
+            // Init userSession
             if (loginResponse.success()) {
-                this.jwtToken = loginResponse.JwtToken();
+                UserSession.initUserSession(loginResponse.userId(), loginResponse.JwtToken());
             }
 
             return loginResponse;

@@ -2,6 +2,7 @@ package com.MarinGallien.JavaChatApp.WebSocket;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.OnlineStatusMessage;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.WebSocketMessage;
 import com.MarinGallien.JavaChatApp.Database.Message;
+import com.MarinGallien.JavaChatApp.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -26,8 +27,6 @@ public class WebSocketClient {
 
     private final WebSocketStompClient stompClient;
     private StompSession session;
-    private String userId;
-    private String url;
     private MessageHandler messageHandler;
 
     // Simple callback interface for receiving messages and connection events
@@ -68,9 +67,13 @@ public class WebSocketClient {
     }
 
     // Connect to the chat server asynchronously using JWT authentication
-    public CompletableFuture<Void> connect (String url, String userId, String jwtToken, MessageHandler handler) {
-        // Store user context for this connection
-        this.userId = userId;
+    public CompletableFuture<Void> connect (MessageHandler handler) {
+        // Load session parameters
+        String userId = UserSession.getUserId();
+        String jwtToken = UserSession.getJwtToken();
+        String url = UserSession.getServerUrl();
+
+        // Initialize handler
         this.messageHandler = handler;
 
         // Create WebSocket headers for HTTP-level authentication
