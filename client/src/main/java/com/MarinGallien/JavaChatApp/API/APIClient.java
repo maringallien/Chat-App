@@ -36,15 +36,7 @@ public class APIClient {
     private String jwtToken;
 
     public APIClient() {
-        this.baseUrl = "http://localhost:8080"; // Default server URL
-        this.httpClient = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(10))
-                .build();
-        this.objectMapper = new ObjectMapper();
-    }
-
-    public APIClient(String baseUrl) {
-        this.baseUrl = baseUrl;
+        this.baseUrl = UserSession.getServerUrl();
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
