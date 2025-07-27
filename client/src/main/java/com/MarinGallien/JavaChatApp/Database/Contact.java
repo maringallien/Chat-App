@@ -7,7 +7,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class Contact {
 
     @Id
     @Column(name = "user_id", nullable = false)
@@ -16,9 +16,9 @@ public class User {
     @Column(name = "username", nullable = false)
     private String username;
 
-    public User() {}
+    public Contact() {}
 
-    public User(String userId, String username) {
+    public Contact(String userId, String username) {
         this.userId = userId;
         this.username = username;
     }

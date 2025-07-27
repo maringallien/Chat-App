@@ -1,6 +1,6 @@
 package com.MarinGallien.JavaChatApp.Services;
 
-import com.MarinGallien.JavaChatApp.DTOs.DataEntities.UserDTO;
+import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ContactDbService;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.Contact;
@@ -86,7 +86,7 @@ public class ContactService{
         }
     }
 
-    public List<UserDTO> getUserContactsDTOs(String userId) {
+    public List<ContactDTO> getUserContactsDTOs(String userId) {
             List<User> users = getUserContacts(userId);
             return users.isEmpty() ? List.of() : userMapper.toDTOList(users);
     }

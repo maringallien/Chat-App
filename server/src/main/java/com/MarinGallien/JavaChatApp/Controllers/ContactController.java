@@ -1,6 +1,6 @@
 package com.MarinGallien.JavaChatApp.Controllers;
 
-import com.MarinGallien.JavaChatApp.DTOs.DataEntities.UserDTO;
+import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ContactRequests.CreateOrRemoveContactRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ContactRequests.GetUserContactsRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.ContactResponses.GetUserContactsResponse;
@@ -107,7 +107,7 @@ public class ContactController {
             }
 
             // Delegate to ContactService
-            List<UserDTO> contacts = contactService.getUserContactsDTOs(request.userId());
+            List<ContactDTO> contacts = contactService.getUserContactsDTOs(request.userId());
 
             // If contacts is null, operation failed
             if (contacts == null) {

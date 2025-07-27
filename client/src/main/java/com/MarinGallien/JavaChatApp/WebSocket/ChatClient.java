@@ -2,6 +2,7 @@ package com.MarinGallien.JavaChatApp.WebSocket;
 
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.OnlineStatusMessage;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.WebSocketMessage;
+import com.MarinGallien.JavaChatApp.Database.Message;
 import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,13 +69,15 @@ public class ChatClient implements WebSocketClient.MessageHandler {
     // ========== INTERFACE METHODS ==========
 
     @Override
-    public void onMessage(WebSocketMessage message) {
-        // Define here what you should do when message is received
+    public Message onMessage(WebSocketMessage message) {
+        // Create Message object
+        // Persist in database
+        // Return Message object for display
     }
 
     @Override
     public void onStatusUpdate(OnlineStatusMessage status) {
-        // Define here what tyo do when online status up[date is received
+        // Update contact status in database
     }
 
     @Override

@@ -3,23 +3,22 @@ package com.MarinGallien.JavaChatApp;
 import java.util.HashMap;
 import java.util.Map;
 
-/*
-This class stores session information:
-authentication info
-
- */
 public class UserSession {
     // Authentication information
-    private String userId;
-    private String jwtToken;
-    private String currentUsername;
+    private static String userId;
+    private static String jwtToken;
+    private static String serverUrl = "ws://localhost:8080";
 
-    // Mappings
-    private Map<String, String> userNameToUserId = new HashMap<>();
-    private Map<String, String> chatNameToChatId = new HashMap<>();
-    private Map<String, String> fileNameToFileId = new HashMap<>();
+    public static void initUserSession(String userId, String jwtToken) {
+        UserSession.userId = userId;
+        UserSession.jwtToken = jwtToken;
+    }
 
-    // Need methods to update caches
+    public static String getUserId() {return userId;}
+    public static String getJwtToken() {return jwtToken;}
+    public static String getServerUrl() {return serverUrl;}
 
-    // Need lookup methods
+    public static void setUserId(String userId) {UserSession.userId = userId;}
+    public static void setJwtToken(String jwtToken) {UserSession.jwtToken = jwtToken;}
+    public static void setServerUrl(String serverUrl) {UserSession.serverUrl = serverUrl;}
 }

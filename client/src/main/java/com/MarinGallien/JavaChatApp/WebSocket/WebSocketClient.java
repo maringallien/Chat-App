@@ -1,6 +1,7 @@
 package com.MarinGallien.JavaChatApp.WebSocket;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.OnlineStatusMessage;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.WebSocketMessage;
+import com.MarinGallien.JavaChatApp.Database.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -26,11 +27,12 @@ public class WebSocketClient {
     private final WebSocketStompClient stompClient;
     private StompSession session;
     private String userId;
+    private String url;
     private MessageHandler messageHandler;
 
     // Simple callback interface for receiving messages and connection events
     public interface MessageHandler {
-        void onMessage(WebSocketMessage message);           // Handle incoming chat messages
+        Message onMessage(WebSocketMessage message);        // Handle incoming chat messages
         void onStatusUpdate(OnlineStatusMessage status);    // Handle user status changes
         void onConnected();                                 // Handle successful connection
         void onDisconnected();                              // Handle disconnection
