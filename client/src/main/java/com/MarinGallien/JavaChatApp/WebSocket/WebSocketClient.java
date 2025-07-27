@@ -1,4 +1,4 @@
-package com.MarinGallien.JavaChatApp.WebSocketClient;
+package com.MarinGallien.JavaChatApp.WebSocket;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.OnlineStatusMessage;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.WebSocketMessage;
 import org.slf4j.Logger;
