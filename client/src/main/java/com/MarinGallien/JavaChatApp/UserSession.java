@@ -1,7 +1,9 @@
 package com.MarinGallien.JavaChatApp;
 
 public class UserSession {
-    // Authentication information
+
+    private static UserSession instance;
+
     private static String userId;
     private static String username;
     private static String email;
@@ -14,6 +16,10 @@ public class UserSession {
         UserSession.jwtToken = jwtToken;
     }
 
+    public static UserSession getInstance() {
+        if (instance == null) instance = new UserSession();
+        return instance;
+    }
     public static String getUserId() {return userId;}
     public static String getUsername() {return username;}
     public static String getEmail() {return email;}
