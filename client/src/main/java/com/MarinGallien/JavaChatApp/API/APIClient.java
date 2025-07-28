@@ -24,7 +24,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.Set;
 
 @Component
 public class APIClient {
@@ -36,7 +35,7 @@ public class APIClient {
     private String jwtToken;
 
     public APIClient() {
-        this.baseUrl = UserSession.getServerUrl();
+        this.baseUrl = UserSession.getWsBaseUrl();
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
@@ -46,10 +45,8 @@ public class APIClient {
     // ========== AUTHENTICATION METHODS ==========
 
     // Authenticate user with email and password
-    public LoginResponse login(String email, String password) {
+    public LoginResponse login(LoginRequest request) {
         try {
-            // Create login request DTO
-            LoginRequest request = new LoginRequest(email, password);
             String jsonBody = objectMapper.writeValueAsString(request);
 
             // Create HTTP request to login endpoint
@@ -66,7 +63,6 @@ public class APIClient {
             // Deserialize response from JSON
             LoginResponse loginResponse = objectMapper.readValue(response.body(), LoginResponse.class);
 
-
             // Init userSession
             if (loginResponse.success()) {
                 UserSession.initUserSession(loginResponse.userId(), loginResponse.JwtToken());
@@ -81,10 +77,8 @@ public class APIClient {
     }
 
     // Register a new user account
-    public GenericResponse register(String username, String email, String password) {
+    public GenericResponse register(RegisterRequest request) {
         try {
-            // Create registration request DTO
-            RegisterRequest request = new RegisterRequest(username, email, password);
             String jsonBody = objectMapper.writeValueAsString(request);
 
             // Build HTTP request to register endpoint
@@ -109,9 +103,8 @@ public class APIClient {
 
     // ========== CHAT METHODS ==========
 
-    public GenericResponse createPrivateChat(String userId1, String userId2) {
+    public GenericResponse createPrivateChat(CreatePcRequest request) {
         try {
-            CreatePcRequest request = new CreatePcRequest(userId1, userId2);
             return sendAuthenticatedRequest("/api/chat/private", request, GenericResponse.class, "POST");
         } catch (Exception e) {
             logger.error("Failed to create private chat: {}", e.getMessage());
@@ -119,9 +112,8 @@ public class APIClient {
         }
     }
 
-    public GenericResponse createGroupChat(String creatorId, Set<String> memberIds, String chatName) {
+    public GenericResponse createGroupChat(CreateGcRequest request) {
         try {
-            CreateGcRequest request = new CreateGcRequest(creatorId, memberIds, chatName);
             return sendAuthenticatedRequest("/api/chat/group", request, GenericResponse.class, "POST");
         } catch (Exception e) {
             logger.error("Failed to create group chat: {}", e.getMessage());
@@ -129,9 +121,8 @@ public class APIClient {
         }
     }
 
-    public GenericResponse deleteChat(String creatorId, String chatId) {
+    public GenericResponse deleteChat(DeleteChatRequest request) {
         try {
-            DeleteChatRequest request = new DeleteChatRequest(creatorId, chatId);
             return sendAuthenticatedRequest("/api/chat", request, GenericResponse.class, "DELETE");
         } catch (Exception e) {
             logger.error("Failed to delete chat: {}", e.getMessage());
@@ -139,9 +130,8 @@ public class APIClient {
         }
     }
 
-    public GenericResponse addMemberToChat(String creatorId, String userId, String chatId) {
+    public GenericResponse addMemberToChat(AddOrRemoveMemberRequest request) {
         try {
-            AddOrRemoveMemberRequest request = new AddOrRemoveMemberRequest(creatorId, userId, chatId);
             return sendAuthenticatedRequest("/api/chat/member/add", request, GenericResponse.class, "POST");
         } catch (Exception e) {
             logger.error("Failed to add member to chat: {}", e.getMessage());
@@ -149,9 +139,8 @@ public class APIClient {
         }
     }
 
-    public GenericResponse removeMemberFromChat(String creatorId, String userId, String chatId) {
+    public GenericResponse removeMemberFromChat(AddOrRemoveMemberRequest request) {
         try {
-            AddOrRemoveMemberRequest request = new AddOrRemoveMemberRequest(creatorId, userId, chatId);
             return sendAuthenticatedRequest("/api/chat/member/remove", request, GenericResponse.class, "POST");
         } catch (Exception e) {
             logger.error("Failed to remove member from chat: {}", e.getMessage());
@@ -159,9 +148,8 @@ public class APIClient {
         }
     }
 
-    public GetUserChatsResponse getUserChats(String userId) {
+    public GetUserChatsResponse getUserChats(GetUserChatsRequest request) {
         try {
-            GetUserChatsRequest request = new GetUserChatsRequest(userId);
             return sendAuthenticatedRequest("/api/chat/chats", request, GetUserChatsResponse.class, "GET");
         } catch (Exception e) {
             logger.error("Failed to get user chats: {}", e.getMessage());
@@ -171,9 +159,8 @@ public class APIClient {
 
     // ========== CONTACT METHODS ==========
 
-    public GenericResponse createContact(String userId, String contactId) {
+    public GenericResponse createContact(CreateOrRemoveContactRequest request) {
         try {
-            CreateOrRemoveContactRequest request = new CreateOrRemoveContactRequest(userId, contactId);
             return sendAuthenticatedRequest("/api/contact/create", request, GenericResponse.class, "POST");
         } catch (Exception e) {
             logger.error("Failed to create contact: {}", e.getMessage());
@@ -181,9 +168,8 @@ public class APIClient {
         }
     }
 
-    public GenericResponse removeContact(String userId, String contactId) {
+    public GenericResponse removeContact(CreateOrRemoveContactRequest request) {
         try {
-            CreateOrRemoveContactRequest request = new CreateOrRemoveContactRequest(userId, contactId);
             return sendAuthenticatedRequest("/api/contact/delete", request, GenericResponse.class, "POST");
         } catch (Exception e) {
             logger.error("Failed to remove contact: {}", e.getMessage());
@@ -191,9 +177,8 @@ public class APIClient {
         }
     }
 
-    public GetUserContactsResponse getUserContacts(String userId) {
+    public GetUserContactsResponse getUserContacts(GetUserContactsRequest request) {
         try {
-            GetUserContactsRequest request = new GetUserContactsRequest(userId);
             return sendAuthenticatedRequest("/api/contact/contacts", request, GetUserContactsResponse.class, "GET");
         } catch (Exception e) {
             logger.error("Failed to get user contacts: {}", e.getMessage());
@@ -203,9 +188,8 @@ public class APIClient {
 
     // ========== MESSAGE METHODS ==========
 
-    public GetChatMessagesResponse getChatMessages(String userId, String chatId) {
+    public GetChatMessagesResponse getChatMessages(GetChatMessagesRequest request) {
         try {
-            GetChatMessagesRequest request = new GetChatMessagesRequest(userId, chatId);
             return sendAuthenticatedRequest("/api/message/messages", request, GetChatMessagesResponse.class, "POST");
         } catch (Exception e) {
             logger.error("Failed to get chat messages: {}", e.getMessage());
@@ -215,9 +199,8 @@ public class APIClient {
 
     // ========== USER METHODS ==========
 
-    public GenericResponse updateUsername(String userId, String username) {
+    public GenericResponse updateUsername(UpdateUnameRequest request) {
         try {
-            UpdateUnameRequest request = new UpdateUnameRequest(userId, username);
             return sendAuthenticatedRequest("/api/user/update/username", request, GenericResponse.class, "POST");
         } catch (Exception e) {
             logger.error("Failed to update username: {}", e.getMessage());
@@ -225,9 +208,8 @@ public class APIClient {
         }
     }
 
-    public GenericResponse updateEmail(String userId, String email) {
+    public GenericResponse updateEmail(UpdateEmailRequest request) {
         try {
-            UpdateEmailRequest request = new UpdateEmailRequest(userId, email);
             return sendAuthenticatedRequest("/api/user/update/email", request, GenericResponse.class, "POST");
         } catch (Exception e) {
             logger.error("Failed to update email: {}", e.getMessage());
@@ -235,9 +217,8 @@ public class APIClient {
         }
     }
 
-    public GenericResponse updatePassword(String userId, String oldPassword, String newPassword) {
+    public GenericResponse updatePassword(UpdatePasswdRequest request) {
         try {
-            UpdatePasswdRequest request = new UpdatePasswdRequest(userId, oldPassword, newPassword);
             return sendAuthenticatedRequest("/api/user/update/password", request, GenericResponse.class, "POST");
         } catch (Exception e) {
             logger.error("Failed to update password: {}", e.getMessage());

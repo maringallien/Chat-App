@@ -11,11 +11,12 @@ import org.slf4j.LoggerFactory;
 public class ChatClient implements WebSocketClient.MessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatClient.class);
-    private static String userId = UserSession.getUserId();
+    private static String userId;
     private final WebSocketClient webSocketClient;
 
     public ChatClient(WebSocketClient webSocketClient) {
         this.webSocketClient = webSocketClient;
+        userId = UserSession.getUserId();
     }
 
 

@@ -71,7 +71,7 @@ public class WebSocketClient {
         // Load session parameters
         String userId = UserSession.getUserId();
         String jwtToken = UserSession.getJwtToken();
-        String url = UserSession.getServerUrl();
+        String url = UserSession.getWsBaseUrl();
 
         // Initialize handler
         this.messageHandler = handler;
