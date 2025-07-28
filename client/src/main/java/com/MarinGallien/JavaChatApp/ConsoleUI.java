@@ -15,7 +15,6 @@ public class ConsoleUI implements ChatService.MessageListener {
     private String currentChatName;
 
     public ConsoleUI() {
-        // No dependencies - pure display component
     }
 
 

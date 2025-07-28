@@ -1,13 +1,22 @@
 package com.MarinGallien.JavaChatApp.API;
 
+import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
+import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
+import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.AuthRequests.LoginRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.AuthRequests.RegisterRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ChatRequests.*;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ContactRequests.*;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.MessageRequests.GetChatMessagesRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.UserRequests.*;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.AuthResponses.LoginResponse;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.ChatResponses.GetUserChatsResponse;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.ContactResponses.GetUserContactsResponse;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.GenericResponse;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.MessageReponses.GetChatMessagesResponse;
 import com.MarinGallien.JavaChatApp.UserSession;
 
+import java.util.List;
 import java.util.Set;
 
 public class APIService {
@@ -19,91 +28,137 @@ public class APIService {
         this.apiClient = apiClient;
     }
 
+
     // ========== AUTHENTICATION METHODS ==========
 
-    public void login(String email, String password) {
+    public boolean login(String email, String password) {
         LoginRequest request = new LoginRequest(email, password);
-        apiClient.login(request);
-        userId = UserSession.getUserId();
+        LoginResponse response = apiClient.login(request);
+
+        if (response.success()) {
+            userId = UserSession.getUserId();
+            // Set JWT token in API client for authenticated requests
+            apiClient.setJwtToken(response.JwtToken());
+            return true;
+        }
+        return false;
     }
 
-    public void register(String username, String email, String password) {
+    public boolean register(String username, String email, String password) {
         RegisterRequest request = new RegisterRequest(username, email, password);
-        apiClient.register(request);
+        GenericResponse response = apiClient.register(request);
+        return response.success();
     }
+
 
     // ========== CHAT METHODS ==========
 
-    public void createPrivateChat(String userId2) {
+    public boolean createPrivateChat(String userId2) {
         CreatePcRequest request = new CreatePcRequest(userId, userId2);
-        apiClient.createPrivateChat(request);
+        GenericResponse response = apiClient.createPrivateChat(request);
+        return response.success();
     }
 
-    public void createGroupChat(Set<String> memberIds, String chatName) {
+    public boolean createGroupChat(Set<String> memberIds, String chatName) {
         CreateGcRequest request = new CreateGcRequest(userId, memberIds, chatName);
-        apiClient.createGroupChat(request);
+        GenericResponse response = apiClient.createGroupChat(request);
+        return response.success();
     }
 
-    public void deleteChat(String chatId) {
+    public boolean deleteChat(String chatId) {
         DeleteChatRequest request = new DeleteChatRequest(userId, chatId);
-        apiClient.deleteChat(request);
+        GenericResponse response = apiClient.deleteChat(request);
+        return response.success();
     }
 
-    public void addMemberToChat(String memberId, String chatId) {
+    public boolean addMemberToChat(String memberId, String chatId) {
         AddOrRemoveMemberRequest request = new AddOrRemoveMemberRequest(userId, memberId, chatId);
-        apiClient.addMemberToChat(request);
+        GenericResponse response = apiClient.addMemberToChat(request);
+        return response.success();
     }
 
-    public void removeMemberFromChat(String memberId, String chatId) {
+    public boolean removeMemberFromChat(String memberId, String chatId) {
         AddOrRemoveMemberRequest request = new AddOrRemoveMemberRequest(userId, memberId, chatId);
-        apiClient.removeMemberFromChat(request);
+        GenericResponse response = apiClient.removeMemberFromChat(request);
+        return response.success();
     }
 
-    public void getUserChats() {
+    public List<ChatDTO> getUserChats() {
         GetUserChatsRequest request = new GetUserChatsRequest(userId);
-        apiClient.getUserChats(request);
+        GetUserChatsResponse response = apiClient.getUserChats(request);
+
+        if (response.success() && response.chats() != null) {
+            return response.chats();
+        }
+        return List.of();
     }
+
 
     // ========== CONTACT METHODS ==========
 
-    public void createContact(String contactId) {
+    public boolean createContact(String contactId) {
         CreateOrRemoveContactRequest request = new CreateOrRemoveContactRequest(userId, contactId);
-        apiClient.createContact(request);
+        GenericResponse response = apiClient.createContact(request);
+        return response.success();
     }
 
-    public void removeContact(String contactId) {
+    public boolean removeContact(String contactId) {
         CreateOrRemoveContactRequest request = new CreateOrRemoveContactRequest(userId, contactId);
-        apiClient.removeContact(request);
+        GenericResponse response = apiClient.removeContact(request);
+        return response.success();
     }
 
-    public void getUserContacts() {
+    public List<ContactDTO> getUserContacts() {
         GetUserContactsRequest request = new GetUserContactsRequest(userId);
-        apiClient.getUserContacts(request);
+        GetUserContactsResponse response = apiClient.getUserContacts(request);
+
+        if (response.success() && response.contacts() != null) {
+            return response.contacts();
+        }
+        return List.of(); // Return empty list on failure
     }
+
 
     // ========== MESSAGE METHODS ==========
 
-    public void getChatMessages(String chatId) {
+    public List<MessageDTO> getChatMessages(String chatId) {
         GetChatMessagesRequest request = new GetChatMessagesRequest(userId, chatId);
-        apiClient.getChatMessages(request);
+        GetChatMessagesResponse response = apiClient.getChatMessages(request);
+
+        if (response.success() && response.messages() != null) {
+            return response.messages();
+        }
+        return List.of(); // Return empty list on failure
     }
+
 
     // ========== USER METHODS ==========
 
-    public void updateUsername(String newUsername) {
+    public boolean updateUsername(String newUsername) {
         UpdateUnameRequest request = new UpdateUnameRequest(userId, newUsername);
-        apiClient.updateUsername(request);
-        UserSession.setUsername(newUsername);
+        GenericResponse response = apiClient.updateUsername(request);
+
+        if (response.success()) {
+            UserSession.setUsername(newUsername);
+            return true;
+        }
+        return false;
     }
 
-    public void updateEmail(String newEmail) {
+    public boolean updateEmail(String newEmail) {
         UpdateEmailRequest request = new UpdateEmailRequest(userId, newEmail);
-        apiClient.updateEmail(request);
-        UserSession.setEmail(newEmail);
+        GenericResponse response = apiClient.updateEmail(request);
+
+        if (response.success()) {
+            UserSession.setEmail(newEmail);
+            return true;
+        }
+        return false;
     }
 
-    public void updatePassword(String oldPassword, String newPassword) {
+    public boolean updatePassword(String oldPassword, String newPassword) {
         UpdatePasswdRequest request = new UpdatePasswdRequest(userId, oldPassword, newPassword);
-        apiClient.updatePassword(request);
+        GenericResponse response = apiClient.updatePassword(request);
+        return response.success();
     }
 }
