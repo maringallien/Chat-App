@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "files")
 public class File {
@@ -25,14 +27,18 @@ public class File {
     @Column(name = "chat_id", nullable = false)
     private String chatId;
 
+    @Column(name = "sent_at", nullable = false)
+    private LocalDateTime sentAt;
+
     public File() {};
 
-    public File(String fileId, String filename, Long fileSize, String fileType, String chatId) {
+    public File(String fileId, String filename, Long fileSize, String fileType, String chatId, LocalDateTime sentAt) {
         this.fileId = fileId;
         this.filename = filename;
         this.fileSize = fileSize;
         this.fileType = fileType;
         this.chatId = chatId;
+        this.sentAt = sentAt;
     }
 
     public String getFileId() {return fileId;}
@@ -40,10 +46,12 @@ public class File {
     public Long getFileSize() {return fileSize;}
     public String getFileType() {return fileType;}
     public String getChatId() {return chatId;}
+    public LocalDateTime getSentAt() {return sentAt;}
 
     public void setFileId(String fileId) {this.fileId = fileId;}
     public void setFilename(String filename) {this.filename = filename;}
     public void setFileSize(Long fileSize) {this.fileSize = fileSize;}
     public void setFileType(String fileType) {this.fileType = fileType;}
     public void setChatId(String chatId) {this.chatId = chatId;}
+    public void setSentAt(LocalDateTime sentAt) {this.sentAt = sentAt;}
 }

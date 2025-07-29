@@ -37,7 +37,7 @@ public class LocalDatabaseService {
         this.messageRepo = messageRepo;
     }
 
-    // ========== CONTACT SYNCHRONIZATION ==========
+    // ========== CONTACT SERVICE ==========
 
     public void syncContacts(List<ContactDTO> serverContacts) {
         try {
@@ -73,12 +73,12 @@ public class LocalDatabaseService {
         }
     }
 
-    public List<Contact> getLocalContacts() {
+    public List<Contact> getContacts() {
         try {
             return contactRepo.findAll();
         } catch (Exception e) {
-            logger.error("Error retrieving local contacts: {}", e.getMessage(), e);
-            return List.of();
+            logger.error("Error retrieving contacts: {}", e.getMessage(), e);
+            return null;
         }
     }
 
@@ -95,7 +95,7 @@ public class LocalDatabaseService {
         }
     }
 
-    // ========== CHAT SYNCHRONIZATION ==========
+    // ========== CHAT SERVICE ==========
 
     public void syncChats(List<ChatDTO> serverChats) {
         try {
@@ -140,14 +140,6 @@ public class LocalDatabaseService {
         }
     }
 
-    public Optional<Chat> getLocalChatById(String chatId) {
-        try {
-            return chatRepo.findByChatId(chatId);
-        } catch (Exception e) {
-            logger.error("Error retrieving local chat {}: {}", chatId, e.getMessage(), e);
-            return Optional.empty();
-        }
-    }
 
     public String findPrivateChat(String contactId) {
         List<Chat> chats = getLocalChats();
@@ -178,7 +170,7 @@ public class LocalDatabaseService {
     }
 
 
-    // ========== MESSAGE SYNCHRONIZATION ==========
+    // ========== MESSAGE SERVICE ==========
 
     public void syncMessages(String chatId, List<MessageDTO> serverMessages) {
         try {
@@ -208,16 +200,7 @@ public class LocalDatabaseService {
         }
     }
 
-    public List<Message> getLocalMessages(String chatId) {
-        try {
-            return messageRepo.findByChatIdOrderByMessageIdAsc(chatId);
-        } catch (Exception e) {
-            logger.error("Error retrieving local messages for chat {}: {}", chatId, e.getMessage(), e);
-            return List.of();
-        }
-    }
-
-    public void addLocalMessage(Message message) {
+    public void saveMessage(Message message) {
         try {
             messageRepo.save(message);
             logger.debug("Added local message {} to chat {}", message.getMessageId(), message.getChatId());
@@ -226,12 +209,13 @@ public class LocalDatabaseService {
         }
     }
 
-    public long getLocalMessageCount(String chatId) {
+    public List<Message> getChatMessages(String chatId) {
         try {
-            return messageRepo.countByChatId(chatId);
+            return messageRepo.findByChatChatId(chatId);
         } catch (Exception e) {
-            logger.error("Error counting local messages for chat {}: {}", chatId, e.getMessage(), e);
-            return 0;
+            logger.error("Error retrieving chat messages: {}", e.getMessage(), e);
+            return null;
         }
     }
+
 }

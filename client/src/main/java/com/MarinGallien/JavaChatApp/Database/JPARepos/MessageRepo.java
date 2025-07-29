@@ -11,11 +11,8 @@ import java.util.List;
 @Repository
 public interface MessageRepo extends JpaRepository<Message, String> {
 
-    @Query("SELECT m FROM Message m WHERE m.chatId = :chatId ORDER BY m.messageId ASC")
-    List<Message> findByChatIdOrderByMessageIdAsc(@Param("chatId") String chatId);
-
-    @Query("SELECT COUNT(m) FROM Message m WHERE m.chatId = :chatId")
-    long countByChatId(@Param("chatId") String chatId);
+    @Query("SELECT m FROM Message m WHERE m.chat.chatId = :chatId")
+    List<Message> findByChatChatId(@Param("chatId") String chatId);
 
     void deleteByChatId(String chatId);
 }

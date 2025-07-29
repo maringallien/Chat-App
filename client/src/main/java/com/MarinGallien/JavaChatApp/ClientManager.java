@@ -1,14 +1,10 @@
 package com.MarinGallien.JavaChatApp;
 
 import com.MarinGallien.JavaChatApp.API.APIService;
-import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
-import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
-import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ChatRequests.*;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.MessageRequests.GetChatMessagesRequest;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.MessageReponses.GetChatMessagesResponse;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.LocalDatabaseService;
-import com.MarinGallien.JavaChatApp.Enums.ChatType;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Contact;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Message;
 import com.MarinGallien.JavaChatApp.WebSocket.ChatService;
 
 import java.util.List;
@@ -94,12 +90,11 @@ public class ClientManager {
                 consoleUI.enterChatMode(contactUname);
 
                 // Load recent messages for context
-                loadRecentMessages(chatId);
+                consoleUI.showMessages(localDbService.getChatMessages(chatId));
             } else {
                 consoleUI.showChatNotFound(contactUname);
             }
         } catch (Exception e) {
-            logger.error("Error entering chat with {}: {}", contactUname, e.getMessage());
             consoleUI.showError("Failed to enter chat: " + e.getMessage());
         }
     }
@@ -186,7 +181,7 @@ public class ClientManager {
 
     public void getUserChats() {
         try {
-            List<ChatDTO> chats = apiService.getUserChats();
+            List<Chat> chats = localDbService.getLocalChats();
 
             if (chats != null && !chats.isEmpty()) {
                 consoleUI.showChats(chats);
@@ -197,6 +192,7 @@ public class ClientManager {
             consoleUI.showError("Failed to get chats: " + e.getMessage());
         }
     }
+
 
     // ========== CONTACT MANAGEMENT METHODS ==========
 
@@ -230,7 +226,7 @@ public class ClientManager {
 
     public void getUserContacts() {
         try {
-            List<ContactDTO> contacts = apiService.getUserContacts();
+            List<Contact> contacts = localDbService.getContacts();
 
             if (contacts != null && !contacts.isEmpty()) {
                 consoleUI.showContacts(contacts);
@@ -246,7 +242,7 @@ public class ClientManager {
 
     public void getChatMessages(String chatId) {
         try {
-            List<MessageDTO> chatMessages = apiService.getChatMessages(chatId);
+            List<Message> chatMessages = localDbService.getChatMessages(chatId);
 
             if (chatMessages != null && !chatMessages.isEmpty()) {
                 consoleUI.showMessages(chatMessages);
