@@ -1,5 +1,7 @@
 package com.MarinGallien.JavaChatApp;
 
+import java.util.Arrays;
+
 public class CmdParser {
 
     public void parseAndExecute(String input, ClientManager clientManager) {
@@ -26,14 +28,33 @@ public class CmdParser {
 
             // Chat commands
             case "chat":
-                if (parts.length >= 2) {
-                    clientManager.enterChatWithContact(parts[1]);
+                if (parts.length < 2) {
+                    System.out.println("Usage: chat <contact_name> OR chat -g <group_name> OR chat -p <contact_name>");
+                    break;
+                }
+
+                // Check for flags
+                if (parts[1].equals("-g") || parts[1].equals("--group")) {
+                    // Group chat mode
+                    if (parts.length >= 3) {
+                        clientManager.enterGroupChat(parts[2]);
+                    } else {
+                        System.out.println("Usage: chat -g <group_name>");
+                    }
+                } else if (parts[1].equals("-p") || parts[1].equals("--private")) {
+                    // Private chat mode (explicit)
+                    if (parts.length >= 3) {
+                        clientManager.enterPrivateChat(parts[2]);
+                    } else {
+                        System.out.println("Usage: chat -p <contact_name>");
+                    }
                 } else {
-                    System.out.println("Usage: chat <contact_name>");
+                    // Default behavior - assume private chat
+                    clientManager.enterPrivateChat(parts[1]);
                 }
                 break;
 
-            case "create-private":
+            case "create-pc":
                 if (parts.length >= 2) {
                     clientManager.createPrivateChat(parts[1]);
                 } else {
@@ -41,7 +62,7 @@ public class CmdParser {
                 }
                 break;
 
-            case "create-group":
+            case "create-gc":
                 if (parts.length >= 3) {
                     // Format: create-group <chat_name> <user_id1> <user_id2> ...
                     String chatName = parts[1];

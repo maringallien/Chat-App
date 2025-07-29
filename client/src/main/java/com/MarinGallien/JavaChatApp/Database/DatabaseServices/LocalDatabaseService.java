@@ -64,6 +64,15 @@ public class LocalDatabaseService {
         }
     }
 
+    public String findContact(String username) {
+        try {
+            return contactRepo.findUserIdByUsername(username);
+        } catch (Exception e) {
+            logger.error("Error retrieving contact: {}", e.getMessage(), e);
+            return null;
+        }
+    }
+
     public List<Contact> getLocalContacts() {
         try {
             return contactRepo.findAll();
@@ -139,6 +148,35 @@ public class LocalDatabaseService {
             return Optional.empty();
         }
     }
+
+    public String findPrivateChat(String contactId) {
+        List<Chat> chats = getLocalChats();
+
+        for (Chat chat : chats) {
+            if (chat.getChatType() == ChatType.GROUP) {
+                continue;
+            }
+            if (chat.getParticipantIds().contains(contactId)) {
+                return chat.getChatId();
+            }
+        }
+        return null;
+    }
+
+    public String findGroupChat(String chatName) {
+        List<Chat> chats = getLocalChats();
+
+        for (Chat chat : chats) {
+            if (chat.getChatType() == ChatType.SINGLE) {
+                continue;
+            }
+            if (chat.getChatName().equals(chatName)) {
+                return chat.getChatId();
+            }
+        }
+        return null;
+    }
+
 
     // ========== MESSAGE SYNCHRONIZATION ==========
 

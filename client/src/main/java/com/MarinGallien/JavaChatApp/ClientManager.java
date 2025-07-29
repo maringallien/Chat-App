@@ -7,6 +7,7 @@ import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ChatRequests.*;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.MessageRequests.GetChatMessagesRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.MessageReponses.GetChatMessagesResponse;
+import com.MarinGallien.JavaChatApp.Database.DatabaseServices.LocalDatabaseService;
 import com.MarinGallien.JavaChatApp.Enums.ChatType;
 import com.MarinGallien.JavaChatApp.WebSocket.ChatService;
 
@@ -18,16 +19,18 @@ public class ClientManager {
     private final APIService apiService;
     private final ChatService chatService;
     private final ConsoleUI consoleUI;
+    private final LocalDatabaseService localDbService;
 
     private String userId;
     private String currentChatId;
     private String currentChatPartner;
 
-    public ClientManager(CmdParser cmdParser, APIService apiService,
-                         ChatService chatService, ConsoleUI consoleUI) {
+    public ClientManager(CmdParser cmdParser, APIService apiService, ChatService chatService,
+                         ConsoleUI consoleUI, LocalDatabaseService localDbService) {
         this.apiService = apiService;
         this.chatService = chatService;
         this.consoleUI = consoleUI;
+        this.localDbService = localDbService;
         userId = UserSession.getInstance().getUserId();
     }
 
@@ -40,6 +43,7 @@ public class ClientManager {
 //            cmdParser.parseAndExecute(input, this);
 //        }
 //    }
+
 
     // ========== AUTHENTICATION METHODS ==========
 
@@ -73,6 +77,36 @@ public class ClientManager {
 
 
     // ========== CHAT MANAGEMENT METHODS ==========
+
+    public void enterPrivateChat(String contactUname) {
+        try {
+            String contactId = localDbService.findContact(contactUname);
+
+            if (contactId == null) {
+                consoleUI.showChatNotFound(contactUname);
+            }
+
+            String chatId = localDbService.findPrivateChat(contactId);
+
+            if (chatId != null) {
+                this.currentChatId = chatId;
+                this.currentChatPartner = contactUname;
+                consoleUI.enterChatMode(contactUname);
+
+                // Load recent messages for context
+                loadRecentMessages(chatId);
+            } else {
+                consoleUI.showChatNotFound(contactUname);
+            }
+        } catch (Exception e) {
+            logger.error("Error entering chat with {}: {}", contactUname, e.getMessage());
+            consoleUI.showError("Failed to enter chat: " + e.getMessage());
+        }
+    }
+
+    public void enterGroupChat(String chatName) {
+
+    }
 
     public void createPrivateChat(String userId2) {
         try {
