@@ -1,4 +1,4 @@
-package com.MarinGallien.JavaChatApp.Database;
+package com.MarinGallien.JavaChatApp.Database.JPAEntities;
 
 import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
 import jakarta.persistence.*;

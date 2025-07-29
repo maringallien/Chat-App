@@ -2,9 +2,9 @@ package com.MarinGallien.JavaChatApp.WebSocket;
 
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.OnlineStatusMessage;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.WebSocketMessage;
-import com.MarinGallien.JavaChatApp.Database.Contact;
-import com.MarinGallien.JavaChatApp.Database.ContactRepo;
-import com.MarinGallien.JavaChatApp.Database.Message;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Contact;
+import com.MarinGallien.JavaChatApp.Database.JPARepos.ContactRepo;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Message;
 import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
 import com.MarinGallien.JavaChatApp.UserSession;
 import org.slf4j.Logger;

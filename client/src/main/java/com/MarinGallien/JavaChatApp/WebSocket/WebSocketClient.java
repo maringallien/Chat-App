@@ -1,7 +1,7 @@
 package com.MarinGallien.JavaChatApp.WebSocket;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.OnlineStatusMessage;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.WebSocketMessage;
-import com.MarinGallien.JavaChatApp.Database.Message;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Message;
 import com.MarinGallien.JavaChatApp.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

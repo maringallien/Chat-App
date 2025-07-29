@@ -1,4 +1,4 @@
-package com.MarinGallien.JavaChatApp.Database;
+package com.MarinGallien.JavaChatApp.Database.JPAEntities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
