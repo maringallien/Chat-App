@@ -45,16 +45,6 @@ public class ClientManager {
         userId = UserSession.getInstance().getUserId();
     }
 
-// Handle user input - delegate parsing
-//    public void handleUserInput(String input) {
-//        if (consoleUI.isInChatMode()) {
-//            handleChatInput(input);
-//        } else {
-//            // Let CmdParser parse and directly call the appropriate method
-//            cmdParser.parseAndExecute(input, this);
-//        }
-//    }
-
 
     // ========== AUTHENTICATION METHODS ==========
 
@@ -64,6 +54,7 @@ public class ClientManager {
 
             if (success) {
                 consoleUI.showLoginSuccess(UserSession.getUsername());
+                chatService.startChat();
             } else {
                 consoleUI.showLoginFailure();
             }
@@ -87,7 +78,66 @@ public class ClientManager {
     }
 
 
+    // ========== CHAT MODE UTILITIES FOR CMDPARSER ==========
+
+    public boolean isInChatMode() {
+        return consoleUI.isInChatMode();
+    }
+
+    public void sendMessage(String message) {
+        if (currentChatId == null) {
+            consoleUI.showError("Not in a chat. Use 'chat <contact>' to start chatting.");
+            return;
+        }
+
+        if (!chatService.isConnected()) {
+            consoleUI.showError("Not connected to chat server.");
+            return;
+        }
+
+        try {
+            chatService.sendMessage(currentChatId, message);
+            consoleUI.showSentMessage(message);
+        } catch (Exception e) {
+            consoleUI.showError("Failed to send message: " + e.getMessage());
+
+        }
+    }
+
+    public void exitCurrentChat() {
+        if (currentChatId != null) {
+            this.currentChatId = null;
+            consoleUI.exitChatMode();
+        }
+    }
+
+    public void disconnect() {
+        try {
+            // Stop chat service (sends offline status and disconnects WebSocket)
+            if (chatService != null && chatService.isConnected()) {
+                chatService.stopChat();
+            }
+
+            // Clear JWT token (logout from API)
+            if (apiService != null) {
+                apiService.logout();
+            }
+
+            // Exit any current chat
+            if (currentChatId != null) {
+                exitCurrentChat();
+            }
+
+
+        } catch (Exception e) {
+            consoleUI.showError("Error during disconnect: " + e.getMessage());
+        }
+    }
+
+
+
     // ========== CHAT MANAGEMENT METHODS ==========
+
 
     public void enterPrivateChat(String contactUname) {
         try {
@@ -169,7 +219,7 @@ public class ClientManager {
                     exitCurrentChat();
                 }
             } else {
-                consoleUI.showError("Failed to delete chat:");
+                consoleUI.showError("Failed to delete chat");
             }
         } catch (Exception e) {
             consoleUI.showError("Failed to delete chat: " + e.getMessage());
@@ -211,7 +261,7 @@ public class ClientManager {
             List<Chat> chats = chatDbService.getLocalChats();
 
             // Check for null or empty
-            if (chats == null && chats.isEmpty()) {
+            if (chats == null || chats.isEmpty()) {
                 consoleUI.showError("No chats were found");
                 return;
             }
@@ -285,7 +335,7 @@ public class ClientManager {
             if (contacts != null && !contacts.isEmpty()) {
                 consoleUI.showContacts(contacts);
             } else {
-                consoleUI.showError("Failed to get contacts");
+                consoleUI.showError("No contacts found");
             }
         } catch (Exception e) {
             consoleUI.showError("Failed to get contacts: " + e.getMessage());
@@ -385,20 +435,4 @@ public class ClientManager {
     }
 
 
-    // ========== PRIVATE HELPER METHODS ==========
-
-    // Chat input handling (no parsing needed - just send)
-    private void handleChatInput(String input) {
-        if (input.equals("/exit")) {
-            exitCurrentChat();
-        } else {
-            chatService.sendMessage(currentChatId, input);
-            consoleUI.showSentMessage(input);
-        }
-    }
-
-    private void exitCurrentChat() {
-        this.currentChatId = null;
-        consoleUI.exitChatMode();
-    }
 }

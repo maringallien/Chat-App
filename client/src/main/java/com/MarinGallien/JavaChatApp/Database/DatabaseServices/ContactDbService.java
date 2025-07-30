@@ -13,11 +13,24 @@ public class ContactDbService {
 
     private static final Logger logger = LoggerFactory.getLogger(ContactDbService.class);
 
-    private static ContactRepo contactRepo;
+    private final ContactRepo contactRepo;
+
+    public ContactDbService(ContactRepo contactRepo) {
+        this.contactRepo = contactRepo;
+    }
 
     public String findContact(String username) {
         try {
             return contactRepo.findUserIdByUsername(username);
+        } catch (Exception e) {
+            logger.error("Error retrieving contact: {}", e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public Contact findContactById(String id) {
+        try {
+            return contactRepo.findByUserId(id);
         } catch (Exception e) {
             logger.error("Error retrieving contact: {}", e.getMessage(), e);
             return null;
@@ -78,6 +91,15 @@ public class ContactDbService {
         } catch (Exception e) {
             logger.error("Error adding new contacts to local database: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to add new contacts to local database", e);
+        }
+    }
+
+    public void save(Contact contact) {
+        try {
+            contactRepo.save(contact);
+            logger.debug("Successfully saved contact with ID: {}", contact.getUserId());
+        } catch (Exception e) {
+            logger.error("Error saving contact: {}", e.getMessage());
         }
     }
 

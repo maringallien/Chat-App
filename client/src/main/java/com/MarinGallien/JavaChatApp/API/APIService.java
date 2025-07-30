@@ -161,4 +161,10 @@ public class APIService {
         GenericResponse response = apiClient.updatePassword(request);
         return response.success();
     }
+
+
+    // ========== UTILITY METHODS ==========
+    public void logout() {
+        apiClient.logout();
+    }
 }

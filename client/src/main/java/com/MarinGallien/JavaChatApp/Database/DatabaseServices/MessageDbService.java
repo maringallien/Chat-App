@@ -14,7 +14,11 @@ public class MessageDbService {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageDbService.class);
 
-    private static MessageRepo messageRepo;
+    private final MessageRepo messageRepo;
+
+    public MessageDbService(MessageRepo messageRepo) {
+        this.messageRepo = messageRepo;
+    }
 
     public void saveMessage(Message message) {
         try {

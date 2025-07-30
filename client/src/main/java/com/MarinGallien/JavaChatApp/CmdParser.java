@@ -5,6 +5,16 @@ import java.util.Arrays;
 public class CmdParser {
 
     public void parseAndExecute(String input, ClientManager clientManager) {
+       // Handle empty input
+        if (input == null || input.trim().isEmpty()) {
+            return;
+        }
+
+        if (clientManager.isInChatMode()) {
+            handleChatInput(input.trim(), clientManager);
+            return;
+        }
+
         String[] parts = input.trim().split("\\s+");
         String command = parts[0].toLowerCase();
 
@@ -156,7 +166,7 @@ public class CmdParser {
                 }
                 break;
 
-            // Utility commands
+            case "exit":
             case "help":
                 clientManager.showHelp();
                 break;
@@ -164,6 +174,14 @@ public class CmdParser {
             default:
                 System.out.println("Unknown command: " + command + ". Type 'help' for available commands.");
                 break;
+        }
+    }
+
+    private void handleChatInput(String input, ClientManager clientManager) {
+        if (input.equals("/exit")) {
+            clientManager.exitCurrentChat();
+        } else {
+            clientManager.sendMessage(input);
         }
     }
 }

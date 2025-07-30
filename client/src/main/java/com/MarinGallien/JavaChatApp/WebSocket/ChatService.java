@@ -2,6 +2,7 @@ package com.MarinGallien.JavaChatApp.WebSocket;
 
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.OnlineStatusMessage;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.WebSocketMessage;
+import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ContactDbService;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.Contact;
 import com.MarinGallien.JavaChatApp.Database.JPARepos.ContactRepo;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.Message;
@@ -18,7 +19,7 @@ public class ChatService implements WebSocketClient.MessageHandler {
     private MessageListener messageListener;
     private boolean connected = false;
     private String userId;
-    private final ContactRepo contactRepo;
+    private final ContactDbService contactDbService;
 
     // Interface for components that want to receive chat messages
     public interface MessageListener {
@@ -28,10 +29,10 @@ public class ChatService implements WebSocketClient.MessageHandler {
         void onError(String error);
     }
 
-    public ChatService(WebSocketClient webSocketClient, ContactRepo contactRepo) {
+    public ChatService(WebSocketClient webSocketClient, ContactDbService contactDbService) {
         this.webSocketClient = webSocketClient;
         userId = UserSession.getInstance().getUserId();
-        this.contactRepo = contactRepo;
+        this.contactDbService = contactDbService;
     }
 
 
@@ -135,10 +136,10 @@ public class ChatService implements WebSocketClient.MessageHandler {
         logger.debug("Received status update from {}: {}", status.getSenderID(), status.getStatus());
 
         // Update contact's status in database
-        Contact contact = contactRepo.findByUserId(status.getSenderID());
+        Contact contact = contactDbService.findContactById(status.getSenderID());
         if (contact != null) {
             contact.setStatus(status.getStatus());
-            contactRepo.save(contact);
+            contactDbService.save(contact);
         }
 
         if (messageListener != null) {

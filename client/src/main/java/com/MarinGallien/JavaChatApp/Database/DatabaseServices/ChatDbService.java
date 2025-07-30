@@ -16,7 +16,11 @@ public class ChatDbService {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatDbService.class);
 
-    private static ChatRepo chatRepo;
+    private final ChatRepo chatRepo;
+
+    public ChatDbService(ChatRepo chatRepo) {
+        this.chatRepo = chatRepo;
+    }
 
     public List<Chat> getLocalChats() {
         try {
