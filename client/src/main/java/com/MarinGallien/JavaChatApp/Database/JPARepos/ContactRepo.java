@@ -12,4 +12,7 @@ public interface ContactRepo extends JpaRepository<Contact, String> {
 
     @Query("SELECT c.userId FROM Contact WHERE c.username = :username")
     String findUserIdByUsername(@Param("username") String username);
+
+    @Query("SELECT c FROM Contact c ORDER BY c.createdAt DESC LIMIT 1")
+    Contact getLatestContact();
 }

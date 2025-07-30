@@ -19,4 +19,7 @@ public interface ChatRepo extends JpaRepository<Chat, String> {
     List<Chat> findChatsByUserId(@Param("userId") String userId);
 
     void deleteByChatId(String chatId);
+
+    @Query("SELECT c FROM Chat c ORDER BY c.createdAt DESC LIMIT 1")
+    Chat getLatestChat();
 }

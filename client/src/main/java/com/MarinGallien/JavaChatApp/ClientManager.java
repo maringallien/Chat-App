@@ -1,36 +1,52 @@
 package com.MarinGallien.JavaChatApp;
 
 import com.MarinGallien.JavaChatApp.API.APIService;
-import com.MarinGallien.JavaChatApp.Database.DatabaseServices.LocalDatabaseService;
+import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
+import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
+import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ChatDbService;
+import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ContactDbService;
+import com.MarinGallien.JavaChatApp.Database.DatabaseServices.MessageDbService;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.Contact;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.Message;
 import com.MarinGallien.JavaChatApp.WebSocket.ChatService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
 // ClientManager - handles business logic, not parsing
 public class ClientManager {
+
+    // Network services
     private final APIService apiService;
     private final ChatService chatService;
-    private final ConsoleUI consoleUI;
-    private final LocalDatabaseService localDbService;
 
+    // Database services
+    private final ChatDbService chatDbService;
+    private final ContactDbService contactDbService;
+    private final MessageDbService messageDbService;
+
+    // UI service
+    private final ConsoleUI consoleUI;
+
+    // Local parameters
     private String userId;
     private String currentChatId;
     private String currentChatPartner;
 
-    public ClientManager(CmdParser cmdParser, APIService apiService, ChatService chatService,
-                         ConsoleUI consoleUI, LocalDatabaseService localDbService) {
+    public ClientManager(APIService apiService, ChatService chatService, ChatDbService chatDbService,
+                         ContactDbService contactDbService, MessageDbService messageDbService, ConsoleUI consoleUI) {
         this.apiService = apiService;
         this.chatService = chatService;
+        this.chatDbService = chatDbService;
+        this.contactDbService = contactDbService;
+        this.messageDbService = messageDbService;
         this.consoleUI = consoleUI;
-        this.localDbService = localDbService;
         userId = UserSession.getInstance().getUserId();
     }
 
-    // Handle user input - delegate parsing
+// Handle user input - delegate parsing
 //    public void handleUserInput(String input) {
 //        if (consoleUI.isInChatMode()) {
 //            handleChatInput(input);
@@ -76,13 +92,13 @@ public class ClientManager {
 
     public void enterPrivateChat(String contactUname) {
         try {
-            String contactId = localDbService.findContact(contactUname);
+            String contactId = contactDbService.findContact(contactUname);
 
             if (contactId == null) {
                 consoleUI.showChatNotFound(contactUname);
             }
 
-            String chatId = localDbService.findPrivateChat(contactId);
+            String chatId = chatDbService.findPrivateChat(contactId);
 
             if (chatId != null) {
                 this.currentChatId = chatId;
@@ -90,7 +106,7 @@ public class ClientManager {
                 consoleUI.enterChatMode(contactUname);
 
                 // Load recent messages for context
-                consoleUI.showMessages(localDbService.getChatMessages(chatId));
+                consoleUI.showMessages(messageDbService.getChatMessages(chatId));
             } else {
                 consoleUI.showChatNotFound(contactUname);
             }
@@ -100,7 +116,18 @@ public class ClientManager {
     }
 
     public void enterGroupChat(String chatName) {
+        try {
+            String chatId = chatDbService.findGroupChat(chatName);
 
+            if (chatId != null) {
+                this.currentChatId = chatId;
+                consoleUI.enterChatMode(chatName);
+
+                consoleUI.showMessages(messageDbService.getChatMessages(chatId));
+            }
+        } catch (Exception e) {
+            consoleUI.showError("Failed to enter chat: " + e.getMessage());
+        }
     }
 
     public void createPrivateChat(String userId2) {
@@ -181,12 +208,40 @@ public class ClientManager {
 
     public void getUserChats() {
         try {
-            List<Chat> chats = localDbService.getLocalChats();
+            // Sync chats and retrieve updated list of chats
+            syncChats();
+            List<Chat> chats = chatDbService.getLocalChats();
 
-            if (chats != null && !chats.isEmpty()) {
-                consoleUI.showChats(chats);
-            } else {
-                consoleUI.showError("Failed to get chats");
+            // Check for null or empty
+            if (chats == null && chats.isEmpty()) {
+                consoleUI.showError("No chats were found");
+                return;
+            }
+
+            // Display chats
+            consoleUI.showChats(chats);
+        } catch (Exception e) {
+            consoleUI.showError("Failed to get chats: " + e.getMessage());
+        }
+    }
+
+    public void syncChats() {
+        try {
+            // Retrieve all chats from server
+            List<ChatDTO> chats = apiService.getUserChats();
+            if (chats == null) {
+                return;
+            }
+
+            // Identify chats created after latest chat stored locally
+            LocalDateTime lastChatTimestamp = chatDbService.getLastChatTimestamp();
+            List<ChatDTO> newChats = chats.stream()
+                    .filter(chat -> lastChatTimestamp == null || chat.getCreatedAt().isAfter(lastChatTimestamp))
+                    .toList();
+
+            // Add new chats to database
+            if (!newChats.isEmpty()) {
+                chatDbService.addNewChats(newChats);
             }
         } catch (Exception e) {
             consoleUI.showError("Failed to get chats: " + e.getMessage());
@@ -226,7 +281,8 @@ public class ClientManager {
 
     public void getUserContacts() {
         try {
-            List<Contact> contacts = localDbService.getContacts();
+            syncContacts();
+            List<Contact> contacts = contactDbService.getContacts();
 
             if (contacts != null && !contacts.isEmpty()) {
                 consoleUI.showContacts(contacts);
@@ -238,11 +294,35 @@ public class ClientManager {
         }
     }
 
+    public void syncContacts() {
+        try {
+            // Retrieve all contacts from server
+            List<ContactDTO> contacts = apiService.getUserContacts();
+            if (contacts == null) {
+                return;
+            }
+
+            // Identify contacts created after latest chat stored locally
+            LocalDateTime lastTimestamp = chatDbService.getLastChatTimestamp();
+            List<ContactDTO> newContacts = contacts.stream()
+                    .filter(contact -> lastTimestamp == null || contact.getCreatedAt().isAfter(lastTimestamp))
+                    .toList();
+
+            // Add new contacts to database
+            if (!newContacts.isEmpty()) {
+                contactDbService.addNewContacts(newContacts);
+            }
+        } catch (Exception e) {
+            consoleUI.showError("Failed to enter chat: " + e.getMessage());
+        }
+    }
+
+
     // ========== MESSAGE METHODS ==========
 
     public void getChatMessages(String chatId) {
         try {
-            List<Message> chatMessages = localDbService.getChatMessages(chatId);
+            List<Message> chatMessages = messageDbService.getChatMessages(chatId);
 
             if (chatMessages != null && !chatMessages.isEmpty()) {
                 consoleUI.showMessages(chatMessages);
@@ -253,6 +333,7 @@ public class ClientManager {
             consoleUI.showError("Failed to get messages: " + e.getMessage());
         }
     }
+
 
     // ========== USER UPDATE METHODS ==========
 
@@ -298,11 +379,13 @@ public class ClientManager {
         }
     }
 
+
     // ========== UTILITY METHODS ==========
 
     public void showHelp() {
         consoleUI.showHelp();
     }
+
 
     // ========== PRIVATE HELPER METHODS ==========
 
