@@ -14,7 +14,8 @@ public class MessageMapper {
                 message.getMessageId(),
                 message.getSender().getUserId(),
                 message.getChat().getChatId(),
-                message.getContent()
+                message.getContent(),
+                message.getSentAt()
         );
     }
 

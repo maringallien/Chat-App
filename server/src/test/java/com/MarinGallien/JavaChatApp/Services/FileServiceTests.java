@@ -14,6 +14,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -51,7 +52,8 @@ public class FileServiceTests {
                 "test.txt",
                 1024L,
                 "text/plain",
-                chatId
+                chatId,
+                LocalDateTime.now()
         );
 
         testMultipartFile = new MockMultipartFile(

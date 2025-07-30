@@ -13,7 +13,8 @@ public class UserMapper {
         return new ContactDTO(
                 user.getUserId(),
                 user.getUsername(),
-                user.getStatus()
+                user.getStatus(),
+                user.getDateJoined()
         );
     }
 

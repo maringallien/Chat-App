@@ -5,7 +5,6 @@ import com.MarinGallien.JavaChatApp.API.APIService;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ChatDbService;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ContactDbService;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.MessageDbService;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Contact;
 import com.MarinGallien.JavaChatApp.Database.JPARepos.ChatRepo;
 import com.MarinGallien.JavaChatApp.Database.JPARepos.ContactRepo;
 import com.MarinGallien.JavaChatApp.Database.JPARepos.MessageRepo;
@@ -18,8 +17,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.Scanner;
 
-public class ClientChatApp {
-    private static final Logger logger = LoggerFactory.getLogger(ClientChatApp.class);
+public class RunClient {
+    private static final Logger logger = LoggerFactory.getLogger(RunClient.class);
 
     private final ClientManager clientManager;
     private final ConsoleUI consoleUI;
@@ -27,7 +26,7 @@ public class ClientChatApp {
     private final Scanner scanner;
     private volatile boolean running = true;
 
-    public ClientChatApp(ChatRepo chatRepo, ContactRepo contactRepo, MessageRepo messageRepo) {
+    public RunClient(ChatRepo chatRepo, ContactRepo contactRepo, MessageRepo messageRepo) {
         // Init UI and command parser
         this.consoleUI = new ConsoleUI();
         this.cmdParser = new CmdParser();
@@ -59,10 +58,10 @@ public class ClientChatApp {
         logger.info("Starting Java Chat Client...");
 
         // Start spring context
-        ConfigurableApplicationContext context = SpringApplication.run(ClientChatApp.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(RunClient.class, args);
 
         // Get the main application bean and run it
-        ClientChatApp app = context.getBean(ClientChatApp.class);
+        RunClient app = context.getBean(RunClient.class);
         app.run();
 
         // Cleanup and exit

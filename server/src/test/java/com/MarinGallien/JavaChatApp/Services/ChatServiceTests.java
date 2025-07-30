@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -63,7 +64,8 @@ public class ChatServiceTests {
                 ChatType.SINGLE,
                 null,
                 null,
-                List.of(user1Id, user2Id)
+                List.of(user1Id, user2Id),
+                LocalDateTime.now()
         );
 
         testGcDTO = new ChatDTO(
@@ -71,7 +73,8 @@ public class ChatServiceTests {
                 ChatType.GROUP,
                 "Test Group",
                 user1Id,
-                List.of(user1Id, user2Id, user3Id)
+                List.of(user1Id, user2Id, user3Id),
+                LocalDateTime.now()
         );
     }
 

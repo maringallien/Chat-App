@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,13 +54,15 @@ public class ContactServiceTests {
         testContactDTO2 = new ContactDTO(
                 user2Id,
                 "bob",
-                OnlineStatus.ONLINE
+                OnlineStatus.ONLINE,
+                LocalDateTime.now()
         );
 
         testContactDTO3 = new ContactDTO(
                 user3Id,
                 "charlie",
-                OnlineStatus.ONLINE
+                OnlineStatus.ONLINE,
+                LocalDateTime.now()
         );
     }
 

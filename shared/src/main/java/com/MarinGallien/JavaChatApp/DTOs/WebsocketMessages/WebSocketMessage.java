@@ -16,6 +16,11 @@ public class WebSocketMessage extends BaseMessage {
         super();
     }
 
+    public WebSocketMessage(String chatID, String content) {
+        this.chatID = chatID;
+        this.content = content;
+    }
+
     // Getters
     public String getContent() { return content; }
     public String getChatID() { return chatID; }

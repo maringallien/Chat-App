@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,7 +45,8 @@ public class MessageServiceTests {
                 "msg1",
                 senderId,
                 chatId,
-                content
+                content,
+                LocalDateTime.now()
         );
     }
 
@@ -151,9 +153,9 @@ public class MessageServiceTests {
         Message message3 = new Message();
         List<Message> messagesList = List.of(message1, message2, message3);
 
-        MessageDTO messageDTO1 = new MessageDTO("msg1", senderId, "testuser", chatId, "Message 1", LocalDateTime.now(), MessageType.TEXT_MESSAGE);
-        MessageDTO messageDTO2 = new MessageDTO("msg2", senderId, "testuser", chatId, "Message 2", LocalDateTime.now(), MessageType.TEXT_MESSAGE);
-        MessageDTO messageDTO3 = new MessageDTO("msg3", senderId, "testuser", chatId, "Message 3", LocalDateTime.now(), MessageType.TEXT_MESSAGE);
+        MessageDTO messageDTO1 = new MessageDTO("msg1", senderId, chatId, "Message 1", LocalDateTime.now());
+        MessageDTO messageDTO2 = new MessageDTO("msg2", senderId, chatId, "Message 2", LocalDateTime.now());
+        MessageDTO messageDTO3 = new MessageDTO("msg3", senderId, chatId, "Message 3", LocalDateTime.now());
         List<MessageDTO> messageDTOsList = List.of(messageDTO1, messageDTO2, messageDTO3);
 
         when(messageDbService.getChatMessages(senderId, chatId)).thenReturn(messagesList);

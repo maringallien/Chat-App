@@ -1,4 +1,4 @@
 . Update code to be less repetitive by using lambda and helper methods
-. use createdAt/sentAt parameters for all entities
 . implement delayed delivery service support in client module
 . need methods to sync user contacts, chats, and messages with server. Current getUserchats/.contacts/messages only query database
+. don't currently have any file handling capabilities in the client

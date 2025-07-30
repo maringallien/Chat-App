@@ -13,6 +13,7 @@ import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,7 +41,7 @@ public class OfflineMessageServiceTests {
 
     @BeforeEach
     void setUp() {
-        testMessage = new WebSocketMessage("sender1", "chat1", "Hello World!", "recipient1");
+        testMessage = new WebSocketMessage("chat1", "Hello World!");
     }
 
     // ==========================================================================
@@ -336,7 +337,7 @@ public class OfflineMessageServiceTests {
     @Test
     void retrievePendingMessages_MultipleMessages_ReturnsAllMessages() throws JsonProcessingException {
         // Given
-        WebSocketMessage message2 = new WebSocketMessage("sender2", "chat2", "Hello Again!", "recipient2");
+        WebSocketMessage message2 = new WebSocketMessage("chat2", "Hello Again!");
         String messageJson2 = "{\"messageID\":\"msg2\",\"type\":\"TEXT_MESSAGE\",\"content\":\"Hello Again\"}";
         List<String> batch = List.of(messageJson, messageJson2);
 
