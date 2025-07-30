@@ -33,7 +33,6 @@ public class ClientManager {
     // Local parameters
     private String userId;
     private String currentChatId;
-    private String currentChatPartner;
 
     public ClientManager(APIService apiService, ChatService chatService, ChatDbService chatDbService,
                          ContactDbService contactDbService, MessageDbService messageDbService, ConsoleUI consoleUI) {
@@ -102,7 +101,6 @@ public class ClientManager {
 
             if (chatId != null) {
                 this.currentChatId = chatId;
-                this.currentChatPartner = contactUname;
                 consoleUI.enterChatMode(contactUname);
 
                 // Load recent messages for context
@@ -394,14 +392,13 @@ public class ClientManager {
         if (input.equals("/exit")) {
             exitCurrentChat();
         } else {
-            chatService.sendMessage(currentChatId, input, currentChatPartner);
+            chatService.sendMessage(currentChatId, input);
             consoleUI.showSentMessage(input);
         }
     }
 
     private void exitCurrentChat() {
         this.currentChatId = null;
-        this.currentChatPartner = null;
         consoleUI.exitChatMode();
     }
 }

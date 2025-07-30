@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public class ChatService implements WebSocketClient.MessageHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(ChatClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(ChatService.class);
 
     private final WebSocketClient webSocketClient;
     private MessageListener messageListener;
@@ -89,7 +89,7 @@ public class ChatService implements WebSocketClient.MessageHandler {
 
     // ========== COMMUNICATION METHODS =========
 
-    public void sendMessage(String chatId, String content, String recipientId) {
+    public void sendMessage(String chatId, String content) {
         if (!connected) {
             logger.warn("Cannot send message: not connected");
             return;
