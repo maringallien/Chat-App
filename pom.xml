@@ -59,6 +59,9 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring.boot.version}</version>
+                    <configuration>
+                        <skip>true</skip> <!-- Skip by default -->
+                    </configuration>
                 </plugin>
 
                 <plugin>
