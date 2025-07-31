@@ -1,4 +1,4 @@
-package com.MarinGallien.JavaChatApp.Database.JPAEntities;
+package com.MarinGallien.JavaChatApp.JPAEntities;
 
 import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
 import jakarta.persistence.*;
@@ -67,10 +67,6 @@ public class User {
     @OneToMany(mappedBy = "uploader", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<File> uploadedFiles = new HashSet<>();
 
-    // User to session relationship
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Session session;
-
 
     // Constructors
     public User() {}
@@ -108,9 +104,6 @@ public class User {
     public Set<File> getUploadedFiles() {
         return uploadedFiles;
     }
-    public Session getSession() {
-        return session;
-    }
 
 
     // Setters
@@ -140,9 +133,6 @@ public class User {
     }
     public void setUploadedFiles(Set<File> uploadedFiles) {
         this.uploadedFiles = uploadedFiles;
-    }
-    public void setSession(Session session) {
-        this.session = session;
     }
 
 

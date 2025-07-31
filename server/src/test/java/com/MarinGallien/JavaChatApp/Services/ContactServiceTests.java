@@ -2,8 +2,8 @@ package com.MarinGallien.JavaChatApp.Services;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ContactDbService;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Contact;
+import com.MarinGallien.JavaChatApp.JPAEntities.User;
+import com.MarinGallien.JavaChatApp.JPAEntities.Contact;
 import com.MarinGallien.JavaChatApp.Database.Mappers.UserMapper;
 import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
 import org.junit.jupiter.api.BeforeEach;

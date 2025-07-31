@@ -1,6 +1,6 @@
 package com.MarinGallien.JavaChatApp.Database.JPARepos;
 
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Message;
+import com.MarinGallien.JavaChatApp.JPAEntities.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

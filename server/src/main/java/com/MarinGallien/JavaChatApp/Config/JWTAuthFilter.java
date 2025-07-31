@@ -1,6 +1,6 @@
 package com.MarinGallien.JavaChatApp.Config;
 
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
+import com.MarinGallien.JavaChatApp.JPAEntities.User;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.UserRepo;
 import com.MarinGallien.JavaChatApp.Services.AuthService.JWTService;
 import jakarta.servlet.FilterChain;

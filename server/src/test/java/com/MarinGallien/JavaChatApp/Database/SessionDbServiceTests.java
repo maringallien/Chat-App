@@ -1,7 +1,7 @@
 package com.MarinGallien.JavaChatApp.Database;
 
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.SessionDbService;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
+import com.MarinGallien.JavaChatApp.JPAEntities.User;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.UserRepo;
 import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
 import org.junit.jupiter.api.BeforeEach;

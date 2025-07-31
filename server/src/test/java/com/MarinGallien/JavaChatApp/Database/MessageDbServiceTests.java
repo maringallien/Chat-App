@@ -1,10 +1,10 @@
 package com.MarinGallien.JavaChatApp.Database;
 
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.MessageDbService;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Message;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.ChatParticipant;
+import com.MarinGallien.JavaChatApp.JPAEntities.Chat;
+import com.MarinGallien.JavaChatApp.JPAEntities.Message;
+import com.MarinGallien.JavaChatApp.JPAEntities.User;
+import com.MarinGallien.JavaChatApp.JPAEntities.ChatParticipant;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.MessageRepo;
 import com.MarinGallien.JavaChatApp.Enums.ChatType;
 import com.MarinGallien.JavaChatApp.Enums.MessageType;

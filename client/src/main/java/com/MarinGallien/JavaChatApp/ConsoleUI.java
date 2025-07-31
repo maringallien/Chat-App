@@ -3,9 +3,10 @@ package com.MarinGallien.JavaChatApp;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Contact;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Message;
+import com.MarinGallien.JavaChatApp.JPAEntities.Chat;
+import com.MarinGallien.JavaChatApp.JPAEntities.Contact;
+import com.MarinGallien.JavaChatApp.JPAEntities.Message;
+
 import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
 import com.MarinGallien.JavaChatApp.WebSocket.ChatService;
 

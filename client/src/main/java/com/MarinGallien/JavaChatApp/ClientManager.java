@@ -6,9 +6,9 @@ import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ChatDbService;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ContactDbService;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.MessageDbService;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Contact;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Message;
+import com.MarinGallien.JavaChatApp.JPAEntities.Contact;
+import com.MarinGallien.JavaChatApp.JPAEntities.Message;
+import com.MarinGallien.JavaChatApp.JPAEntities.Chat;
 import com.MarinGallien.JavaChatApp.WebSocket.ChatService;
 
 import java.time.LocalDateTime;

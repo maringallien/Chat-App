@@ -1,8 +1,8 @@
 package com.MarinGallien.JavaChatApp.Database.DatabaseServices;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Message;
 import com.MarinGallien.JavaChatApp.Database.JPARepos.MessageRepo;
+import com.MarinGallien.JavaChatApp.JPAEntities.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

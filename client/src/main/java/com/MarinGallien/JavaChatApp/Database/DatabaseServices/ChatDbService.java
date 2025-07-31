@@ -1,9 +1,9 @@
 package com.MarinGallien.JavaChatApp.Database.DatabaseServices;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
 import com.MarinGallien.JavaChatApp.Database.JPARepos.ChatRepo;
 import com.MarinGallien.JavaChatApp.Enums.ChatType;
+import com.MarinGallien.JavaChatApp.JPAEntities.Chat;
 import com.MarinGallien.JavaChatApp.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,14 +82,19 @@ public class ChatDbService {
                 // Check if chat already exists to avoid duplicates
                 Optional<Chat> existingChat = chatRepo.findById(chatDTO.getChatId());
                 if (existingChat.isEmpty()) {
-                    Chat chat = new Chat(
-                            chatDTO.getChatId(),
-                            chatDTO.getChatType(),
-                            chatDTO.getChatName(),
-                            chatDTO.getCreatorId(),
-                            chatDTO.getParticipantIds(),
-                            chatDTO.getCreatedAt()
-                    );
+                    Chat chat = new Chat(chatDTO.getChatId(), chatDTO.getChatType());
+
+                    if (chatDTO.getChatType() == ChatType.GROUP) {
+                        chat.s;
+                    }
+//                    Chat chat = new Chat(
+//                            chatDTO.getChatId(),
+//                            chatDTO.getChatType(),
+//                            chatDTO.getChatName(),
+//                            chatDTO.getCreatorId(),
+//                            chatDTO.getParticipantIds(),
+//                            chatDTO.getCreatedAt()
+//                    );
                     chatRepo.save(chat);
                 }
             }

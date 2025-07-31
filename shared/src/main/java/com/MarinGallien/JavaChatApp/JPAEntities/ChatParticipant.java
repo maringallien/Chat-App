@@ -1,4 +1,4 @@
-package com.MarinGallien.JavaChatApp.Database.JPAEntities;
+package com.MarinGallien.JavaChatApp.JPAEntities;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;

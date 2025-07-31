@@ -1,7 +1,7 @@
 package com.MarinGallien.JavaChatApp.Database.Mappers;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.FileDTO;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.File;
+import com.MarinGallien.JavaChatApp.JPAEntities.File;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

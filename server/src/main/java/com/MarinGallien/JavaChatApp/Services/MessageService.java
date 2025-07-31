@@ -2,7 +2,7 @@ package com.MarinGallien.JavaChatApp.Services;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.MessageDbService;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Message;
+import com.MarinGallien.JavaChatApp.JPAEntities.Message;
 import com.MarinGallien.JavaChatApp.Database.Mappers.MessageMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

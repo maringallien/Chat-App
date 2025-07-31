@@ -2,7 +2,7 @@ package com.MarinGallien.JavaChatApp.Services;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.FileDTO;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.FileDbService;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.File;
+import com.MarinGallien.JavaChatApp.JPAEntities.File;
 import com.MarinGallien.JavaChatApp.Database.Mappers.FileMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

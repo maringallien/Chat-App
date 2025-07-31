@@ -1,7 +1,7 @@
 package com.MarinGallien.JavaChatApp.Database.JPARepositories;
 
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.ChatParticipant;
+import com.MarinGallien.JavaChatApp.JPAEntities.Chat;
+import com.MarinGallien.JavaChatApp.JPAEntities.ChatParticipant;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -2,8 +2,7 @@ package com.MarinGallien.JavaChatApp.Services;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.MessageDbService;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Message;
-import com.MarinGallien.JavaChatApp.Enums.MessageType;
+import com.MarinGallien.JavaChatApp.JPAEntities.Message;
 import com.MarinGallien.JavaChatApp.Database.Mappers.MessageMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 import java.util.List;

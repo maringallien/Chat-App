@@ -1,8 +1,8 @@
 package com.MarinGallien.JavaChatApp.Database;
 
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ContactDbService;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Contact;
+import com.MarinGallien.JavaChatApp.JPAEntities.User;
+import com.MarinGallien.JavaChatApp.JPAEntities.Contact;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.ContactRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
