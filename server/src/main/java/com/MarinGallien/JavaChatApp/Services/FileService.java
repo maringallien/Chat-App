@@ -80,8 +80,6 @@ public class FileService {
         }
     }
 
-    @EventListener
-    @Async("eventTaskExecutor")
     public boolean deleteFile(String userId, String chatId, String fileId) {
         try {
             // Validate inputs

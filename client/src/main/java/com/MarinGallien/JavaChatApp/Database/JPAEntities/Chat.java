@@ -5,6 +5,7 @@ import com.sun.jdi.CharType;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 
 @Entity
@@ -29,6 +30,7 @@ public class Chat {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
 
     public Chat(String chatId, ChatType chatType, String chatName, String creatorId,
                 List<String> participantIds, LocalDateTime createdAt) {

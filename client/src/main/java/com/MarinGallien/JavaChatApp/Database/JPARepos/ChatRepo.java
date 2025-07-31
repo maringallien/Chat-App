@@ -15,7 +15,7 @@ public interface ChatRepo extends JpaRepository<Chat, String> {
     @Query("SELECT c FROM Chat c WHERE c.chatId = :chatId")
     Optional<Chat> findByChatId(@Param("chatId") String chatId);
 
-    @Query("SELECT c FROM Chat c WHERE :userId MEMBER OF c.participantIds")
+    @Query("SELECT c FROM Chat c WHERE c.participantIds LIKE CONCAT('%', :userId, '%')")
     List<Chat> findChatsByUserId(@Param("userId") String userId);
 
     void deleteByChatId(String chatId);
