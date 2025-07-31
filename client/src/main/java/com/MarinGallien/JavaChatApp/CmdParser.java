@@ -1,6 +1,7 @@
 package com.MarinGallien.JavaChatApp;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class CmdParser {
 
@@ -39,7 +40,7 @@ public class CmdParser {
             // Chat commands
             case "chat":
                 if (parts.length < 2) {
-                    System.out.println("Usage: chat <contact_name> OR chat -g <group_name> OR chat -p <contact_name>");
+                    System.out.println("Usage: hat -g <group_name> OR chat -p <contact_name>");
                     break;
                 }
 
@@ -58,9 +59,6 @@ public class CmdParser {
                     } else {
                         System.out.println("Usage: chat -p <contact_name>");
                     }
-                } else {
-                    // Default behavior - assume private chat
-                    clientManager.enterPrivateChat(parts[1]);
                 }
                 break;
 
@@ -68,18 +66,18 @@ public class CmdParser {
                 if (parts.length >= 2) {
                     clientManager.createPrivateChat(parts[1]);
                 } else {
-                    System.out.println("Usage: create-private <user_id>");
+                    System.out.println("Usage: create-private <contact_username>");
                 }
                 break;
 
             case "create-gc":
                 if (parts.length >= 3) {
-                    // Format: create-group <chat_name> <user_id1> <user_id2> ...
+                    // Format: create-group <chat_name> <contact_username1> <contact_username2> ...
                     String chatName = parts[1];
-                    String[] memberIds = Arrays.copyOfRange(parts, 2, parts.length);
+                    List<String> memberIds = Arrays.asList(Arrays.copyOfRange(parts, 2, parts.length));
                     clientManager.createGroupChat(chatName, memberIds);
                 } else {
-                    System.out.println("Usage: create-group <chat_name> <user_id1> <user_id2> ...");
+                    System.out.println("Usage: create-group <chat_name> <contact_username1> <contact_username2> ...");
                 }
                 break;
 
@@ -87,7 +85,7 @@ public class CmdParser {
                 if (parts.length >= 2) {
                     clientManager.deleteChat(parts[1]);
                 } else {
-                    System.out.println("Usage: delete-chat <chat_id>");
+                    System.out.println("Usage: delete-chat <chat_name>");
                 }
                 break;
 
@@ -95,7 +93,7 @@ public class CmdParser {
                 if (parts.length >= 3) {
                     clientManager.addMemberToChat(parts[1], parts[2]);
                 } else {
-                    System.out.println("Usage: add-member <chat_id> <user_id>");
+                    System.out.println("Usage: add-member <chat_name> <contact_username>");
                 }
                 break;
 
@@ -103,7 +101,7 @@ public class CmdParser {
                 if (parts.length >= 3) {
                     clientManager.removeMemberFromChat(parts[1], parts[2]);
                 } else {
-                    System.out.println("Usage: remove-member <chat_id> <user_id>");
+                    System.out.println("Usage: remove-member <chat_name> <contact_username>");
                 }
                 break;
 
@@ -116,7 +114,7 @@ public class CmdParser {
                 if (parts.length >= 2) {
                     clientManager.addContact(parts[1]);
                 } else {
-                    System.out.println("Usage: add-contact <user_id>");
+                    System.out.println("Usage: add-contact <contact_username>");
                 }
                 break;
 
@@ -124,7 +122,7 @@ public class CmdParser {
                 if (parts.length >= 2) {
                     clientManager.removeContact(parts[1]);
                 } else {
-                    System.out.println("Usage: remove-contact <user_id>");
+                    System.out.println("Usage: remove-contact <contact_username>");
                 }
                 break;
 
@@ -137,7 +135,7 @@ public class CmdParser {
                 if (parts.length >= 2) {
                     clientManager.getChatMessages(parts[1]);
                 } else {
-                    System.out.println("Usage: messages <chat_id>");
+                    System.out.println("Usage: messages <chat_name>");
                 }
                 break;
 

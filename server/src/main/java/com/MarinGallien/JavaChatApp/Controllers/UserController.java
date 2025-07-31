@@ -1,5 +1,11 @@
 package com.MarinGallien.JavaChatApp.Controllers;
 
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.ChatIdRequest;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.UserIdRequest;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.UserIdsRequest;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.ChatIdResponse;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.UserIdResponse;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.UserIdsResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.UserRequests.UpdateEmailRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.UserRequests.UpdatePasswdRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.UserRequests.UpdateUnameRequest;
@@ -11,10 +17,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -120,4 +126,69 @@ public class UserController {
         }
     }
 
+    @GetMapping("/userId")
+    public ResponseEntity<UserIdResponse> getUserId(
+            @Valid @RequestBody UserIdRequest request,
+            BindingResult bindingResult) {
+
+        try {
+            // Return if input has any errors
+            if (bindingResult.hasErrors()) {
+                logger.warn("Invalid request to retrieve user ID from chat name: input parameters null or empty");
+                return ResponseEntity.badRequest().body(new UserIdResponse(false, null));
+            }
+
+            // Delegate to chat service
+            String userId = userService.getUserIdFromUsername(request.username());
+
+            // Handle no corresponding ID
+            if (userId == null || userId.isEmpty()) {
+                logger.warn("No ID found");
+                return ResponseEntity.badRequest().body(new UserIdResponse(false, null));
+            }
+
+            logger.info("Sending back user Id");
+            return ResponseEntity.ok().body(new UserIdResponse(true, userId));
+        } catch (Exception e) {
+            logger.error("Failed to retrieve user Id");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new UserIdResponse(false, null));
+        }
+    }
+
+    @GetMapping("/userIds")
+    public ResponseEntity<UserIdsResponse> getUserIds(
+            @Valid @RequestBody UserIdsRequest request,
+            BindingResult bindingResult) {
+
+        try {
+            // Return if input has any errors
+            if (bindingResult.hasErrors()) {
+                logger.warn("Invalid request to retrieve user ID from chat name: input parameters null or empty");
+                return ResponseEntity.badRequest().body(new UserIdsResponse(false, null));
+            }
+
+            // Delegate to chat service
+            List<String> userIds = new ArrayList<>();
+            for (String username : request.usernames()) {
+                String userId = userService.getUserIdFromUsername(username);
+                if (userId != null && !userId.isEmpty()) {
+                    userIds.add(userId);
+                }
+            }
+
+            // Handle no corresponding ID
+            if (userIds.isEmpty()) {
+                logger.warn("No IDs found");
+                return ResponseEntity.badRequest().body(new UserIdsResponse(false, null));
+            }
+
+            logger.info("Sending back user Ids");
+            return ResponseEntity.ok().body(new UserIdsResponse(true, userIds));
+        } catch (Exception e) {
+            logger.error("Failed to retrieve user Ids");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new UserIdsResponse(false, null));
+        }
+    }
 }

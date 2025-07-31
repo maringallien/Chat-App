@@ -1,8 +1,8 @@
 package com.MarinGallien.JavaChatApp.Database.DatabaseServices;
 
-import com.MarinGallien.JavaChatApp.JPAEntities.Chat;
-import com.MarinGallien.JavaChatApp.JPAEntities.User;
-import com.MarinGallien.JavaChatApp.JPAEntities.ChatParticipant;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.ChatParticipant;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.ChatParticipantRepo;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.ChatRepo;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.UserRepo;
@@ -49,8 +49,13 @@ public class ChatDbService {
                 return chatRepo.findChatById(privateChatId);
             }
 
+            String username1 = userRepo.findUserById(userId1).getUsername();
+            String username2 = userRepo.findUserById(userId2).getUsername();
+            String chatName = username1 + "-" + username2;
+
             // Create and save private chat
             Chat chat = new Chat(privateChatId, ChatType.SINGLE);
+            chat.setChatName(chatName);
             Chat managedChat = chatRepo.save(chat);
             logger.info("Created and saved private chat");
 
@@ -247,6 +252,18 @@ public class ChatDbService {
         } catch (Exception e) {
             logger.warn("Error retrieving chat-participant mappings: {}", e.getMessage());
             return List.of();
+        }
+    }
+
+    // ========== NETWORK GETTER METHOD SUPPORT ==========
+
+    public String getChatIdByChatName(String chatName) {
+        try {
+            Chat chat = chatRepo.findChatByChatName(chatName);
+            return chat.getChatId();
+        } catch (Exception e) {
+            logger.warn("Error retrieving chat ID: {}", e.getMessage());
+            return null;
         }
     }
 

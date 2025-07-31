@@ -2,12 +2,6 @@ package com.MarinGallien.JavaChatApp;
 
 import com.MarinGallien.JavaChatApp.API.APIClient;
 import com.MarinGallien.JavaChatApp.API.APIService;
-import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ChatDbService;
-import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ContactDbService;
-import com.MarinGallien.JavaChatApp.Database.DatabaseServices.MessageDbService;
-import com.MarinGallien.JavaChatApp.Database.JPARepos.ChatRepo;
-import com.MarinGallien.JavaChatApp.Database.JPARepos.ContactRepo;
-import com.MarinGallien.JavaChatApp.Database.JPARepos.MessageRepo;
 import com.MarinGallien.JavaChatApp.WebSocket.ChatService;
 import com.MarinGallien.JavaChatApp.WebSocket.WebSocketClient;
 import org.slf4j.Logger;
@@ -28,7 +22,7 @@ public class RunClient {
     private final Scanner scanner;
     private volatile boolean running = true;
 
-    public RunClient(ChatRepo chatRepo, ContactRepo contactRepo, MessageRepo messageRepo) {
+    public RunClient() {
         // Init UI and command parser
         this.consoleUI = new ConsoleUI();
         this.cmdParser = new CmdParser();
@@ -38,17 +32,11 @@ public class RunClient {
         APIClient apiClient = new APIClient();
         APIService apiService = new APIService(apiClient);
 
-        // Initialize database services
-        ChatDbService chatDbService = new ChatDbService(chatRepo);
-        ContactDbService contactDbService = new ContactDbService(contactRepo);
-        MessageDbService messageDbService = new MessageDbService(messageRepo);
-
         // Initialize WebSocket services
         WebSocketClient webSocketClient = new WebSocketClient();
-        ChatService chatService = new ChatService(webSocketClient, contactDbService);
+        ChatService chatService = new ChatService(webSocketClient);
 
-        this.clientManager = new ClientManager(apiService, chatService, chatDbService, contactDbService,
-                messageDbService, consoleUI);
+        this.clientManager = new ClientManager(apiService, chatService, consoleUI);
 
         chatService.setMessageListener(consoleUI);
     }

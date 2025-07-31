@@ -1,6 +1,6 @@
 package com.MarinGallien.JavaChatApp.Database.DatabaseServices;
 
-import com.MarinGallien.JavaChatApp.JPAEntities.User;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.UserRepo;
 import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
 import jakarta.transaction.Transactional;
@@ -255,6 +255,16 @@ public class UserDbService {
 
         } catch (Exception e) {
             logger.error("Failed to retrieve user by email: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public String getUserIdByUsername(String username) {
+        try {
+            User user = userRepo.findUserByUsername(username);
+            return user.getUserId();
+        } catch (Exception e) {
+            logger.error("Failed to retrieve user ID from username: {}", e.getMessage());
             return null;
         }
     }

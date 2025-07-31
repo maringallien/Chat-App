@@ -4,3 +4,11 @@
 . don't currently have any file handling capabilities in the client
 . fix client database to use proper JPA relationships instead of storing list of users for chat participants
 . remove all automatic ID generation from JPA entities and do that in database services
+
+. Add the following network getters:
+    . getUserId(username)
+    . getChatId(chatName)
+    . getUserIds(List<username>)
+    . getFileId(filename)
+
+. keep try-catch for controllers, and event handlers, maybe even service layer. Remove the rest

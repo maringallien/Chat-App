@@ -1,12 +1,16 @@
 package com.MarinGallien.JavaChatApp.Controllers;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.FileDTO;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.ChatIdRequest;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.FileIdRequest;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.ChatIdResponse;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.FileIdResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.FileRequests.DeleteFileRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.FileRequests.DownloadFileRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.FileRequests.GetChatFilesRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.FileResponses.GetChatFilesResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.GenericResponse;
-import com.MarinGallien.JavaChatApp.JPAEntities.File;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.File;
 import com.MarinGallien.JavaChatApp.Services.FileService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -170,6 +174,35 @@ public class FileController {
         }
     }
 
+    @GetMapping("/fileId")
+    public ResponseEntity<FileIdResponse> getFileId(
+            @Valid @RequestBody FileIdRequest request,
+            BindingResult bindingResult) {
+
+        try {
+            // Return if input has any errors
+            if (bindingResult.hasErrors()) {
+                logger.warn("Invalid request to retrieve chat ID from chat name: input parameters null or empty");
+                return ResponseEntity.badRequest().body(new FileIdResponse(false, null));
+            }
+
+            // Delegate to chat service
+            String fileId = fileService.getFileIdFromFilename(request.filename());
+
+            // Handle no corresponding ID
+            if (fileId == null || fileId.isEmpty()) {
+                logger.warn("No ID found");
+                return ResponseEntity.badRequest().body(new FileIdResponse(false, null));
+            }
+
+            logger.info("Sending back chat Id");
+            return ResponseEntity.ok().body(new FileIdResponse(true, fileId));
+        } catch (Exception e) {
+            logger.error("Failed to retrieve chat Id");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new FileIdResponse(false, null));
+        }
+    }
     private boolean validateId(String id) {
         return id != null && !id.trim().isEmpty();
     }

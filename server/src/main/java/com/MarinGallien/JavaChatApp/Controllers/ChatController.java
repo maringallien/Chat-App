@@ -2,12 +2,15 @@ package com.MarinGallien.JavaChatApp.Controllers;
 
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.ChatIdRequest;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.ChatIdResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ChatRequests.*;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.ChatResponses.GetUserChatsResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.GenericResponse;
-import com.MarinGallien.JavaChatApp.JPAEntities.Chat;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
 import com.MarinGallien.JavaChatApp.Services.ChatService;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -137,7 +140,7 @@ public class ChatController {
             }
 
             // Delegate to chatService
-            boolean added = chatService.addMember(request.creatorId(), request.userId(), request.chatId());
+            boolean added = chatService.addMember(request.creatorId(), request.memberId(), request.chatId());
 
             //If chat creation failed, send error message
             if (!added) {
@@ -169,7 +172,7 @@ public class ChatController {
             }
 
             // Delegate to chatService
-            boolean removed = chatService.removeMember(request.creatorId(), request.userId(), request.chatId());
+            boolean removed = chatService.removeMember(request.creatorId(), request.memberId(), request.chatId());
 
             // If chat creation failed, send error message
             if (!removed) {
@@ -222,5 +225,33 @@ public class ChatController {
         }
     }
 
+    @GetMapping("/chatId")
+    public ResponseEntity<ChatIdResponse> getChatId(
+            @Valid @RequestBody ChatIdRequest request,
+            BindingResult bindingResult) {
 
+        try {
+            // Return if input has any errors
+            if (bindingResult.hasErrors()) {
+                logger.warn("Invalid request to retrieve chat ID from chat name: input parameters null or empty");
+                return ResponseEntity.badRequest().body(new ChatIdResponse(false, null));
+            }
+
+            // Delegate to chat service
+            String chatId = chatService.getChatIdByChatName(request.chatName());
+
+            // Handle no corresponding ID
+            if (chatId == null || chatId.isEmpty()) {
+                logger.warn("No ID found");
+                return ResponseEntity.badRequest().body(new ChatIdResponse(false, null));
+            }
+
+            logger.info("Sending back chat Id");
+            return ResponseEntity.ok().body(new ChatIdResponse(true, chatId));
+        } catch (Exception e) {
+            logger.error("Failed to retrieve chat Id");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ChatIdResponse(false, null));
+        }
+    }
 }

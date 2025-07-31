@@ -2,7 +2,7 @@ package com.MarinGallien.JavaChatApp.Services;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.FileDTO;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.FileDbService;
-import com.MarinGallien.JavaChatApp.JPAEntities.File;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.File;
 import com.MarinGallien.JavaChatApp.Database.Mappers.FileMapper;
 import org.springframework.core.io.Resource;
 import org.slf4j.Logger;
@@ -124,6 +124,19 @@ public class FileService {
         } catch (Exception e) {
             logger.error("Failed to retrieve files list: {}", e.getMessage());
             return List.of();
+        }
+    }
+
+    public String getFileIdFromFilename(String filename) {
+        try {
+            if (filename == null || filename.isEmpty()) {
+                logger.warn("Failed to retrieve file ID: file name is null or empty");
+                return null;
+            }
+            return fileDbService.getFileIdByFilename(filename);
+        } catch (Exception e) {
+            logger.error("Failed to retrieve file ID from file name: {}", e.getMessage());
+            return null;
         }
     }
 

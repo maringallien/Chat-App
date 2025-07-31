@@ -3,15 +3,12 @@ package com.MarinGallien.JavaChatApp;
 import com.MarinGallien.JavaChatApp.API.APIService;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
-import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ChatDbService;
-import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ContactDbService;
-import com.MarinGallien.JavaChatApp.Database.DatabaseServices.MessageDbService;
-import com.MarinGallien.JavaChatApp.JPAEntities.Contact;
-import com.MarinGallien.JavaChatApp.JPAEntities.Message;
-import com.MarinGallien.JavaChatApp.JPAEntities.Chat;
+import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
 import com.MarinGallien.JavaChatApp.WebSocket.ChatService;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -22,11 +19,6 @@ public class ClientManager {
     private final APIService apiService;
     private final ChatService chatService;
 
-    // Database services
-    private final ChatDbService chatDbService;
-    private final ContactDbService contactDbService;
-    private final MessageDbService messageDbService;
-
     // UI service
     private final ConsoleUI consoleUI;
 
@@ -34,13 +26,9 @@ public class ClientManager {
     private String userId;
     private String currentChatId;
 
-    public ClientManager(APIService apiService, ChatService chatService, ChatDbService chatDbService,
-                         ContactDbService contactDbService, MessageDbService messageDbService, ConsoleUI consoleUI) {
+    public ClientManager(APIService apiService, ChatService chatService, ConsoleUI consoleUI) {
         this.apiService = apiService;
         this.chatService = chatService;
-        this.chatDbService = chatDbService;
-        this.contactDbService = contactDbService;
-        this.messageDbService = messageDbService;
         this.consoleUI = consoleUI;
         userId = UserSession.getInstance().getUserId();
     }
@@ -138,23 +126,25 @@ public class ClientManager {
 
     // ========== CHAT MANAGEMENT METHODS ==========
 
-
+    // METHOD NEEDS WORK. NEED TO FIND CHAT ID FROM USERNAME OR USER ID
     public void enterPrivateChat(String contactUname) {
         try {
-            String contactId = contactDbService.findContact(contactUname);
+            // Retrieve chat
+            String contactUserId = apiService.getUserIdFromUsername(contactUname);
 
-            if (contactId == null) {
-                consoleUI.showChatNotFound(contactUname);
+            if (contactUserId == null || contactUserId.isEmpty()) {
+                consoleUI.showError("Failed to retrieve contact user ID");
+                return;
             }
 
-            String chatId = chatDbService.findPrivateChat(contactId);
+            String chatId = determineChatId(userId, contactUserId);
 
             if (chatId != null) {
                 this.currentChatId = chatId;
                 consoleUI.enterChatMode(contactUname);
 
                 // Load recent messages for context
-                consoleUI.showMessages(messageDbService.getChatMessages(chatId));
+                consoleUI.showMessages(apiService.getChatMessages(chatId));
             } else {
                 consoleUI.showChatNotFound(contactUname);
             }
@@ -163,27 +153,44 @@ public class ClientManager {
         }
     }
 
+    private String determineChatId(String userId1, String userId2) {
+        String[] sortedIds = {userId1, userId2};
+        Arrays.sort(sortedIds);
+        return "PRIVATE_" + sortedIds[0] + "_" + sortedIds[1];
+    }
+
+
     public void enterGroupChat(String chatName) {
         try {
-            String chatId = chatDbService.findGroupChat(chatName);
-
-            if (chatId != null) {
-                this.currentChatId = chatId;
-                consoleUI.enterChatMode(chatName);
-
-                consoleUI.showMessages(messageDbService.getChatMessages(chatId));
+            // Retrieve chat ID from chat name
+            String chatId = apiService.getChatIdFromChatName(chatName);
+            if (chatId == null || chatId.isEmpty()) {
+                consoleUI.showError("Failed to retrieve chat ID");
+                return;
             }
+
+            this.currentChatId = chatId;
+            consoleUI.enterChatMode(chatName);
+            consoleUI.showMessages(apiService.getChatMessages(chatId));
+
         } catch (Exception e) {
             consoleUI.showError("Failed to enter chat: " + e.getMessage());
         }
     }
 
-    public void createPrivateChat(String userId2) {
+    public void createPrivateChat(String contactUname) {
         try {
-            boolean success = apiService.createPrivateChat(userId2);
+            // Retrieve contact ID from contact username
+            String contactId = apiService.getUserIdFromUsername(contactUname);
+            if (contactId == null || contactId.isEmpty()) {
+                consoleUI.showError("Failed to retrieve user ID");
+                return;
+            }
+
+            boolean success = apiService.createPrivateChat(contactId);
 
             if (success) {
-                consoleUI.showPrivateChatCreated(userId2);
+                consoleUI.showPrivateChatCreated(contactId);
             } else {
                 consoleUI.showError("Failed to create private chat");
             }
@@ -192,9 +199,16 @@ public class ClientManager {
         }
     }
 
-    public void createGroupChat(String chatName, String[] memberIds) {
+    public void createGroupChat(String chatName, List<String> memberUnames) {
         try {
-            Set<String> memberSet = Set.of(memberIds);
+            // Retrieve member IDs from member usernames
+            List<String> memberIds = apiService.getUserIdsFromUsernames(memberUnames);
+            if (memberIds == null || memberIds.isEmpty()) {
+                consoleUI.showError("Failed to retrieve user IDs");
+                return;
+            }
+
+            Set<String> memberSet = new HashSet<>(memberIds);
             boolean success = apiService.createGroupChat(memberSet, chatName);
 
             if (success) {
@@ -207,8 +221,15 @@ public class ClientManager {
         }
     }
 
-    public void deleteChat(String chatId) {
+    public void deleteChat(String chatName) {
         try {
+            // Retrieve chat ID from chat name
+            String chatId = apiService.getChatIdFromChatName(chatName);
+            if (chatId == null || chatId.isEmpty()) {
+                consoleUI.showError("Failed to retrieve chat ID");
+                return;
+            }
+
             boolean success = apiService.deleteChat(chatId);
 
             if (success) {
@@ -226,9 +247,17 @@ public class ClientManager {
         }
     }
 
-    public void addMemberToChat(String chatId, String userId) {
+    public void addMemberToChat(String chatName, String username) {
         try {
-            boolean success = apiService.addMemberToChat(userId, chatId);
+            // Retrieve chat and member IDs from chat name and username
+            String chatId = apiService.getChatIdFromChatName(chatName);
+            String memberId = apiService.getUserIdFromUsername(username);
+            if (memberId == null || chatId == null || memberId.isEmpty() || chatId.isEmpty()) {
+                consoleUI.showError("Failed to retrieve chat and/or user ID");
+                return;
+            }
+
+            boolean success = apiService.addMemberToChat(memberId, chatId);
 
             if (success) {
                 consoleUI.showSuccess("Member added to chat successfully");
@@ -240,8 +269,16 @@ public class ClientManager {
         }
     }
 
-    public void removeMemberFromChat(String chatId, String memberId) {
+    public void removeMemberFromChat(String chatName, String username) {
         try {
+            // Retrieve chat and member IDs from chat name and username
+            String chatId = apiService.getChatIdFromChatName(chatName);
+            String memberId = apiService.getUserIdFromUsername(username);
+            if (memberId == null || chatId == null || memberId.isEmpty() || chatId.isEmpty()) {
+                consoleUI.showError("Failed to retrieve chat and/or user ID");
+                return;
+            }
+
             boolean success = apiService.removeMemberFromChat(memberId, chatId);
 
             if (success) {
@@ -256,9 +293,7 @@ public class ClientManager {
 
     public void getUserChats() {
         try {
-            // Sync chats and retrieve updated list of chats
-            syncChats();
-            List<Chat> chats = chatDbService.getLocalChats();
+            List<ChatDTO> chats = apiService.getUserChats();
 
             // Check for null or empty
             if (chats == null || chats.isEmpty()) {
@@ -273,34 +308,16 @@ public class ClientManager {
         }
     }
 
-    public void syncChats() {
-        try {
-            // Retrieve all chats from server
-            List<ChatDTO> chats = apiService.getUserChats();
-            if (chats == null) {
-                return;
-            }
-
-            // Identify chats created after latest chat stored locally
-            LocalDateTime lastChatTimestamp = chatDbService.getLastChatTimestamp();
-            List<ChatDTO> newChats = chats.stream()
-                    .filter(chat -> lastChatTimestamp == null || chat.getCreatedAt().isAfter(lastChatTimestamp))
-                    .toList();
-
-            // Add new chats to database
-            if (!newChats.isEmpty()) {
-                chatDbService.addNewChats(newChats);
-            }
-        } catch (Exception e) {
-            consoleUI.showError("Failed to get chats: " + e.getMessage());
-        }
-    }
-
-
     // ========== CONTACT MANAGEMENT METHODS ==========
 
-    public void addContact(String contactId) {
+    public void addContact(String contactUname) {
         try {
+            // Retrieve contact ID from contact username
+            String contactId = apiService.getUserIdFromUsername(contactUname);
+            if (contactUname == null || contactUname.isEmpty()) {
+                consoleUI.showError("Failed to retrieve contact ID");
+            }
+
             boolean success = apiService.createContact(contactId);
 
             if (success) {
@@ -313,8 +330,14 @@ public class ClientManager {
         }
     }
 
-    public void removeContact(String contactId) {
+    public void removeContact(String contactUname) {
         try {
+            // Retrieve contact ID from contact username
+            String contactId = apiService.getUserIdFromUsername(contactUname);
+            if (contactUname == null || contactUname.isEmpty()) {
+                consoleUI.showError("Failed to retrieve contact ID");
+            }
+
             boolean success = apiService.removeContact(contactId);
 
             if (success) {
@@ -329,8 +352,7 @@ public class ClientManager {
 
     public void getUserContacts() {
         try {
-            syncContacts();
-            List<Contact> contacts = contactDbService.getContacts();
+            List<ContactDTO> contacts = apiService.getUserContacts();
 
             if (contacts != null && !contacts.isEmpty()) {
                 consoleUI.showContacts(contacts);
@@ -342,35 +364,19 @@ public class ClientManager {
         }
     }
 
-    public void syncContacts() {
-        try {
-            // Retrieve all contacts from server
-            List<ContactDTO> contacts = apiService.getUserContacts();
-            if (contacts == null) {
-                return;
-            }
-
-            // Identify contacts created after latest chat stored locally
-            LocalDateTime lastTimestamp = chatDbService.getLastChatTimestamp();
-            List<ContactDTO> newContacts = contacts.stream()
-                    .filter(contact -> lastTimestamp == null || contact.getCreatedAt().isAfter(lastTimestamp))
-                    .toList();
-
-            // Add new contacts to database
-            if (!newContacts.isEmpty()) {
-                contactDbService.addNewContacts(newContacts);
-            }
-        } catch (Exception e) {
-            consoleUI.showError("Failed to enter chat: " + e.getMessage());
-        }
-    }
-
 
     // ========== MESSAGE METHODS ==========
 
-    public void getChatMessages(String chatId) {
+    public void getChatMessages(String chatName) {
         try {
-            List<Message> chatMessages = messageDbService.getChatMessages(chatId);
+            // Retrieve chat ID from chat name
+            String chatId = apiService.getChatIdFromChatName(chatName);
+            if (chatName == null || chatName.isEmpty()) {
+                consoleUI.showError("Failed to retrieve chat ID");
+                return;
+            }
+
+            List<MessageDTO> chatMessages = apiService.getChatMessages(chatId);
 
             if (chatMessages != null && !chatMessages.isEmpty()) {
                 consoleUI.showMessages(chatMessages);
@@ -427,12 +433,10 @@ public class ClientManager {
         }
     }
 
-
     // ========== UTILITY METHODS ==========
 
     public void showHelp() {
         consoleUI.showHelp();
     }
-
 
 }

@@ -3,6 +3,14 @@ package com.MarinGallien.JavaChatApp.API;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.ChatIdRequest;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.FileIdRequest;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.UserIdRequest;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.UserIdsRequest;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.ChatIdResponse;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.FileIdResponse;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.UserIdResponse;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.UserIdsResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.AuthRequests.LoginRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.AuthRequests.RegisterRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ChatRequests.*;
@@ -160,6 +168,33 @@ public class APIService {
         UpdatePasswdRequest request = new UpdatePasswdRequest(userId, oldPassword, newPassword);
         GenericResponse response = apiClient.updatePassword(request);
         return response.success();
+    }
+
+
+    // ========== NETWORK GETTER METHODS ==========
+
+    public String getUserIdFromUsername(String username) {
+        UserIdRequest request = new UserIdRequest(username);
+        UserIdResponse response = apiClient.getUserIdFromUsername(request);
+        return response.userId();
+    }
+
+    public List<String> getUserIdsFromUsernames(List<String> usernames) {
+        UserIdsRequest request = new UserIdsRequest(usernames);
+        UserIdsResponse response = apiClient.getUserIdsFromUsernames(request);
+        return response.userIds();
+    }
+
+    public String getFileIdFromFilename(String filename) {
+        FileIdRequest request = new FileIdRequest(filename);
+        FileIdResponse response = apiClient.getFileIdFromFilename(request);
+        return response.fileId();
+    }
+
+    public String getChatIdFromChatName(String chatName) {
+        ChatIdRequest request = new ChatIdRequest(chatName);
+        ChatIdResponse response = apiClient.getChatIdFromChatName(request);
+        return response.chatId();
     }
 
 

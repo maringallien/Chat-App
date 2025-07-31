@@ -1,7 +1,7 @@
 package com.MarinGallien.JavaChatApp.Services;
 
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.UserDbService;
-import com.MarinGallien.JavaChatApp.JPAEntities.User;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
 import com.MarinGallien.JavaChatApp.Services.AuthService.JWTService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -199,6 +199,19 @@ public class UserService {
         } catch (Exception e) {
             logger.error("Error updating password: {}", e.getMessage());
             return false;
+        }
+    }
+
+    public String getUserIdFromUsername(String username) {
+        try {
+            if (username == null || username.isEmpty()) {
+                logger.warn("Failed to retrieve user Id: username is null or empty");
+                return null;
+            }
+            return userDbService.getUserIdByUsername(username);
+        } catch (Exception e) {
+            logger.error("Failed to retrieve user ID from username: {}", e.getMessage());
+            return null;
         }
     }
 

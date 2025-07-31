@@ -1,5 +1,13 @@
 package com.MarinGallien.JavaChatApp.API;
 
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.ChatIdRequest;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.FileIdRequest;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.UserIdRequest;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.UserIdsRequest;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.ChatIdResponse;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.FileIdResponse;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.UserIdResponse;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.UserIdsResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.AuthRequests.LoginRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.AuthRequests.RegisterRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ChatRequests.*;
@@ -24,6 +32,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.List;
 
 @Component
 public class APIClient {
@@ -223,6 +232,44 @@ public class APIClient {
         } catch (Exception e) {
             logger.error("Failed to update password: {}", e.getMessage());
             return new GenericResponse(false, "Failed to update password: " + e.getMessage());
+        }
+    }
+
+
+    // ========== NETWORK GETTER METHODS ==========
+    public UserIdResponse getUserIdFromUsername(UserIdRequest request) {
+        try {
+            return sendAuthenticatedRequest("/api/user/userId", request, UserIdResponse.class, "POST");
+        } catch (Exception e) {
+            logger.error("Failed to update email: {}", e.getMessage());
+            return new UserIdResponse(false, null);
+        }
+    }
+
+    public UserIdsResponse getUserIdsFromUsernames(UserIdsRequest request) {
+        try {
+            return sendAuthenticatedRequest("/api/user/userIds", request, UserIdsResponse.class, "POST");
+        } catch (Exception e) {
+            logger.error("Failed to update email: {}", e.getMessage());
+            return new UserIdsResponse(false, null);
+        }
+    }
+
+    public FileIdResponse getFileIdFromFilename(FileIdRequest request) {
+        try {
+            return sendAuthenticatedRequest("/api/fileId", request, FileIdResponse.class, "POST");
+        } catch (Exception e) {
+            logger.error("Failed to update email: {}", e.getMessage());
+            return new FileIdResponse(false, null);
+        }
+    }
+
+    public ChatIdResponse getChatIdFromChatName(ChatIdRequest request) {
+        try {
+            return sendAuthenticatedRequest("/api/chatId", request, ChatIdResponse.class, "POST");
+        } catch (Exception e) {
+            logger.error("Failed to update email: {}", e.getMessage());
+            return new ChatIdResponse(false, null);
         }
     }
 

@@ -1,7 +1,6 @@
 package com.MarinGallien.JavaChatApp.WebSocket;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.OnlineStatusMessage;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.WebSocketMessage;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Message;
 import com.MarinGallien.JavaChatApp.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,7 @@ public class WebSocketClient {
 
     // Simple callback interface for receiving messages and connection events
     public interface MessageHandler {
-        Message onMessage(WebSocketMessage message);        // Handle incoming chat messages
+        void onMessage(WebSocketMessage message);        // Handle incoming chat messages
         void onStatusUpdate(OnlineStatusMessage status);    // Handle user status changes
         void onConnected();                                 // Handle successful connection
         void onDisconnected();                              // Handle disconnection

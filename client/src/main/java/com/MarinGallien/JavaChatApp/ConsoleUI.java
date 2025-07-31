@@ -3,10 +3,6 @@ package com.MarinGallien.JavaChatApp;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
-import com.MarinGallien.JavaChatApp.JPAEntities.Chat;
-import com.MarinGallien.JavaChatApp.JPAEntities.Contact;
-import com.MarinGallien.JavaChatApp.JPAEntities.Message;
-
 import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
 import com.MarinGallien.JavaChatApp.WebSocket.ChatService;
 
@@ -83,36 +79,36 @@ public class ConsoleUI implements ChatService.MessageListener {
     // ========== DISPLAY METHODS FOR API DATA ==========
     // These methods are called by ClientManager to display data
 
-    public void showContacts(List<Contact> contacts) {
+    public void showContacts(List<ContactDTO> contacts) {
         System.out.println("=== Your Contacts ===");
         if (contacts.isEmpty()) {
             System.out.println("No contacts found.");
         } else {
-            for (Contact contact : contacts) {
-                String indicator = contact.getStatus() == OnlineStatus.ONLINE ? "🟢" : "⚪";
+            for (ContactDTO contact : contacts) {
+                String indicator = contact.getOnlineStatus() == OnlineStatus.ONLINE ? "🟢" : "⚪";
                 System.out.println(indicator + " " + contact.getUsername());
             }
         }
     }
 
-    public void showChats(List<Chat> chats) {
+    public void showChats(List<ChatDTO> chats) {
         System.out.println("=== Your Chats ===");
         if (chats.isEmpty()) {
             System.out.println("No chats found.");
         } else {
-            for (Chat chat : chats) {
-                String chatName = chat.getChatName() != null ? chat.getChatName() : "Private Chat";
+            for (ChatDTO chat : chats) {
+                String chatName = chat.getChatName();
                 System.out.println("- " + chatName + " (" + chat.getChatType() + ")");
             }
         }
     }
 
-    public void showMessages(List<Message> messages) {
+    public void showMessages(List<MessageDTO> messages) {
         System.out.println("=== Chat Messages ===");
         if (messages.isEmpty()) {
             System.out.println("No messages found.");
         } else {
-            for (Message message : messages) {
+            for (MessageDTO message : messages) {
                 System.out.println("[" + message.getSenderId() + "]: " + message.getContent());
             }
         }

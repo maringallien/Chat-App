@@ -8,7 +8,7 @@ public record AddOrRemoveMemberRequest(
         String creatorId,
 
         @NotBlank(message = "User ID is required")
-        String userId,
+        String memberId,
 
         @NotBlank(message = "Chat ID is required")
         String chatId

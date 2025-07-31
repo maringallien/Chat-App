@@ -1,6 +1,6 @@
 package com.MarinGallien.JavaChatApp.Database.JPARepositories;
 
-import com.MarinGallien.JavaChatApp.JPAEntities.Chat;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,4 +20,9 @@ public interface ChatRepo extends JpaRepository<Chat, String> {
     // Find a chat by ID
     @Query("SELECT c FROM Chat c WHERE c.chatId = :chatId")
     Chat findChatById(@Param("chatId") String chatId);
+
+    @Query("SELECT c FROM Chat c WHERE c.chatName = :chatName")
+    Chat findChatByChatName(@Param("ChatName") String chatName);
+
+
 }

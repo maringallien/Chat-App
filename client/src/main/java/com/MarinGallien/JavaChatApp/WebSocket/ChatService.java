@@ -2,10 +2,6 @@ package com.MarinGallien.JavaChatApp.WebSocket;
 
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.OnlineStatusMessage;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.WebSocketMessage;
-import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ContactDbService;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Contact;
-import com.MarinGallien.JavaChatApp.Database.JPARepos.ContactRepo;
-import com.MarinGallien.JavaChatApp.Database.JPAEntities.Message;
 import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
 import com.MarinGallien.JavaChatApp.UserSession;
 import org.slf4j.Logger;
@@ -19,7 +15,6 @@ public class ChatService implements WebSocketClient.MessageHandler {
     private MessageListener messageListener;
     private boolean connected = false;
     private String userId;
-    private final ContactDbService contactDbService;
 
     // Interface for components that want to receive chat messages
     public interface MessageListener {
@@ -29,10 +24,9 @@ public class ChatService implements WebSocketClient.MessageHandler {
         void onError(String error);
     }
 
-    public ChatService(WebSocketClient webSocketClient, ContactDbService contactDbService) {
+    public ChatService(WebSocketClient webSocketClient) {
         this.webSocketClient = webSocketClient;
         userId = UserSession.getInstance().getUserId();
-        this.contactDbService = contactDbService;
     }
 
 
@@ -114,33 +108,18 @@ public class ChatService implements WebSocketClient.MessageHandler {
     // ========== WebsocketClient.MessageHandler INTERFACE IMPLEMENTATION ==========
 
     @Override
-    public Message onMessage(WebSocketMessage message) {
+    public void onMessage(WebSocketMessage message) {
         logger.debug("Received message from {}: {}", message.getSenderID(), message.getContent());
 
         if (messageListener != null) {
             messageListener.onMessageReceived(message.getSenderID(), message.getContent());
         }
 
-        // Create Message object for potential database storage
-        Message dbMessage = new Message();
-        dbMessage.setMessageId(message.getMessageID());
-        dbMessage.setSenderId(message.getSenderID());
-        dbMessage.setChatId(message.getChatID());
-        dbMessage.setContent(message.getContent());
-
-        return dbMessage;
     }
 
     @Override
     public void onStatusUpdate(OnlineStatusMessage status) {
         logger.debug("Received status update from {}: {}", status.getSenderID(), status.getStatus());
-
-        // Update contact's status in database
-        Contact contact = contactDbService.findContactById(status.getSenderID());
-        if (contact != null) {
-            contact.setStatus(status.getStatus());
-            contactDbService.save(contact);
-        }
 
         if (messageListener != null) {
             messageListener.onStatusChanged(status.getSenderID(), status.getStatus());

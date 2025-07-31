@@ -2,7 +2,7 @@ package com.MarinGallien.JavaChatApp.Services;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ChatDbService;
-import com.MarinGallien.JavaChatApp.JPAEntities.Chat;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
 import com.MarinGallien.JavaChatApp.EventSystem.EventBusService;
 import com.MarinGallien.JavaChatApp.EventSystem.Events.ChatEvents.ChatCreated;
 import com.MarinGallien.JavaChatApp.EventSystem.Events.ChatEvents.ChatDeleted;
@@ -228,6 +228,19 @@ public class ChatService {
         } catch (Exception e) {
             logger.error("Error processing chats list request");
             return List.of();
+        }
+    }
+
+    public String getChatIdByChatName(String chatName) {
+        try {
+            if (chatName == null || chatName.isEmpty()) {
+                logger.warn("Failed to retrieve chat ID: chat name is null or empty.");
+                return null;
+            }
+            return chatDbService.getChatIdByChatName(chatName);
+        } catch (Exception e) {
+            logger.error("Failer to retrieve chat ID from chat name: {}", e.getMessage());
+            return null;
         }
     }
 

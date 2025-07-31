@@ -1,9 +1,9 @@
 package com.MarinGallien.JavaChatApp.Database.DatabaseServices;
 
-import com.MarinGallien.JavaChatApp.JPAEntities.Chat;
-import com.MarinGallien.JavaChatApp.JPAEntities.File;
-import com.MarinGallien.JavaChatApp.JPAEntities.Message;
-import com.MarinGallien.JavaChatApp.JPAEntities.User;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.File;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Message;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
 import com.MarinGallien.JavaChatApp.Database.JPARepositories.*;
 import com.MarinGallien.JavaChatApp.Enums.MessageType;
 import jakarta.transaction.Transactional;
@@ -279,6 +279,16 @@ public class FileDbService {
         } catch (Exception e) {
             logger.error("Failed to retrieve files list: {}", e.getMessage());
             return List.of();
+        }
+    }
+
+    public String getFileIdByFilename(String filename) {
+        try {
+            File file = fileRepo.findFileByFilename(filename);
+            return file.getFileId();
+        } catch (Exception e) {
+            logger.error("Failed to retrieve file from filename: {}", e.getMessage());
+            return null;
         }
     }
 }

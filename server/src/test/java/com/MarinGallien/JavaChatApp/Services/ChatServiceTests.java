@@ -2,7 +2,7 @@ package com.MarinGallien.JavaChatApp.Services;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
 import com.MarinGallien.JavaChatApp.Database.DatabaseServices.ChatDbService;
-import com.MarinGallien.JavaChatApp.JPAEntities.Chat;
+import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
 import com.MarinGallien.JavaChatApp.EventSystem.EventBusService;
 import com.MarinGallien.JavaChatApp.EventSystem.Events.ChatEvents.ChatCreated;
 import com.MarinGallien.JavaChatApp.EventSystem.Events.ChatEvents.ChatDeleted;
