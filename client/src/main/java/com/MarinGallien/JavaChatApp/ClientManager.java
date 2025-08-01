@@ -129,7 +129,7 @@ public class ClientManager {
     // METHOD NEEDS WORK. NEED TO FIND CHAT ID FROM USERNAME OR USER ID
     public void enterPrivateChat(String contactUname) {
         try {
-            // Retrieve chat
+            // Retrieve user ID
             String contactUserId = apiService.getUserIdFromUsername(contactUname);
 
             if (contactUserId == null || contactUserId.isEmpty()) {
@@ -137,14 +137,18 @@ public class ClientManager {
                 return;
             }
 
+            // Generate private chat ID (they are predictable)
             String chatId = determineChatId(userId, contactUserId);
 
             if (chatId != null) {
                 this.currentChatId = chatId;
                 consoleUI.enterChatMode(contactUname);
 
-                // Load recent messages for context
-                consoleUI.showMessages(apiService.getChatMessages(chatId));
+                List<MessageDTO> messages = apiService.getChatMessages(chatId);
+
+                if (!messages.isEmpty()) {
+                    consoleUI.showMessages(messages);
+                }
             } else {
                 consoleUI.showChatNotFound(contactUname);
             }

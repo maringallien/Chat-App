@@ -44,7 +44,7 @@ public class APIService {
         LoginResponse response = apiClient.login(request);
 
         if (response.success()) {
-            userId = UserSession.getInstance().getUserId();
+            userId = response.userId();
             // Set JWT token in API client for authenticated requests
             apiClient.setJwtToken(response.JwtToken());
             return true;
