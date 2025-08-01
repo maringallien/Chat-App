@@ -125,11 +125,14 @@ public class UserController {
                     .body(new GenericResponse(false, "Internal Server Error"));
         }
     }
+
     @PostMapping("/userId")
     public ResponseEntity<UserIdResponse> getUserId(
             @Valid @RequestBody UserIdRequest request,
             BindingResult bindingResult) {
         try {
+            logger.info("processing user id request");
+
             // Return if input has any errors
             if (bindingResult.hasErrors()) {
                 logger.warn("Invalid request to retrieve user ID: username parameter is null or empty");
