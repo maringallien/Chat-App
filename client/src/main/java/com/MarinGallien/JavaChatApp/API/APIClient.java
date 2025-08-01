@@ -22,6 +22,7 @@ import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.MessageReponses.
 
 import com.MarinGallien.JavaChatApp.UserSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -44,11 +45,13 @@ public class APIClient {
     private String jwtToken;
 
     public APIClient() {
-        this.baseUrl = UserSession.getWsBaseUrl();
+        this.baseUrl = UserSession.getHttpBaseUrl();
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
         this.objectMapper = new ObjectMapper();
+
+        this.objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
     }
 
     // ========== AUTHENTICATION METHODS ==========
