@@ -14,6 +14,9 @@ public class ChatDTO {
     private List<String> participantIds;
     private LocalDateTime createdAt;
 
+    public ChatDTO() {
+    }
+
     public ChatDTO(String chatId, ChatType chatType, String chatName, String creatorId,
                    List<String> participantIds, LocalDateTime createdAt) {
         this.chatId = chatId;

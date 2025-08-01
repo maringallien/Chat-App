@@ -10,6 +10,9 @@ public class ContactDTO {
     private OnlineStatus onlineStatus;
     private LocalDateTime createdAt;
 
+    public ContactDTO() {
+    }
+
     public ContactDTO(String userId, String username, OnlineStatus onlineStatus, LocalDateTime createdAt) {
         this.userId = userId;
         this.username = username;

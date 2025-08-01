@@ -50,7 +50,7 @@ public class APIClient {
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
         this.objectMapper = new ObjectMapper();
-
+        this.objectMapper.findAndRegisterModules();
         this.objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
     }
 
@@ -162,7 +162,7 @@ public class APIClient {
 
     public GetUserChatsResponse getUserChats(GetUserChatsRequest request) {
         try {
-            return sendAuthenticatedRequest("/api/chat/chats", request, GetUserChatsResponse.class, "GET");
+            return sendAuthenticatedRequest("/api/chat/chats", request, GetUserChatsResponse.class, "POST");
         } catch (Exception e) {
             logger.error("Failed to get user chats: {}", e.getMessage());
             return new GetUserChatsResponse(false, "Failed to get user chats: " + e.getMessage(), null);
@@ -191,7 +191,7 @@ public class APIClient {
 
     public GetUserContactsResponse getUserContacts(GetUserContactsRequest request) {
         try {
-            return sendAuthenticatedRequest("/api/contact/contacts", request, GetUserContactsResponse.class, "GET");
+            return sendAuthenticatedRequest("/api/contact/contacts", request, GetUserContactsResponse.class, "POST");
         } catch (Exception e) {
             logger.error("Failed to get user contacts: {}", e.getMessage());
             return new GetUserContactsResponse(false, "Failed to get user contacts: " + e.getMessage(), null);
@@ -202,7 +202,7 @@ public class APIClient {
 
     public GetChatMessagesResponse getChatMessages(GetChatMessagesRequest request) {
         try {
-            return sendAuthenticatedRequest("/api/message/messages", request, GetChatMessagesResponse.class, "GET");
+            return sendAuthenticatedRequest("/api/message/messages", request, GetChatMessagesResponse.class, "POST");
         } catch (Exception e) {
             logger.error("Failed to get chat messages: {}", e.getMessage());
             return new GetChatMessagesResponse(false, "Failed to get chat messages: " + e.getMessage(), null);

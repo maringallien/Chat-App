@@ -11,6 +11,8 @@ public class MessageDTO {
     private String content;
     private LocalDateTime sentAt;
 
+    public MessageDTO() {
+    }
 
     public MessageDTO(String messageId, String senderId, String chatId, String content, LocalDateTime sentAt) {
         this.messageId = messageId;
