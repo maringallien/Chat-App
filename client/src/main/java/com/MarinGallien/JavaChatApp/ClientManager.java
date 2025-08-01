@@ -56,6 +56,9 @@ public class ClientManager {
             boolean success = apiService.register(username, email, password);
 
             if (success) {
+                UserSession.getInstance().setUsername(username);
+                UserSession.getInstance().setEmail(email);
+
                 consoleUI.showRegistrationSuccess();
             } else {
                 consoleUI.showRegistrationFailure();
