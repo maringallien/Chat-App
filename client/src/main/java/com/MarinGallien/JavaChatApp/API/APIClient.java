@@ -242,7 +242,7 @@ public class APIClient {
     // ========== NETWORK GETTER METHODS ==========
     public UserIdResponse getUserIdFromUsername(UserIdRequest request) {
         try {
-            return sendAuthenticatedRequest("/api/user/userId", request, UserIdResponse.class, "POST");
+            return sendAuthenticatedRequest("/api/user/userId", request, UserIdResponse.class, "GET");
         } catch (Exception e) {
             logger.error("Failed to update email: {}", e.getMessage());
             return new UserIdResponse(false, null);
@@ -251,7 +251,7 @@ public class APIClient {
 
     public UserIdsResponse getUserIdsFromUsernames(UserIdsRequest request) {
         try {
-            return sendAuthenticatedRequest("/api/user/userIds", request, UserIdsResponse.class, "POST");
+            return sendAuthenticatedRequest("/api/user/userIds", request, UserIdsResponse.class, "GET");
         } catch (Exception e) {
             logger.error("Failed to update email: {}", e.getMessage());
             return new UserIdsResponse(false, null);
@@ -260,7 +260,7 @@ public class APIClient {
 
     public FileIdResponse getFileIdFromFilename(FileIdRequest request) {
         try {
-            return sendAuthenticatedRequest("/api/fileId", request, FileIdResponse.class, "POST");
+            return sendAuthenticatedRequest("/api/fileId", request, FileIdResponse.class, "GET");
         } catch (Exception e) {
             logger.error("Failed to update email: {}", e.getMessage());
             return new FileIdResponse(false, null);
@@ -269,7 +269,7 @@ public class APIClient {
 
     public ChatIdResponse getChatIdFromChatName(ChatIdRequest request) {
         try {
-            return sendAuthenticatedRequest("/api/chatId", request, ChatIdResponse.class, "POST");
+            return sendAuthenticatedRequest("/api/chatId", request, ChatIdResponse.class, "GET");
         } catch (Exception e) {
             logger.error("Failed to update email: {}", e.getMessage());
             return new ChatIdResponse(false, null);

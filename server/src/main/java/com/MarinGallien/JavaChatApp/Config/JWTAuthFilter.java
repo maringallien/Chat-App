@@ -97,7 +97,8 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         return path.equals("/auth/login") ||
                 path.equals("/auth/register") ||
                 path.equals("/h2-console") ||
-                path.equals("/public");
-        }
+                path.equals("/public") ||
+                path.startsWith("/ws");
+    }
 
 }

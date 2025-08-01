@@ -173,18 +173,56 @@ public class ConsoleUI implements ChatService.MessageListener {
     }
 
     public void showHelp() {
-        System.out.println("Available commands:");
-        System.out.println("  login <email> <password>     - Login to your account");
-        System.out.println("  register <username> <email> <password> - Create new account");
-        System.out.println("  chat <contact_name>          - Start chat with contact");
-        System.out.println("  contacts                     - Show your contacts");
-        System.out.println("  chats                        - Show your chats");
-        System.out.println("  add <user_id>                - Add contact by user ID");
-        System.out.println("  remove <user_id>             - Remove contact by user ID");
-        System.out.println("  create <contact_name>        - Create private chat");
-        System.out.println("  messages <chat_name>         - Show chat messages");
-        System.out.println("  help                         - Show this help");
-        System.out.println("  exit                         - Exit application");
+        System.out.println("=== Available commands ===");
+        System.out.println();
+
+        // Authentication commands
+        System.out.println("=== Authentication ===");
+        System.out.println("  login <email> <password>                    - Login to your account");
+        System.out.println("  register <username> <email> <password>      - Create new account");
+        System.out.println();
+
+        // Chat commands
+        System.out.println("=== Chat Management ===");
+        System.out.println("  chat -g <group_name>                        - Join group chat");
+        System.out.println("  chat -p <contact_name>                      - Start private chat");
+        System.out.println("  create-pc <contact_username>                - Create private chat");
+        System.out.println("  create-gc <chat_name> <contact1> <contact2> - Create group chat with contacts");
+        System.out.println("  delete-chat <chat_name>                     - Delete a chat");
+        System.out.println("  chats                                       - Show your chats");
+        System.out.println("  messages <chat_name>                        - Show chat messages");
+        System.out.println();
+
+        // Group chat management
+        System.out.println("=== Group Chat Management ===");
+        System.out.println("  add-member <chat_name> <contact_username>   - Add member to group chat");
+        System.out.println("  remove-member <chat_name> <contact_username>- Remove member from group chat");
+        System.out.println();
+
+        // Contact commands
+        System.out.println("=== Contact Management ===");
+        System.out.println("  add-contact <contact_username>              - Add contact by username");
+        System.out.println("  remove-contact <contact_username>           - Remove contact by username");
+        System.out.println("  contacts                                    - Show your contacts");
+        System.out.println();
+
+        // User update commands
+        System.out.println("=== Account Settings ===");
+        System.out.println("  update-username <new_username>              - Update your username");
+        System.out.println("  update-email <new_email>                    - Update your email");
+        System.out.println("  update-password <old_password> <new_password> - Update your password");
+        System.out.println();
+
+        // Utility commands
+        System.out.println("=== Utility ===");
+        System.out.println("  help                                        - Show this help");
+        System.out.println("  exit                                        - Exit application");
+        System.out.println();
+
+        // Chat mode info
+        System.out.println("=== In Chat Mode ===");
+        System.out.println("  Type messages to send them");
+        System.out.println("  /exit                                       - Leave current chat");
     }
 
     public void showGoodbye() {
