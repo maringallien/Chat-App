@@ -45,7 +45,7 @@ public class APIClient {
     private String jwtToken;
 
     public APIClient() {
-        this.baseUrl = UserSession.getHttpBaseUrl();
+        this.baseUrl = UserSession.getInstance().getHttpBaseUrl();
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
@@ -77,7 +77,7 @@ public class APIClient {
 
             // Init userSession
             if (loginResponse.success()) {
-                UserSession.initUserSession(loginResponse.userId(), loginResponse.JwtToken());
+                UserSession.getInstance().initUserSession(loginResponse.userId(), loginResponse.JwtToken());
             }
 
             return loginResponse;

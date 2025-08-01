@@ -68,9 +68,9 @@ public class WebSocketClient {
     // Connect to the chat server asynchronously using JWT authentication
     public CompletableFuture<Void> connect (MessageHandler handler) {
         // Load session parameters
-        String userId = UserSession.getUserId();
-        String jwtToken = UserSession.getJwtToken();
-        String url = UserSession.getWsBaseUrl();
+        String userId = UserSession.getInstance().getUserId();
+        String jwtToken = UserSession.getInstance().getJwtToken();
+        String url = UserSession.getInstance().getWsBaseUrl();
 
         // Initialize handler
         this.messageHandler = handler;

@@ -23,14 +23,12 @@ public class ClientManager {
     private final ConsoleUI consoleUI;
 
     // Local parameters
-    private String userId;
     private String currentChatId;
 
     public ClientManager(APIService apiService, ChatService chatService, ConsoleUI consoleUI) {
         this.apiService = apiService;
         this.chatService = chatService;
         this.consoleUI = consoleUI;
-        userId = UserSession.getInstance().getUserId();
     }
 
 
@@ -41,7 +39,7 @@ public class ClientManager {
             boolean success = apiService.login(email, password);
 
             if (success) {
-                consoleUI.showLoginSuccess(UserSession.getUsername());
+                consoleUI.showLoginSuccess(UserSession.getInstance().getUsername());
                 chatService.startChat();
             } else {
                 consoleUI.showLoginFailure();
@@ -141,7 +139,7 @@ public class ClientManager {
             }
 
             // Generate private chat ID (they are predictable)
-            String chatId = determineChatId(userId, contactUserId);
+            String chatId = determineChatId(contactUserId);
 
             if (chatId != null) {
                 this.currentChatId = chatId;
@@ -160,12 +158,12 @@ public class ClientManager {
         }
     }
 
-    private String determineChatId(String userId1, String userId2) {
-        String[] sortedIds = {userId1, userId2};
+    private String determineChatId(String userId2) {
+        String localUserId = UserSession.getInstance().getUserId();
+        String[] sortedIds = {localUserId, userId2};
         Arrays.sort(sortedIds);
         return "PRIVATE_" + sortedIds[0] + "_" + sortedIds[1];
     }
-
 
     public void enterGroupChat(String chatName) {
         try {

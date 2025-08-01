@@ -149,7 +149,7 @@ public class APIService {
         GenericResponse response = apiClient.updateUsername(request);
 
         if (response.success()) {
-            UserSession.setUsername(newUsername);
+            UserSession.getInstance().setUsername(newUsername);
             return true;
         }
         return false;
@@ -160,7 +160,7 @@ public class APIService {
         GenericResponse response = apiClient.updateEmail(request);
 
         if (response.success()) {
-            UserSession.setEmail(newEmail);
+            UserSession.getInstance().setEmail(newEmail);
             return true;
         }
         return false;

@@ -16,7 +16,6 @@ public enum ChatType {
     }
 
     // Getter for JSON serialization
-    @JsonValue
     public String getValue() {
         return value;
     }
@@ -27,7 +26,6 @@ public enum ChatType {
         return value;
     }
 
-    @JsonCreator
     public static ChatType fromString(String value) {
         // Handle null input
         if (value == null) {
