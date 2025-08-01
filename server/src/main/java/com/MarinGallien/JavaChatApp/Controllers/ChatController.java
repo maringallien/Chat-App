@@ -225,7 +225,7 @@ public class ChatController {
         }
     }
 
-    @GetMapping("/chatId")
+    @PostMapping("/chatId")
     public ResponseEntity<ChatIdResponse> getChatId(
             @Valid @RequestBody ChatIdRequest request,
             BindingResult bindingResult) {

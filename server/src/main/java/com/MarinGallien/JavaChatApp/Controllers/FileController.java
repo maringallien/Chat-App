@@ -174,7 +174,7 @@ public class FileController {
         }
     }
 
-    @GetMapping("/fileId")
+    @PostMapping("/fileId")
     public ResponseEntity<FileIdResponse> getFileId(
             @Valid @RequestBody FileIdRequest request,
             BindingResult bindingResult) {

@@ -314,7 +314,7 @@ public class ClientManager {
         try {
             // Retrieve contact ID from contact username
             String contactId = apiService.getUserIdFromUsername(contactUname);
-            if (contactUname == null || contactUname.isEmpty()) {
+            if (contactId == null || contactId.isEmpty()) {
                 consoleUI.showError("Failed to retrieve contact ID");
             }
 
@@ -334,7 +334,7 @@ public class ClientManager {
         try {
             // Retrieve contact ID from contact username
             String contactId = apiService.getUserIdFromUsername(contactUname);
-            if (contactUname == null || contactUname.isEmpty()) {
+            if (contactId == null || contactId.isEmpty()) {
                 consoleUI.showError("Failed to retrieve contact ID");
             }
 

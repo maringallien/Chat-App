@@ -126,20 +126,17 @@ public class UserController {
         }
     }
 
-    @GetMapping("/userId")
-    public ResponseEntity<UserIdResponse> getUserId(
-            @Valid @RequestBody UserIdRequest request,
-            BindingResult bindingResult) {
-
+    @PostMapping("/userId")
+    public ResponseEntity<UserIdResponse> getUserId(@RequestParam String username) {
         try {
             // Return if input has any errors
-            if (bindingResult.hasErrors()) {
-                logger.warn("Invalid request to retrieve user ID from chat name: input parameters null or empty");
+            if (username == null || username.trim().isEmpty()) {  // ← Simple validation
+                logger.warn("Invalid request to retrieve user ID: username parameter is null or empty");
                 return ResponseEntity.badRequest().body(new UserIdResponse(false, null));
             }
 
             // Delegate to chat service
-            String userId = userService.getUserIdFromUsername(request.username());
+            String userId = userService.getUserIdFromUsername(username);
 
             // Handle no corresponding ID
             if (userId == null || userId.isEmpty()) {
@@ -156,7 +153,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/userIds")
+    @PostMapping("/userIds")
     public ResponseEntity<UserIdsResponse> getUserIds(
             @Valid @RequestBody UserIdsRequest request,
             BindingResult bindingResult) {

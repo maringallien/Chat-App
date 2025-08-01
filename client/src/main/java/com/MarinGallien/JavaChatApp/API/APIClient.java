@@ -202,7 +202,7 @@ public class APIClient {
 
     public GetChatMessagesResponse getChatMessages(GetChatMessagesRequest request) {
         try {
-            return sendAuthenticatedRequest("/api/message/messages", request, GetChatMessagesResponse.class, "POST");
+            return sendAuthenticatedRequest("/api/message/messages", request, GetChatMessagesResponse.class, "GET");
         } catch (Exception e) {
             logger.error("Failed to get chat messages: {}", e.getMessage());
             return new GetChatMessagesResponse(false, "Failed to get chat messages: " + e.getMessage(), null);
@@ -242,36 +242,36 @@ public class APIClient {
     // ========== NETWORK GETTER METHODS ==========
     public UserIdResponse getUserIdFromUsername(UserIdRequest request) {
         try {
-            return sendAuthenticatedRequest("/api/user/userId", request, UserIdResponse.class, "GET");
+            return sendAuthenticatedRequest("/api/user/userId", request, UserIdResponse.class, "POST");
         } catch (Exception e) {
-            logger.error("Failed to update email: {}", e.getMessage());
+            logger.error("Failed to retrieve user ID: {}", e.getMessage());
             return new UserIdResponse(false, null);
         }
     }
 
     public UserIdsResponse getUserIdsFromUsernames(UserIdsRequest request) {
         try {
-            return sendAuthenticatedRequest("/api/user/userIds", request, UserIdsResponse.class, "GET");
+            return sendAuthenticatedRequest("/api/user/userIds", request, UserIdsResponse.class, "POST");
         } catch (Exception e) {
-            logger.error("Failed to update email: {}", e.getMessage());
+            logger.error("Failed to retrieve user IDs: {}", e.getMessage());
             return new UserIdsResponse(false, null);
         }
     }
 
     public FileIdResponse getFileIdFromFilename(FileIdRequest request) {
         try {
-            return sendAuthenticatedRequest("/api/fileId", request, FileIdResponse.class, "GET");
+            return sendAuthenticatedRequest("/api/fileId", request, FileIdResponse.class, "POST");
         } catch (Exception e) {
-            logger.error("Failed to update email: {}", e.getMessage());
+            logger.error("Failed to retrieve file ID: {}", e.getMessage());
             return new FileIdResponse(false, null);
         }
     }
 
     public ChatIdResponse getChatIdFromChatName(ChatIdRequest request) {
         try {
-            return sendAuthenticatedRequest("/api/chatId", request, ChatIdResponse.class, "GET");
+            return sendAuthenticatedRequest("/api/chatId", request, ChatIdResponse.class, "POST");
         } catch (Exception e) {
-            logger.error("Failed to update email: {}", e.getMessage());
+            logger.error("Failed to retrieve chat ID: {}", e.getMessage());
             return new ChatIdResponse(false, null);
         }
     }
