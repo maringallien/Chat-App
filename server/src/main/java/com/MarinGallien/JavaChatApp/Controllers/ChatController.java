@@ -191,7 +191,7 @@ public class ChatController {
         }
     }
 
-    @GetMapping("/chats")
+    @PostMapping("/chats")
     public ResponseEntity<GetUserChatsResponse> getUserChats(
             @Valid @RequestBody GetUserChatsRequest request,
             BindingResult bindingResult) {

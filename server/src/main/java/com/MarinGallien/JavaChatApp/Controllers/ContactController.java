@@ -92,7 +92,7 @@ public class ContactController {
         }
     }
 
-    @GetMapping("/contacts")
+    @PostMapping("/contacts")
     public ResponseEntity<GetUserContactsResponse> getUserContacts(
             @Valid @RequestBody GetUserContactsRequest request,
             BindingResult bindingResult) {

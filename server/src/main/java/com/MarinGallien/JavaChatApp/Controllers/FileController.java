@@ -139,7 +139,7 @@ public class FileController {
         }
     }
 
-    @GetMapping("/files")
+    @PostMapping("/files")
     public ResponseEntity<GetChatFilesResponse> getChatFiles (
             @Valid @RequestBody GetChatFilesRequest request,
             BindingResult bindingResult) {
