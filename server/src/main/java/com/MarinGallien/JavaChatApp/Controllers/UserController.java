@@ -125,29 +125,38 @@ public class UserController {
                     .body(new GenericResponse(false, "Internal Server Error"));
         }
     }
-
     @PostMapping("/userId")
-    public ResponseEntity<UserIdResponse> getUserId(@RequestParam String username) {
+    public ResponseEntity<UserIdResponse> getUserId(
+            @Valid @RequestBody UserIdRequest request,
+            BindingResult bindingResult) {
         try {
             // Return if input has any errors
-            if (username == null || username.trim().isEmpty()) {  // ← Simple validation
+            if (bindingResult.hasErrors()) {
                 logger.warn("Invalid request to retrieve user ID: username parameter is null or empty");
                 return ResponseEntity.badRequest().body(new UserIdResponse(false, null));
             }
 
-            // Delegate to chat service
+            // Extract username from request object
+            String username = request.username();
+
+            if (username == null || username.trim().isEmpty()) {
+                logger.warn("Invalid request to retrieve user ID: username parameter is null or empty");
+                return ResponseEntity.badRequest().body(new UserIdResponse(false, null));
+            }
+
+            // Delegate to user service
             String userId = userService.getUserIdFromUsername(username);
 
             // Handle no corresponding ID
             if (userId == null || userId.isEmpty()) {
-                logger.warn("No ID found");
+                logger.warn("No ID found for username: {}", username);
                 return ResponseEntity.badRequest().body(new UserIdResponse(false, null));
             }
 
-            logger.info("Sending back user Id");
+            logger.info("Sending back user Id for username: {}", username);
             return ResponseEntity.ok().body(new UserIdResponse(true, userId));
         } catch (Exception e) {
-            logger.error("Failed to retrieve user Id");
+            logger.error("Failed to retrieve user Id: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new UserIdResponse(false, null));
         }

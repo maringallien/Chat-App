@@ -89,18 +89,6 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Spring Boot Redis Starter -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
-		</dependency>
-
-		<!-- Lettuce Redis Client (usually included with spring-boot-starter-data-redis) -->
-		<dependency>
-			<groupId>io.lettuce</groupId>
-			<artifactId>lettuce-core</artifactId>
-		</dependency>
-
 		<!-- DTOs -->
 		<dependency>
 			<groupId>com.MarinGallien.JavaChatApp</groupId>
