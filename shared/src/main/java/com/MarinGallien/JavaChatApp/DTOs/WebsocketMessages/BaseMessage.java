@@ -1,6 +1,7 @@
 package com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages;
 
 import com.MarinGallien.JavaChatApp.Enums.MessageType;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -14,15 +15,19 @@ import java.util.UUID;
 public class BaseMessage {
     // Parameters
     @NotBlank(message = "Message ID cannot be blank")
+    @JsonProperty("message_id")
     private String messageID;
 
     @NotNull(message = "Message type cannot be blank")
+    @JsonProperty("type")
     private MessageType type;
 
     @NotBlank(message = "Sender ID cannot be blank")
+    @JsonProperty("sender_id")
     private String senderID;
 
     @NotBlank(message = "Timestamp ID cannot be blank")
+    @JsonProperty("timestamp")
     private Long timestamp;
 
     // Default constructor for Jackson - used when received messages need deserialization from JSON

@@ -97,13 +97,20 @@ public class WebSocketClient {
                     // Store the active session
                     this.session = session;
 
+                    logger.info("WebSocket session established, setting up subscriptions...");
+
                     // Auto-subscribe to personal message queue (server sends messages here)
-                    logger.info("Subscribing to message queue: /queue/messages");
-                    session.subscribe("/queue/messages", new MessageFrameHandler());
+                    // Spring STOMP uses /user prefix for user-specific subscriptions
+                    String messageQueue = "/user/queue/messages";
+                    logger.info("Subscribing to message queue: {}", messageQueue);
+                    StompSession.Subscription msgSub = session.subscribe(messageQueue, new MessageFrameHandler());
+                    logger.info("Message subscription created: {}", msgSub != null ? "SUCCESS" : "FAILED");
 
                     // Auto-subscribe to presence updates (online/offline status changes)
-                    logger.info("Subscribing to message queue: /queue/presence");
-                    session.subscribe("/queue/presence", new PresenceFrameHandler());
+                    String presenceQueue = "/user/queue/presence";
+                    logger.info("Subscribing to presence queue: {}", presenceQueue);
+                    StompSession.Subscription presSub = session.subscribe(presenceQueue, new PresenceFrameHandler());
+                    logger.info("Presence subscription created: {}", presSub != null ? "SUCCESS" : "FAILED");
 
                     logger.info("WebSocket subscriptions completed for user: {}", userId);
 
@@ -197,10 +204,15 @@ public class WebSocketClient {
         // Handle incoming message frames
         @Override
         public void handleFrame(StompHeaders headers, Object payload) {
-            logger.info("Handling incoming message frame");
+            logger.info("Received message frame - Headers: {}", headers);
+            logger.info("Payload type: {}, Content: {}", payload != null ? payload.getClass().getSimpleName() : "null", payload);
+
             // Verify payload type and forward to message handler
             if (payload instanceof WebSocketMessage message && messageHandler != null) {
+                logger.info("Forwarding message to handler: from={}, content={}", message.getSenderID(), message.getContent());
                 messageHandler.onMessage(message);
+            } else {
+                logger.warn("Could not process message - payload type mismatch or null handler");
             }
         }
     }
@@ -220,9 +232,15 @@ public class WebSocketClient {
         // Handle incoming status update frames
         @Override
         public void handleFrame(StompHeaders headers, Object payload) {
+            logger.info("Received presence frame - Headers: {}", headers);
+            logger.info("Payload type: {}, Content: {}", payload != null ? payload.getClass().getSimpleName() : "null", payload);
+
             // Verify payload type and forward to message handler
             if (payload instanceof OnlineStatusMessage status && messageHandler != null) {
+                logger.info("Forwarding status update to handler: from={}, status={}", status.getSenderID(), status.getStatus());
                 messageHandler.onStatusUpdate(status);
+            } else {
+                logger.warn("Could not process status update - payload type mismatch or null handler");
             }
         }
     }

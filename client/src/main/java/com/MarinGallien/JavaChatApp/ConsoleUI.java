@@ -53,7 +53,6 @@ public class ConsoleUI implements ChatService.MessageListener {
     @Override
     public void onMessageReceived(String senderId, String message) {
         String currentUserId = UserSession.getInstance().getUserId();
-
         if (currentUserId != null && currentUserId.equals(senderId)) {
             // This is your own message echoed back - don't display it
             return;
