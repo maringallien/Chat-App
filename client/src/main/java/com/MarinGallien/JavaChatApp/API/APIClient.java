@@ -93,7 +93,6 @@ public class APIClient {
         try {
             String jsonBody = objectMapper.writeValueAsString(request);
 
-            // Build HTTP request to register endpoint
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(URI.create(baseUrl + "/auth/register"))
                     .header("Content-Type", "application/json")

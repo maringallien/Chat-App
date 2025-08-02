@@ -14,7 +14,6 @@ public class ChatService implements WebSocketClient.MessageHandler {
     private final WebSocketClient webSocketClient;
     private MessageListener messageListener;
     private boolean connected = false;
-    private String userId;
 
     // Interface for components that want to receive chat messages
     public interface MessageListener {
@@ -26,7 +25,6 @@ public class ChatService implements WebSocketClient.MessageHandler {
 
     public ChatService(WebSocketClient webSocketClient) {
         this.webSocketClient = webSocketClient;
-        userId = UserSession.getInstance().getUserId();
     }
 
 
@@ -90,7 +88,7 @@ public class ChatService implements WebSocketClient.MessageHandler {
             return;
         }
 
-        WebSocketMessage message = new WebSocketMessage(userId, chatId, content);
+        WebSocketMessage message = new WebSocketMessage(UserSession.getInstance().getUserId(), chatId, content);
         webSocketClient.sendMessage(message);
     }
 
@@ -100,7 +98,7 @@ public class ChatService implements WebSocketClient.MessageHandler {
             return;
         }
 
-        OnlineStatusMessage statusMessage = new OnlineStatusMessage(status, userId);
+        OnlineStatusMessage statusMessage = new OnlineStatusMessage(status, UserSession.getInstance().getUserId());
         webSocketClient.sendStatus(statusMessage);
     }
 

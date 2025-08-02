@@ -39,6 +39,7 @@ public class ClientManager {
             boolean success = apiService.login(email, password);
 
             if (success) {
+                consoleUI.showInfo(UserSession.getInstance().getUserId());
                 consoleUI.showLoginSuccess(UserSession.getInstance().getUsername());
                 chatService.startChat();
             } else {

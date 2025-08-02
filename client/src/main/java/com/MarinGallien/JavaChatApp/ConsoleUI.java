@@ -52,6 +52,13 @@ public class ConsoleUI implements ChatService.MessageListener {
 
     @Override
     public void onMessageReceived(String senderId, String message) {
+        String currentUserId = UserSession.getInstance().getUserId();
+
+        if (currentUserId != null && currentUserId.equals(senderId)) {
+            // This is your own message echoed back - don't display it
+            return;
+        }
+
         // Display incoming message immediately
         System.out.println("\n[" + senderId + "]: " + message);
         showChatPrompt(); // Show prompt again after message
