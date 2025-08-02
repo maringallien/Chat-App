@@ -136,8 +136,9 @@ public class WebSocketClient {
 
             // Send to server's chat endpoint
             session.send("/app/chat/" + message.getChatID(), message);
+        } else {
+            logger.error("Failed to send message to chat {}", message.getChatID());
         }
-        logger.error("Failed to send message to chat {}", message.getChatID());
     }
 
     // Send a status update to the server

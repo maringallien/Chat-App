@@ -230,7 +230,12 @@ public class ChatManager {
     }
 
     public Set<String> getChatParticipants(String chatId) {
-        return chats.get(chatId).getMembers();
+        Chat chat = chats.get(chatId);
+        if (chat == null) {
+            logger.warn("Cannot get participants: chat {} does not exist in ChatManager", chatId);
+            return Set.of(); // Return empty set instead of throwing NPE
+        }
+        return chat.getMembers();
     }
 
     // Checks if the chat exists
