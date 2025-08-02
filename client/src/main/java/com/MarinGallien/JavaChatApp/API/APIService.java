@@ -30,7 +30,6 @@ import java.util.Set;
 public class APIService {
 
     private final APIClient apiClient;
-    private String userId;
 
     public APIService(APIClient apiClient) {
         this.apiClient = apiClient;
@@ -63,37 +62,37 @@ public class APIService {
     // ========== CHAT METHODS ==========
 
     public boolean createPrivateChat(String userId2) {
-        CreatePcRequest request = new CreatePcRequest(userId, userId2);
+        CreatePcRequest request = new CreatePcRequest(getLocalUserId(), userId2);
         GenericResponse response = apiClient.createPrivateChat(request);
         return response.success();
     }
 
     public boolean createGroupChat(Set<String> memberIds, String chatName) {
-        CreateGcRequest request = new CreateGcRequest(userId, memberIds, chatName);
+        CreateGcRequest request = new CreateGcRequest(getLocalUserId(), memberIds, chatName);
         GenericResponse response = apiClient.createGroupChat(request);
         return response.success();
     }
 
     public boolean deleteChat(String chatId) {
-        DeleteChatRequest request = new DeleteChatRequest(userId, chatId);
+        DeleteChatRequest request = new DeleteChatRequest(getLocalUserId(), chatId);
         GenericResponse response = apiClient.deleteChat(request);
         return response.success();
     }
 
     public boolean addMemberToChat(String memberId, String chatId) {
-        AddOrRemoveMemberRequest request = new AddOrRemoveMemberRequest(userId, memberId, chatId);
+        AddOrRemoveMemberRequest request = new AddOrRemoveMemberRequest(getLocalUserId(), memberId, chatId);
         GenericResponse response = apiClient.addMemberToChat(request);
         return response.success();
     }
 
     public boolean removeMemberFromChat(String memberId, String chatId) {
-        AddOrRemoveMemberRequest request = new AddOrRemoveMemberRequest(userId, memberId, chatId);
+        AddOrRemoveMemberRequest request = new AddOrRemoveMemberRequest(getLocalUserId(), memberId, chatId);
         GenericResponse response = apiClient.removeMemberFromChat(request);
         return response.success();
     }
 
     public List<ChatDTO> getUserChats() {
-        GetUserChatsRequest request = new GetUserChatsRequest(userId);
+        GetUserChatsRequest request = new GetUserChatsRequest(getLocalUserId());
         GetUserChatsResponse response = apiClient.getUserChats(request);
 
         if (response.success() && response.chats() != null) {
@@ -106,19 +105,19 @@ public class APIService {
     // ========== CONTACT METHODS ==========
 
     public boolean createContact(String contactId) {
-        CreateOrRemoveContactRequest request = new CreateOrRemoveContactRequest(userId, contactId);
+        CreateOrRemoveContactRequest request = new CreateOrRemoveContactRequest(getLocalUserId(), contactId);
         GenericResponse response = apiClient.createContact(request);
         return response.success();
     }
 
     public boolean removeContact(String contactId) {
-        CreateOrRemoveContactRequest request = new CreateOrRemoveContactRequest(userId, contactId);
+        CreateOrRemoveContactRequest request = new CreateOrRemoveContactRequest(getLocalUserId(), contactId);
         GenericResponse response = apiClient.removeContact(request);
         return response.success();
     }
 
     public List<ContactDTO> getUserContacts() {
-        GetUserContactsRequest request = new GetUserContactsRequest(userId);
+        GetUserContactsRequest request = new GetUserContactsRequest(getLocalUserId());
         GetUserContactsResponse response = apiClient.getUserContacts(request);
 
         if (response.success() && response.contacts() != null) {
@@ -131,7 +130,7 @@ public class APIService {
     // ========== MESSAGE METHODS ==========
 
     public List<MessageDTO> getChatMessages(String chatId) {
-        GetChatMessagesRequest request = new GetChatMessagesRequest(userId, chatId);
+        GetChatMessagesRequest request = new GetChatMessagesRequest(getLocalUserId(), chatId);
         GetChatMessagesResponse response = apiClient.getChatMessages(request);
 
         if (response.success() && response.messages() != null) {
@@ -144,7 +143,7 @@ public class APIService {
     // ========== USER METHODS ==========
 
     public boolean updateUsername(String newUsername) {
-        UpdateUnameRequest request = new UpdateUnameRequest(userId, newUsername);
+        UpdateUnameRequest request = new UpdateUnameRequest(getLocalUserId(), newUsername);
         GenericResponse response = apiClient.updateUsername(request);
 
         if (response.success()) {
@@ -155,7 +154,7 @@ public class APIService {
     }
 
     public boolean updateEmail(String newEmail) {
-        UpdateEmailRequest request = new UpdateEmailRequest(userId, newEmail);
+        UpdateEmailRequest request = new UpdateEmailRequest(getLocalUserId(), newEmail);
         GenericResponse response = apiClient.updateEmail(request);
 
         if (response.success()) {
@@ -166,7 +165,7 @@ public class APIService {
     }
 
     public boolean updatePassword(String oldPassword, String newPassword) {
-        UpdatePasswdRequest request = new UpdatePasswdRequest(userId, oldPassword, newPassword);
+        UpdatePasswdRequest request = new UpdatePasswdRequest(getLocalUserId(), oldPassword, newPassword);
         GenericResponse response = apiClient.updatePassword(request);
         return response.success();
     }
@@ -202,5 +201,9 @@ public class APIService {
     // ========== UTILITY METHODS ==========
     public void logout() {
         apiClient.logout();
+    }
+
+    private String getLocalUserId() {
+        return UserSession.getInstance().getUserId();
     }
 }

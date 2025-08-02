@@ -322,6 +322,7 @@ public class ClientManager {
             String contactId = apiService.getUserIdFromUsername(contactUname);
             if (contactId == null || contactId.isEmpty()) {
                 consoleUI.showError("Failed to retrieve contact ID");
+                return;
             }
 
             boolean success = apiService.createContact(contactId);

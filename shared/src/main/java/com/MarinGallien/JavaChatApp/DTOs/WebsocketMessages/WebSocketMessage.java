@@ -16,7 +16,8 @@ public class WebSocketMessage extends BaseMessage {
         super();
     }
 
-    public WebSocketMessage(String chatID, String content) {
+    public WebSocketMessage(String senderId, String chatID, String content) {
+        super(MessageType.TEXT_MESSAGE, senderId);
         this.chatID = chatID;
         this.content = content;
     }
@@ -28,15 +29,5 @@ public class WebSocketMessage extends BaseMessage {
     // Setters
     public void setContent(String content) {this.content = content;}
     public void setChatID(String chatID) { this.chatID = chatID; }
-
-    // Constructor for creating text messages in code
-    public WebSocketMessage(String senderID, String chatID, String content) {
-        super(MessageType.TEXT_MESSAGE, senderID);
-        this.chatID = chatID;
-        this.content = content;
-
-    }
-
-
 }
 
