@@ -53,23 +53,26 @@ public class WebSocketHandler {
 
     // Handles text messages sent to specific chat chats
     @MessageMapping("/chat/{chatId}")
-    public void handleTextMessage(@DestinationVariable String chatId, @Payload WebSocketMessage message) {
+    public void handleTextMessage(@DestinationVariable String chatId, @Payload WebSocketMessage message,
+                                  SimpMessageHeaderAccessor headerAccessor) {
         try {
-            String senderId = message.getSenderID();
-            String messageChatId = message.getChatID();
+            String senderId = getUserIdFromSession(headerAccessor);
 
             logger.info("Processing text message from {} to chat {}", senderId, chatId);
 
             // Save message to database and return
             messageService.saveMessage(senderId, chatId, message.getContent());
 
+            logger.info("forwarding text message from {} to all chat participants", senderId);
             // Forward message to all chat participants
-            Set<String> chatParticipants = chatManager.getChatParticipants(messageChatId);
+            Set<String> chatParticipants = chatManager.getChatParticipants(chatId);
 
             for (String userId : chatParticipants) {
                 // If user is online - forward
                 if (statusManager.isOnline(userId)) {
+                    logger.info("Forwarding text message to user {}", userId);
                     messagingTemplate.convertAndSendToUser(userId, "/queue/messages", message);
+                    logger.info("Forwarded text message to user {}", userId);
                 }
             }
 
