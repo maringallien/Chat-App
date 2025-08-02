@@ -46,6 +46,8 @@ public class WebSocketClient {
 
     // Create WebSocket STOMP client
     private WebSocketStompClient createStompClient() {
+        logger.info("Creating STOMP client");
+
         // Create SockJS client with WebSocket transport
         SockJsClient sockJsClient = new SockJsClient(
                 Collections.singletonList(new WebSocketTransport(new StandardWebSocketClient()))
@@ -62,6 +64,8 @@ public class WebSocketClient {
         scheduler.initialize();
         client.setTaskScheduler(scheduler);
 
+        logger.info("Created STOMP client");
+
         return client;
     }
 
@@ -71,6 +75,10 @@ public class WebSocketClient {
         String userId = UserSession.getInstance().getUserId();
         String jwtToken = UserSession.getInstance().getJwtToken();
         String url = UserSession.getInstance().getWsBaseUrl();
+
+        // Debug logging
+        logger.info("Connecting WebSocket for user: {}", userId);
+        logger.info("WebSocket URL: {}", url);
 
         // Initialize handler
         this.messageHandler = handler;
@@ -90,13 +98,22 @@ public class WebSocketClient {
                     this.session = session;
 
                     // Auto-subscribe to personal message queue (server sends messages here)
+                    logger.info("Subscribing to message queue: /queue/messages");
                     session.subscribe("/queue/messages", new MessageFrameHandler());
 
                     // Auto-subscribe to presence updates (online/offline status changes)
+                    logger.info("Subscribing to message queue: /queue/presence");
                     session.subscribe("/queue/presence", new PresenceFrameHandler());
+
+                    logger.info("WebSocket subscriptions completed for user: {}", userId);
 
                     // Notify handler that connection is ready
                     if (handler != null) handler.onConnected();
+                })
+                .exceptionally(throwable -> {
+                    logger.error("WebSocket connection failed: {}", throwable.getMessage());
+                    if (handler != null) handler.onError("Connection failed: " + throwable.getMessage());
+                    return null;
                 });
     }
 
@@ -120,6 +137,7 @@ public class WebSocketClient {
             // Send to server's chat endpoint
             session.send("/app/chat/" + message.getChatID(), message);
         }
+        logger.error("Failed to send message to chat {}", message.getChatID());
     }
 
     // Send a status update to the server
@@ -178,6 +196,7 @@ public class WebSocketClient {
         // Handle incoming message frames
         @Override
         public void handleFrame(StompHeaders headers, Object payload) {
+            logger.info("Handling incoming message frame");
             // Verify payload type and forward to message handler
             if (payload instanceof WebSocketMessage message && messageHandler != null) {
                 messageHandler.onMessage(message);

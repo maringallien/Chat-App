@@ -88,10 +88,15 @@ public class WebSocketHandler {
             SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
             String userId = getUserIdFromSession(headerAccessor);
 
+            logger.info("Receiving incoming websocket connection from {}", userId);
+
+
             if (userId == null || userId.trim().isEmpty()) {
                 logger.warn("Could not updated online status: user ID is null");
                 return;
             }
+
+            logger.info("Updating user status to ONLINE");
 
             // Update user status in database
             OnlineStatus status = sessionService.updateUserStatus(userId, OnlineStatus.ONLINE);
@@ -102,9 +107,11 @@ public class WebSocketHandler {
             }
 
             // Update status in status manager
+            logger.info("Setting user status to online in status manager");
             statusManager.setUserOnline(userId);
 
             // Notify contacts of status change
+            logger.info("Notifying contacts of user's status change");
             notifyContactsOfStatusChange(userId, OnlineStatus.ONLINE);
 
         } catch (Exception e) {
@@ -113,6 +120,7 @@ public class WebSocketHandler {
     }
 
     // Handle disconnection - retrieve user ID from session attributes and update online status in database
+    // OFFLINE USERS ARE STILL BEING FORWARDED MESSAGES
     @EventListener
     public void handleWebSocketDisconnectEvent(SessionDisconnectEvent event) {
         try {
