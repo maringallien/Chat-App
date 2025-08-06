@@ -108,7 +108,6 @@ public class ChatService implements WebSocketClient.MessageHandler {
 
     @Override
     public void onMessage(WebSocketMessage message) {
-        logger.debug("Received message from {}: {}", message.getSenderID(), message.getContent());
 
         if (messageListener != null) {
             messageListener.onMessageReceived(message.getSenderID(), message.getContent());

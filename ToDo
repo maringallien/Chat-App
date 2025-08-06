@@ -1,14 +1,11 @@
-. Update code to be less repetitive by using lambda and helper methods
-. implement delayed delivery service support in client module
-. need methods to sync user contacts, chats, and messages with server. Current getUserchats/.contacts/messages only query database
-. don't currently have any file handling capabilities in the client
-. fix client database to use proper JPA relationships instead of storing list of users for chat participants
-. remove all automatic ID generation from JPA entities and do that in database services
 
-. Add the following network getters:
-    . getUserId(username)
-    . getChatId(chatName)
-    . getUserIds(List<username>)
-    . getFileId(filename)
+Fixes:
+. delete-chat doesn't currently work, probably an endpoint issue
+. add file handling capabilities to client
+. currently, users can be added to chat without being contacts
+. If a chat is deleted while another user is in it, user remains in chat and can keep sending messages until they leave
+. Chats can be created with the same name
 
+Upgrades:
 . keep try-catch for controllers, and event handlers, maybe even service layer. Remove the rest
+. Update code to be less repetitive by using lambda and helper methods

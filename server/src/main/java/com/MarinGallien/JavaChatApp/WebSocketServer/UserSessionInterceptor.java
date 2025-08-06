@@ -10,6 +10,8 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
+import java.security.Principal;
+
 @Component
 public class UserSessionInterceptor implements ChannelInterceptor {
 
@@ -24,11 +26,27 @@ public class UserSessionInterceptor implements ChannelInterceptor {
 
             if (userId != null && !userId.trim().isEmpty()) {
                 accessor.getSessionAttributes().put("userId", userId.trim());
-                logger.info("Set userId {} in session", userId);
-            } else {
-                logger.warn("No userId provided in connection headers");
+
+                // THIS IS THE KEY FIX - Set the Principal for Spring's routing
+                accessor.setUser(new SimplePrincipal(userId.trim()));
+
+                logger.info("Set userId {} as Principal", userId);
             }
         }
         return message;
+    }
+
+    // Simple Principal implementation
+    public class SimplePrincipal implements Principal {
+        private final String name;
+
+        public SimplePrincipal(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
     }
 }

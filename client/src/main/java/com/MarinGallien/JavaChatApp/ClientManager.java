@@ -229,6 +229,7 @@ public class ClientManager {
 
     public void deleteChat(String chatName) {
         try {
+            // For private chats, we need to determine chat Id locally, for group chats we can look it up
             // Retrieve chat ID from chat name
             String chatId = apiService.getChatIdFromChatName(chatName);
             if (chatId == null || chatId.isEmpty()) {

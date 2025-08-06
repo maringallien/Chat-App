@@ -95,7 +95,7 @@ public class ChatController {
         }
     }
 
-    @DeleteMapping
+    @PostMapping("/delete")
     public ResponseEntity<GenericResponse> deleteChat(
             @Valid @RequestBody DeleteChatRequest request,
             BindingResult bindingResult) {

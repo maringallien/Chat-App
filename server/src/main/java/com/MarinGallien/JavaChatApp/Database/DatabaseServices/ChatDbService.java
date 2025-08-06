@@ -51,8 +51,7 @@ public class ChatDbService {
 
             String username1 = userRepo.findUserById(userId1).getUsername();
             String username2 = userRepo.findUserById(userId2).getUsername();
-            String chatName = username1 + "-" + username2;
-
+            String chatName = generateChatName(username1, username2);
             // Create and save private chat
             Chat chat = new Chat(privateChatId, ChatType.SINGLE);
             chat.setChatName(chatName);
@@ -271,5 +270,11 @@ public class ChatDbService {
         String[] sortedIds = {userId1, userId2};
         Arrays.sort(sortedIds);
         return "PRIVATE_" + sortedIds[0] + "_" + sortedIds[1];
+    }
+
+    private String generateChatName(String username1, String username2) {
+        String[] sortedUnames = {username1, username2};
+        Arrays.sort(sortedUnames);
+        return sortedUnames[0] + "-" + sortedUnames[1];
     }
 }

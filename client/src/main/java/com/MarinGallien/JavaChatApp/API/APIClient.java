@@ -134,7 +134,7 @@ public class APIClient {
 
     public GenericResponse deleteChat(DeleteChatRequest request) {
         try {
-            return sendAuthenticatedRequest("/api/chat", request, GenericResponse.class, "DELETE");
+            return sendAuthenticatedRequest("/api/chat/delete", request, GenericResponse.class, "POST");
         } catch (Exception e) {
             logger.error("Failed to delete chat: {}", e.getMessage());
             return new GenericResponse(false, "Failed to delete chat: " + e.getMessage());
@@ -259,7 +259,7 @@ public class APIClient {
 
     public FileIdResponse getFileIdFromFilename(FileIdRequest request) {
         try {
-            return sendAuthenticatedRequest("/api/fileId", request, FileIdResponse.class, "POST");
+            return sendAuthenticatedRequest("/api/file/fileId", request, FileIdResponse.class, "POST");
         } catch (Exception e) {
             logger.error("Failed to retrieve file ID: {}", e.getMessage());
             return new FileIdResponse(false, null);
@@ -268,7 +268,7 @@ public class APIClient {
 
     public ChatIdResponse getChatIdFromChatName(ChatIdRequest request) {
         try {
-            return sendAuthenticatedRequest("/api/chatId", request, ChatIdResponse.class, "POST");
+            return sendAuthenticatedRequest("/api/chat/chatId", request, ChatIdResponse.class, "POST");
         } catch (Exception e) {
             logger.error("Failed to retrieve chat ID: {}", e.getMessage());
             return new ChatIdResponse(false, null);
