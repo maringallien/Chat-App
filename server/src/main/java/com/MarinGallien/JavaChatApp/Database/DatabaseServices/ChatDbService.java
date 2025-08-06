@@ -117,7 +117,7 @@ public class ChatDbService {
         }
     }
 
-    public boolean deleteChat(String creatorId, String chatId) {
+    public boolean deleteChat(String userId, String chatId) {
         try {
             // make sure chat exists
             if (!chatRepo.existsById(chatId)) {
@@ -128,8 +128,8 @@ public class ChatDbService {
             Chat chat = chatRepo.findChatById(chatId);
 
             // Make sure creatorId is same as chat's creator ID
-            if (!chat.getCreatorId().equals(creatorId)) {
-                logger.warn("Cannot delete chat: user {} was not chat creator", creatorId);
+            if (chat.getChatType() == ChatType.GROUP && !chat.getCreatorId().equals(userId)) {
+                logger.warn("Cannot delete chat: user {} was not chat creator", userId);
                 return false;
             }
 

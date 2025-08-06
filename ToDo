@@ -1,6 +1,5 @@
 
 Fixes:
-. delete-chat doesn't currently work, probably an endpoint issue
 . add file handling capabilities to client
 . currently, users can be added to chat without being contacts
 . If a chat is deleted while another user is in it, user remains in chat and can keep sending messages until they leave

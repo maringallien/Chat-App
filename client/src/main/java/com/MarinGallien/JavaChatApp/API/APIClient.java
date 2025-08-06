@@ -12,11 +12,14 @@ import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.AuthRequests.Logi
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.AuthRequests.RegisterRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ChatRequests.*;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ContactRequests.*;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.FileRequests.DownloadFileRequest;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.FileRequests.GetChatFilesRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.MessageRequests.GetChatMessagesRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.UserRequests.*;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.AuthResponses.LoginResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.ChatResponses.GetUserChatsResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.ContactResponses.GetUserContactsResponse;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.FileResponses.GetChatFilesResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.GenericResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.MessageReponses.GetChatMessagesResponse;
 
@@ -25,7 +28,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpHeaders;
 
 import java.io.IOException;
 import java.net.URI;
@@ -237,6 +248,86 @@ public class APIClient {
         }
     }
 
+    // ========== FILE METHODS ==========
+
+    public GenericResponse uploadFile(String userId, String chatId, java.io.File file) {
+        try {
+            // Create RestTemplate
+            RestTemplate restTemplate = new RestTemplate();
+
+            // Create headers with JWT token
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(jwtToken);
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            // Create multipart form data
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("userId", userId);
+            body.add("chatId", chatId);
+            body.add("file", new FileSystemResource(file));
+
+            // Create HTTP entity
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+            // Send request
+            ResponseEntity<GenericResponse> response = restTemplate.postForEntity(
+                    baseUrl + "/api/file/upload",
+                    requestEntity,
+                    GenericResponse.class
+            );
+
+            return response.getBody();
+        } catch (Exception e) {
+            logger.error("Failed to upload file: {}", e.getMessage());
+            return new GenericResponse(false, "Failed to upload file: " + e.getMessage());
+        }
+    }
+
+    public byte[] downloadFile(String userId, String chatId, String fileId) {
+        try {
+            // Create download request
+            DownloadFileRequest request = new DownloadFileRequest(userId, chatId, fileId);
+
+            // Send authenticatedRequest
+            String jsonBody = objectMapper.writeValueAsString(request);
+
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + "/api/file/download"))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + jwtToken)
+                .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+
+            // Send request and get response as bytes
+            HttpResponse<byte[]> response = httpClient.send(httpRequest,
+                    HttpResponse.BodyHandlers.ofByteArray());
+
+            // Check if response is successful (200 status code)
+            if (response.statusCode() == 200) {
+                return response.body();
+            } else {
+                logger.error("Failed to download file");
+                return null;
+            }
+
+        } catch (Exception e) {
+            logger.error("Failed to download file {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public GetChatFilesResponse getChatFiles(String userId, String chatId) {
+        try {
+            // Create request object
+            GetChatFilesRequest request = new GetChatFilesRequest(userId, chatId);
+
+            // Send authenticated request
+            return sendAuthenticatedRequest("/api/file/files", request, GetChatFilesResponse.class, "POST");
+        } catch (Exception e) {
+            logger.error("Failed to get chat files: {}", e.getMessage());
+            return new GetChatFilesResponse(false, "Failed to get chat files", null);
+        }
+    }
 
     // ========== NETWORK GETTER METHODS ==========
     public UserIdResponse getUserIdFromUsername(UserIdRequest request) {

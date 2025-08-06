@@ -119,16 +119,16 @@ public class ChatService {
         }
     }
 
-    public boolean deleteChat(String creatorId, String chatId) {
+    public boolean deleteChat(String userId, String chatId) {
         try {
             // Validate input parameters
-            if (!validateId(creatorId) || !validateId(chatId)) {
+            if (!validateId(userId) || !validateId(chatId)) {
                 logger.warn("Error processing event: user ID or chat ID is null or empty");
                 return false;
             }
 
             // Update database
-            boolean deleted = chatDbService.deleteChat(creatorId, chatId);
+            boolean deleted = chatDbService.deleteChat(userId, chatId);
 
             // Make sure chat was deleted
             if (!deleted) {
