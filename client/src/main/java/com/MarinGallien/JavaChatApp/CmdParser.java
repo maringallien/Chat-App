@@ -163,6 +163,29 @@ public class CmdParser {
                     System.out.println("Usage: update-password <old_password> <new_password>");
                 }
                 break;
+            case "upload-file":
+                if (parts.length >= 3) {
+                    clientManager.uploadFile(parts[1], parts[2]);
+                } else {
+                    System.out.println("Usage: upload-file <chatname> <filepath>");
+                }
+                break;
+
+            case "download-file":
+                if (parts.length >= 4) {
+                    clientManager.downloadFile(parts[1], parts[2], parts[3]);
+                } else {
+                    System.out.println("Usage: download-file <chatname> <filename> <filepath>");
+                }
+                break;
+
+            case "get-files":
+                if (parts.length >= 2) {
+                    clientManager.getChatFiles(parts[1]);
+                } else {
+                    System.out.println("Usage: get-files <chatname>");
+                }
+                break;
 
             case "exit":
             case "help":

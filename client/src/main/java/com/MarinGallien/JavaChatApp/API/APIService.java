@@ -2,6 +2,7 @@ package com.MarinGallien.JavaChatApp.API;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
+import com.MarinGallien.JavaChatApp.DTOs.DataEntities.FileDTO;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
 import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.ChatIdRequest;
 import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.FileIdRequest;
@@ -15,15 +16,20 @@ import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.AuthRequests.Logi
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.AuthRequests.RegisterRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ChatRequests.*;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ContactRequests.*;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.FileRequests.GetChatFilesRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.MessageRequests.GetChatMessagesRequest;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.UserRequests.*;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.AuthResponses.LoginResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.ChatResponses.GetUserChatsResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.ContactResponses.GetUserContactsResponse;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.FileResponses.GetChatFilesResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.GenericResponse;
 import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.MessageReponses.GetChatMessagesResponse;
 import com.MarinGallien.JavaChatApp.UserSession;
+import org.springframework.core.io.FileSystemResource;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Set;
 
@@ -168,6 +174,51 @@ public class APIService {
         UpdatePasswdRequest request = new UpdatePasswdRequest(getLocalUserId(), oldPassword, newPassword);
         GenericResponse response = apiClient.updatePassword(request);
         return response.success();
+    }
+
+
+    // ========== FILE METHODS ==========
+
+    public boolean uploadFile(String chatId, File file) {
+        GenericResponse response = apiClient.uploadFile(getLocalUserId(), chatId, file);
+        return response.success();
+    }
+
+    public boolean downloadFile(String chatId, String fileId, String filepath) {
+        byte[] fileData = apiClient.downloadFile(getLocalUserId(), chatId, fileId);
+
+        if (fileData == null || fileData.length == 0) {
+            return false;
+        }
+
+        // Create target filepath
+        File targetFile = new File(filepath);
+
+        // Create parent directories if they don't exist
+        File parentDir = targetFile.getParentFile();
+        if (parentDir == null && !parentDir.exists()) {
+            parentDir.mkdirs();
+        }
+
+        // write byte array to file
+        try (FileOutputStream fos = new FileOutputStream(targetFile)) {
+            fos.write(fileData);
+            fos.flush();
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public List<FileDTO> getChatFiles(String chatId) {
+        try {
+            GetChatFilesRequest request = new GetChatFilesRequest(getLocalUserId(), chatId);
+            GetChatFilesResponse response = apiClient.getChatFiles(request);
+            return response.files();
+        } catch (Exception e) {
+            return List.of();
+        }
     }
 
 

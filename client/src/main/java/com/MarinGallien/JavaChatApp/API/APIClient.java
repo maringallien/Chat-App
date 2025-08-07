@@ -38,6 +38,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpHeaders;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -250,7 +251,7 @@ public class APIClient {
 
     // ========== FILE METHODS ==========
 
-    public GenericResponse uploadFile(String userId, String chatId, java.io.File file) {
+    public GenericResponse uploadFile(String userId, String chatId, File file) {
         try {
             // Create RestTemplate
             RestTemplate restTemplate = new RestTemplate();
@@ -316,12 +317,8 @@ public class APIClient {
         }
     }
 
-    public GetChatFilesResponse getChatFiles(String userId, String chatId) {
+    public GetChatFilesResponse getChatFiles(GetChatFilesRequest request) {
         try {
-            // Create request object
-            GetChatFilesRequest request = new GetChatFilesRequest(userId, chatId);
-
-            // Send authenticated request
             return sendAuthenticatedRequest("/api/file/files", request, GetChatFilesResponse.class, "POST");
         } catch (Exception e) {
             logger.error("Failed to get chat files: {}", e.getMessage());

@@ -2,6 +2,7 @@ package com.MarinGallien.JavaChatApp;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
+import com.MarinGallien.JavaChatApp.DTOs.DataEntities.FileDTO;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
 import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
 import com.MarinGallien.JavaChatApp.WebSocket.ChatService;
@@ -99,24 +100,23 @@ public class ConsoleUI implements ChatService.MessageListener {
 
     public void showChats(List<ChatDTO> chats) {
         System.out.println("=== Your Chats ===");
-        if (chats.isEmpty()) {
-            System.out.println("No chats found.");
-        } else {
-            for (ChatDTO chat : chats) {
-                String chatName = chat.getChatName();
-                System.out.println("- " + chatName + " (" + chat.getChatType() + ")");
-            }
+        for (ChatDTO chat : chats) {
+            String chatName = chat.getChatName();
+            System.out.println("- " + chatName + " (" + chat.getChatType() + ")");
         }
     }
 
     public void showMessages(List<MessageDTO> messages) {
         System.out.println("=== Chat Messages ===");
-        if (messages.isEmpty()) {
-            System.out.println("No messages found.");
-        } else {
-            for (MessageDTO message : messages) {
-                System.out.println("[" + message.getSenderId() + "]: " + message.getContent());
-            }
+        for (MessageDTO message : messages) {
+            System.out.println("[" + message.getSenderId() + "]: " + message.getContent());
+        }
+    }
+
+    public void showFiles(List<FileDTO> files) {
+        System.out.println("=== Chat Messages ===");
+        for (FileDTO file : files) {
+            System.out.println(file.getFilename());
         }
     }
 
@@ -212,6 +212,13 @@ public class ConsoleUI implements ChatService.MessageListener {
         System.out.println("  contacts                                    - Show your contacts");
         System.out.println();
 
+        // File commands
+        System.out.println("=== File Management ===");
+        System.out.println("  upload-file <chatname> <filepath>           - Upload file to chat");
+        System.out.println("  download-file <chatname> <filename> <path>  - Download file from chat");
+        System.out.println("  get-files <chatname>                        - List files in chat");
+        System.out.println();
+
         // User update commands
         System.out.println("=== Account Settings ===");
         System.out.println("  update-username <new_username>              - Update your username");
@@ -230,7 +237,6 @@ public class ConsoleUI implements ChatService.MessageListener {
         System.out.println("  Type messages to send them");
         System.out.println("  /exit                                       - Leave current chat");
     }
-
     public void showGoodbye() {
         System.out.println("Goodbye!");
     }

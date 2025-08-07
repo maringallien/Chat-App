@@ -3,9 +3,11 @@ package com.MarinGallien.JavaChatApp;
 import com.MarinGallien.JavaChatApp.API.APIService;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
+import com.MarinGallien.JavaChatApp.DTOs.DataEntities.FileDTO;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
 import com.MarinGallien.JavaChatApp.WebSocket.ChatService;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -441,6 +443,103 @@ public class ClientManager {
         }
     }
 
+
+    // ========== FILE METHODS ==========
+
+    public void uploadFile(String chatName, String filepath) {
+        try {
+            if (filepath == null || filepath.isEmpty()) {
+                consoleUI.showError("Failed to upload file: filepath is null or empty");
+                return;
+            }
+
+            // Create file object from filepath
+            File file = new File(filepath);
+
+            // Make sure file exists
+            if (!file.exists() || !file.isFile()) {
+                consoleUI.showError("Failed to upload file: file does not exist or is not a file");
+            }
+
+            String chatId = apiService.getChatIdFromChatName(chatName);
+
+            if (chatId == null || chatId.isEmpty()) {
+                consoleUI.showError("Failed to upload file: chat does not exist");
+                return;
+            }
+
+            boolean success = apiService.uploadFile(chatId, file);
+            if (success) {
+                consoleUI.showSuccess("File uploaded successfully");
+            } else {
+                consoleUI.showError("Failed to upload file");
+            }
+
+        } catch (Exception e) {
+            consoleUI.showError("Failed to upload file: " + e.getMessage());
+        }
+    }
+
+    public void downloadFile(String chatName, String filename, String filePath) {
+        try {
+            if (filename == null || filePath == null || filename.isEmpty() || filePath.isEmpty()) {
+                consoleUI.showError("Failed to download file: Filename or file path empty/null");
+                return;
+            }
+
+            // Retrieve chatId
+            String chatId = apiService.getChatIdFromChatName(chatName);
+            if (chatId == null || chatId.isEmpty()) {
+                consoleUI.showError("Failed to download file: chat ID not found");
+                return;
+            }
+
+            // Retrieve chat name
+            String fileId = apiService.getFileIdFromFilename(filename);
+            if (fileId == null || fileId.isEmpty()) {
+                consoleUI.showError("Failed to download file: no corresponding file ID");
+                return;
+            }
+
+            boolean success = apiService.downloadFile(chatId, fileId, filePath);
+            if (success) {
+                consoleUI.showSuccess("File downloaded successfully");
+            } else {
+                consoleUI.showError("Failed to download file");
+            }
+
+        } catch (Exception e) {
+            consoleUI.showError("Failed to download file: " + e.getMessage());
+        }
+    }
+
+    public void getChatFiles(String chatName) {
+        try {
+            if (chatName == null || chatName.isEmpty()) {
+                consoleUI.showError("Failed to retrieve chat files: chat name is null or empty");
+                return;
+            }
+
+            String chatId = apiService.getChatIdFromChatName(chatName);
+            if (chatId == null || chatId.isEmpty()) {
+                consoleUI.showError("Failed to retrieve chat files: chat does not exist");
+                return;
+            }
+
+            List<FileDTO> chatFiles = apiService.getChatFiles(chatId);
+
+            if (chatFiles == null || chatFiles.isEmpty()) {
+                consoleUI.showInfo("No files in this chat");
+                return;
+            }
+
+            consoleUI.showFiles(chatFiles);
+
+        } catch (Exception e) {
+            consoleUI.showError("Failed to retrieve chat files: " + e.getMessage());
+        }
+    }
+
     // ========== UTILITY METHODS ==========
 
     public void showHelp() {
@@ -448,3 +547,4 @@ public class ClientManager {
     }
 
 }
+
