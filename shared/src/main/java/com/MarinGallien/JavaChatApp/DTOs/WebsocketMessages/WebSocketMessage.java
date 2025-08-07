@@ -14,23 +14,30 @@ public class WebSocketMessage extends BaseMessage {
     @JsonProperty("content")
     private String content;
 
+    @NotBlank(message = "Sender name cannot be blank")
+    @JsonProperty("username")
+    private String username;
+
     // Default constructor for Jackson
     public WebSocketMessage() {
         super();
     }
 
-    public WebSocketMessage(String senderId, String chatID, String content) {
+    public WebSocketMessage(String senderId, String chatID, String content, String username) {
         super(MessageType.TEXT_MESSAGE, senderId);
         this.chatID = chatID;
         this.content = content;
+        this.username = username;
     }
 
     // Getters
     public String getContent() { return content; }
     public String getChatID() { return chatID; }
+    public String getUsername() {return username;}
 
     // Setters
     public void setContent(String content) {this.content = content;}
     public void setChatID(String chatID) { this.chatID = chatID; }
+    public void setUsername(String username) {this.username = username;}
 }
 

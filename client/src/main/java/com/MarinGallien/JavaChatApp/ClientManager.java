@@ -6,6 +6,7 @@ import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.FileDTO;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
 import com.MarinGallien.JavaChatApp.WebSocket.ChatService;
+import org.apache.catalina.User;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -89,7 +90,6 @@ public class ClientManager {
 
         try {
             chatService.sendMessage(currentChatId, message);
-            consoleUI.showSentMessage(message);
         } catch (Exception e) {
             consoleUI.showError("Failed to send message: " + e.getMessage());
 
@@ -141,12 +141,13 @@ public class ClientManager {
                 return;
             }
 
-            // Generate private chat ID (they are predictable)
+            // Determine private chat ID and chat name (they are predictable)
             String chatId = determineChatId(contactUserId);
+            String chatName = determineChatName(UserSession.getInstance().getUsername(), contactUname);
 
             if (chatId != null) {
                 this.currentChatId = chatId;
-                consoleUI.enterChatMode(contactUname);
+                consoleUI.enterChatMode(chatName, chatId);
 
                 List<MessageDTO> messages = apiService.getChatMessages(chatId);
 
@@ -168,6 +169,13 @@ public class ClientManager {
         return "PRIVATE_" + sortedIds[0] + "_" + sortedIds[1];
     }
 
+    private String determineChatName(String username1, String username2) {
+        String[] sortedUnames = {username1, username2};
+        Arrays.sort(sortedUnames);
+        return sortedUnames[0] + "-" + sortedUnames[1];
+    }
+
+
     public void enterGroupChat(String chatName) {
         try {
             // Retrieve chat ID from chat name
@@ -178,7 +186,7 @@ public class ClientManager {
             }
 
             this.currentChatId = chatId;
-            consoleUI.enterChatMode(chatName);
+            consoleUI.enterChatMode(chatName, chatId);
             consoleUI.showMessages(apiService.getChatMessages(chatId));
 
         } catch (Exception e) {

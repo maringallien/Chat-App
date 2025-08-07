@@ -1,4 +1,5 @@
 package com.MarinGallien.JavaChatApp.WebSocket;
+import ch.qos.logback.classic.Level;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.OnlineStatusMessage;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.WebSocketMessage;
 import com.MarinGallien.JavaChatApp.UserSession;
@@ -38,6 +39,7 @@ public class WebSocketClient {
     }
 
     public WebSocketClient() {
+        ((ch.qos.logback.classic.Logger) logger).setLevel(Level.OFF);
         this.stompClient = createStompClient();
     }
 

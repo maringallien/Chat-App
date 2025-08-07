@@ -15,6 +15,7 @@ public class ConsoleUI implements ChatService.MessageListener {
     // UI State for display purposes only
     private boolean inChatMode = false;
     private String currentChatName;
+    private String currentChatId;
 
     public ConsoleUI() {
     }
@@ -22,17 +23,20 @@ public class ConsoleUI implements ChatService.MessageListener {
 
     // ========== CHAT MODE DISPLAY MANAGEMENT ==========
 
-    public void enterChatMode(String chatName) {
+    public void enterChatMode(String chatName, String chatId) {
         this.inChatMode = true;
         this.currentChatName = chatName;
+        this.currentChatId = chatId;
 
         System.out.println("=== Entered chat: " + chatName + " ===");
         System.out.println("Type messages to send. Type '/exit' to leave.");
     }
 
+
     public void exitChatMode() {
         this.inChatMode = false;
         this.currentChatName = null;
+        this.currentChatId = null;  // Clear the chat ID too
         System.out.println("=== Exited chat ===");
     }
 
@@ -53,16 +57,22 @@ public class ConsoleUI implements ChatService.MessageListener {
     // These methods are called by ChatService when WebSocket events occur
 
     @Override
-    public void onMessageReceived(String senderId, String message) {
+    public void onMessageReceived(String chatId, String senderId, String username, String message) {
         String currentUserId = UserSession.getInstance().getUserId();
         if (currentUserId != null && currentUserId.equals(senderId)) {
-            // This is your own message echoed back - don't display it
             return;
         }
 
-        // Display incoming message immediately
-        System.out.println("\n[" + senderId + "]: " + message);
-        showChatPrompt(); // Show prompt again after message
+        // Only display the message if we're currently in chat mode
+        if (!inChatMode) {
+            return;
+        }
+
+        // Only display the message if we're currently in that specific chat
+        if (inChatMode && currentChatId != null && currentChatId.equals(chatId)) {
+            System.out.println("\n[" + username + "]: " + message);
+            showChatPrompt();
+        }
     }
 
     @Override

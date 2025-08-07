@@ -1,5 +1,6 @@
 package com.MarinGallien.JavaChatApp.WebSocket;
 
+import ch.qos.logback.classic.Level;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.OnlineStatusMessage;
 import com.MarinGallien.JavaChatApp.DTOs.WebsocketMessages.WebSocketMessage;
 import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
@@ -17,13 +18,14 @@ public class ChatService implements WebSocketClient.MessageHandler {
 
     // Interface for components that want to receive chat messages
     public interface MessageListener {
-        void onMessageReceived(String senderId, String message);
+        void onMessageReceived(String chatId, String senderId, String username, String message);
         void onStatusChanged(String userId, OnlineStatus status);
         void onConnectionChanged(boolean connected);
         void onError(String error);
     }
 
     public ChatService(WebSocketClient webSocketClient) {
+        ((ch.qos.logback.classic.Logger) logger).setLevel(Level.OFF);
         this.webSocketClient = webSocketClient;
     }
 
@@ -42,16 +44,16 @@ public class ChatService implements WebSocketClient.MessageHandler {
         // Attempt to connect to the WebSocket server with JWT authentication
         webSocketClient.connect(this)
             .thenRun(() -> {
-                connected = true;
+//                connected = true;
                 logger.info("Chat started");
 
                 // Broadcast online status to contacts
                 sendOnlineStatus(OnlineStatus.ONLINE);
 
-                // Notify listener
-                if (messageListener != null) {
-                    messageListener.onConnectionChanged(true);
-                }
+//                // Notify listener
+//                if (messageListener != null) {
+//                    messageListener.onConnectionChanged(true);
+//                }
             })
             .exceptionally(error -> {
                 connected = false;
@@ -88,7 +90,7 @@ public class ChatService implements WebSocketClient.MessageHandler {
             return;
         }
 
-        WebSocketMessage message = new WebSocketMessage(UserSession.getInstance().getUserId(), chatId, content);
+        WebSocketMessage message = new WebSocketMessage(UserSession.getInstance().getUserId(), chatId, content, UserSession.getInstance().getUsername());
         logger.info("Sending message sender ID: {}, chat ID: {}, content: {}", UserSession.getInstance().getUserId(), chatId, content);
         webSocketClient.sendMessage(message);
     }
@@ -110,7 +112,7 @@ public class ChatService implements WebSocketClient.MessageHandler {
     public void onMessage(WebSocketMessage message) {
 
         if (messageListener != null) {
-            messageListener.onMessageReceived(message.getSenderID(), message.getContent());
+            messageListener.onMessageReceived(message.getChatID(), message.getSenderID(), message.getUsername(), message.getContent());
         }
 
     }

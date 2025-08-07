@@ -8,3 +8,8 @@ Fixes:
 Upgrades:
 . keep try-catch for controllers, and event handlers, maybe even service layer. Remove the rest
 . Update code to be less repetitive by using lambda and helper methods
+
+
+. Chat name is wrong,
+. Received messages are displayed with user ID instead of username
+. received messages are printed weirdly

@@ -1,5 +1,6 @@
 package com.MarinGallien.JavaChatApp.API;
 
+import ch.qos.logback.classic.Level;
 import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.ChatIdRequest;
 import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.FileIdRequest;
 import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.UserIdRequest;
@@ -57,6 +58,7 @@ public class APIClient {
     private String jwtToken;
 
     public APIClient() {
+        ((ch.qos.logback.classic.Logger) logger).setLevel(Level.OFF);
         this.baseUrl = UserSession.getInstance().getHttpBaseUrl();
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
