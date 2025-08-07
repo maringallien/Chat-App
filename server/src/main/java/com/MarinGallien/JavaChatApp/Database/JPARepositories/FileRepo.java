@@ -14,6 +14,6 @@ public interface FileRepo extends JpaRepository<File, String> {
     // Retrieves a list of files belonging to a chat
     List<File> findByMessageChatChatId(@Param("chatId") String chatId);
 
-    @Query("SELECT f FROM File f WHERE f.filename = :filename")
-    File findFileByFilename(@Param("filename") String filename);
+    @Query("SELECT f FROM File f WHERE f.filename = :filename AND f.message.chat.chatId = :chatId")
+    File findFileByFilename(@Param("filename") String filename, @Param("chatId") String chatId);
 }

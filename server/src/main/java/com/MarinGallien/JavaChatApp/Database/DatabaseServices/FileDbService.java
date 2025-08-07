@@ -117,7 +117,8 @@ public class FileDbService {
             String uniqueFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + extension;
 
             // Create upload directory if it doesn't already exist
-            String uploadDir = "uploads/";
+            // Use absolute path for upload directory
+            String uploadDir = System.getProperty("java.io.tmpdir") + "/chat-app-uploads/";
             Path uploadPath = Paths.get(uploadDir);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
@@ -282,9 +283,9 @@ public class FileDbService {
         }
     }
 
-    public String getFileIdByFilename(String filename) {
+    public String getFileIdByFilename(String filename, String chatId) {
         try {
-            File file = fileRepo.findFileByFilename(filename);
+            File file = fileRepo.findFileByFilename(filename, chatId);
             return file.getFileId();
         } catch (Exception e) {
             logger.error("Failed to retrieve file from filename: {}", e.getMessage());

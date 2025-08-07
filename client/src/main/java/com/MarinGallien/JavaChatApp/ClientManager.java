@@ -494,8 +494,8 @@ public class ClientManager {
                 return;
             }
 
-            // Retrieve chat name
-            String fileId = apiService.getFileIdFromFilename(filename);
+            // Retrieve file ID
+            String fileId = apiService.getFileIdFromFilename(filename, chatId);
             if (fileId == null || fileId.isEmpty()) {
                 consoleUI.showError("Failed to download file: no corresponding file ID");
                 return;

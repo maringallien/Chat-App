@@ -127,13 +127,13 @@ public class FileService {
         }
     }
 
-    public String getFileIdFromFilename(String filename) {
+    public String getFileIdFromFilename(String filename, String chatId) {
         try {
             if (filename == null || filename.isEmpty()) {
                 logger.warn("Failed to retrieve file ID: file name is null or empty");
                 return null;
             }
-            return fileDbService.getFileIdByFilename(filename);
+            return fileDbService.getFileIdByFilename(filename, chatId);
         } catch (Exception e) {
             logger.error("Failed to retrieve file ID from file name: {}", e.getMessage());
             return null;

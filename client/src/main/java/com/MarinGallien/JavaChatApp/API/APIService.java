@@ -236,8 +236,8 @@ public class APIService {
         return response.userIds();
     }
 
-    public String getFileIdFromFilename(String filename) {
-        FileIdRequest request = new FileIdRequest(filename);
+    public String getFileIdFromFilename(String filename, String chatId) {
+        FileIdRequest request = new FileIdRequest(filename, chatId);
         FileIdResponse response = apiClient.getFileIdFromFilename(request);
         return response.fileId();
     }

@@ -187,7 +187,7 @@ public class FileController {
             }
 
             // Delegate to chat service
-            String fileId = fileService.getFileIdFromFilename(request.filename());
+            String fileId = fileService.getFileIdFromFilename(request.filename(), request.chatId());
 
             // Handle no corresponding ID
             if (fileId == null || fileId.isEmpty()) {

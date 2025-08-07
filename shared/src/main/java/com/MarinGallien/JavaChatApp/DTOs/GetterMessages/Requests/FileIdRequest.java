@@ -5,5 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 
 public record FileIdRequest(
         @NotBlank(message = "File name cannot be blank")
-        String filename
+        String filename,
+
+        @NotBlank(message = "Chat ID cannot be blank")
+        String chatId
 ) implements ApiReqResInterface {}
