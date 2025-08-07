@@ -22,15 +22,15 @@ public class ClientManager {
     private final ChatService chatService;
 
     // UI service
-    private final ConsoleUI consoleUI;
+    private final LanternaUI lanternaUI;
 
     // Local parameters
     private String currentChatId;
 
-    public ClientManager(APIService apiService, ChatService chatService, ConsoleUI consoleUI) {
+    public ClientManager(APIService apiService, ChatService chatService, LanternaUI lanternaUI) {
         this.apiService = apiService;
         this.chatService = chatService;
-        this.consoleUI = consoleUI;
+        this.lanternaUI = lanternaUI;
     }
 
 
@@ -41,14 +41,14 @@ public class ClientManager {
             boolean success = apiService.login(email, password);
 
             if (success) {
-                consoleUI.showInfo(UserSession.getInstance().getUserId());
-                consoleUI.showLoginSuccess(UserSession.getInstance().getUsername());
+                lanternaUI.showInfo(UserSession.getInstance().getUserId());
+                lanternaUI.showLoginSuccess(UserSession.getInstance().getUsername());
                 chatService.startChat();
             } else {
-                consoleUI.showLoginFailure();
+                lanternaUI.showLoginFailure();
             }
         } catch (Exception e) {
-            consoleUI.showError("Login failed: " + e.getMessage());
+            lanternaUI.showError("Login failed: " + e.getMessage());
         }
     }
 
@@ -60,12 +60,12 @@ public class ClientManager {
                 UserSession.getInstance().setUsername(username);
                 UserSession.getInstance().setEmail(email);
 
-                consoleUI.showRegistrationSuccess();
+                lanternaUI.showRegistrationSuccess();
             } else {
-                consoleUI.showRegistrationFailure();
+                lanternaUI.showRegistrationFailure();
             }
         } catch (Exception e) {
-            consoleUI.showError("Registration failed: " + e.getMessage());
+            lanternaUI.showError("Registration failed: " + e.getMessage());
         }
     }
 
@@ -73,25 +73,25 @@ public class ClientManager {
     // ========== CHAT MODE UTILITIES FOR CMDPARSER ==========
 
     public boolean isInChatMode() {
-        return consoleUI.isInChatMode();
+        return lanternaUI.isInChatMode();
     }
 
     public void sendMessage(String message) {
         if (currentChatId == null) {
-            consoleUI.showError("Not in a chat. Use 'chat <contact>' to start chatting.");
+            lanternaUI.showError("Not in a chat. Use 'chat <contact>' to start chatting.");
             return;
         }
 
         if (!chatService.isConnected()) {
-            consoleUI.showError("Not connected to chat server.");
+            lanternaUI.showError("Not connected to chat server.");
             return;
         }
 
         try {
             chatService.sendMessage(currentChatId, message);
-            consoleUI.showSentMessage(message);
+            lanternaUI.showSentMessage(message);
         } catch (Exception e) {
-            consoleUI.showError("Failed to send message: " + e.getMessage());
+            lanternaUI.showError("Failed to send message: " + e.getMessage());
 
         }
     }
@@ -99,7 +99,7 @@ public class ClientManager {
     public void exitCurrentChat() {
         if (currentChatId != null) {
             this.currentChatId = null;
-            consoleUI.exitChatMode();
+            lanternaUI.exitChatMode();
         }
     }
 
@@ -122,7 +122,7 @@ public class ClientManager {
 
 
         } catch (Exception e) {
-            consoleUI.showError("Error during disconnect: " + e.getMessage());
+            lanternaUI.showError("Error during disconnect: " + e.getMessage());
         }
     }
 
@@ -137,7 +137,7 @@ public class ClientManager {
             String contactUserId = apiService.getUserIdFromUsername(contactUname);
 
             if (contactUserId == null || contactUserId.isEmpty()) {
-                consoleUI.showError("Failed to retrieve contact user ID");
+                lanternaUI.showError("Failed to retrieve contact user ID");
                 return;
             }
 
@@ -146,18 +146,18 @@ public class ClientManager {
 
             if (chatId != null) {
                 this.currentChatId = chatId;
-                consoleUI.enterChatMode(contactUname);
+                lanternaUI.enterChatMode(contactUname);
 
                 List<MessageDTO> messages = apiService.getChatMessages(chatId);
 
                 if (!messages.isEmpty()) {
-                    consoleUI.showMessages(messages);
+                    lanternaUI.showMessages(messages);
                 }
             } else {
-                consoleUI.showChatNotFound(contactUname);
+                lanternaUI.showChatNotFound(contactUname);
             }
         } catch (Exception e) {
-            consoleUI.showError("Failed to enter chat: " + e.getMessage());
+            lanternaUI.showError("Failed to enter chat: " + e.getMessage());
         }
     }
 
@@ -173,16 +173,16 @@ public class ClientManager {
             // Retrieve chat ID from chat name
             String chatId = apiService.getChatIdFromChatName(chatName);
             if (chatId == null || chatId.isEmpty()) {
-                consoleUI.showError("Failed to retrieve chat ID");
+                lanternaUI.showError("Failed to retrieve chat ID");
                 return;
             }
 
             this.currentChatId = chatId;
-            consoleUI.enterChatMode(chatName);
-            consoleUI.showMessages(apiService.getChatMessages(chatId));
+            lanternaUI.enterChatMode(chatName);
+            lanternaUI.showMessages(apiService.getChatMessages(chatId));
 
         } catch (Exception e) {
-            consoleUI.showError("Failed to enter chat: " + e.getMessage());
+            lanternaUI.showError("Failed to enter chat: " + e.getMessage());
         }
     }
 
@@ -191,19 +191,19 @@ public class ClientManager {
             // Retrieve contact ID from contact username
             String contactId = apiService.getUserIdFromUsername(contactUname);
             if (contactId == null || contactId.isEmpty()) {
-                consoleUI.showError("Failed to retrieve user ID");
+                lanternaUI.showError("Failed to retrieve user ID");
                 return;
             }
 
             boolean success = apiService.createPrivateChat(contactId);
 
             if (success) {
-                consoleUI.showPrivateChatCreated(contactId);
+                lanternaUI.showPrivateChatCreated(contactId);
             } else {
-                consoleUI.showError("Failed to create private chat");
+                lanternaUI.showError("Failed to create private chat");
             }
         } catch (Exception e) {
-            consoleUI.showError("Failed to create private chat: " + e.getMessage());
+            lanternaUI.showError("Failed to create private chat: " + e.getMessage());
         }
     }
 
@@ -212,7 +212,7 @@ public class ClientManager {
             // Retrieve member IDs from member usernames
             List<String> memberIds = apiService.getUserIdsFromUsernames(memberUnames);
             if (memberIds == null || memberIds.isEmpty()) {
-                consoleUI.showError("Failed to retrieve user IDs");
+                lanternaUI.showError("Failed to retrieve user IDs");
                 return;
             }
 
@@ -220,12 +220,12 @@ public class ClientManager {
             boolean success = apiService.createGroupChat(memberSet, chatName);
 
             if (success) {
-                consoleUI.showGroupChatCreated(chatName);
+                lanternaUI.showGroupChatCreated(chatName);
             } else {
-                consoleUI.showError("Failed to create group chat");
+                lanternaUI.showError("Failed to create group chat");
             }
         } catch (Exception e) {
-            consoleUI.showError("Failed to create group chat: " + e.getMessage());
+            lanternaUI.showError("Failed to create group chat: " + e.getMessage());
         }
     }
 
@@ -235,24 +235,24 @@ public class ClientManager {
             // Retrieve chat ID from chat name
             String chatId = apiService.getChatIdFromChatName(chatName);
             if (chatId == null || chatId.isEmpty()) {
-                consoleUI.showError("Failed to retrieve chat ID");
+                lanternaUI.showError("Failed to retrieve chat ID");
                 return;
             }
 
             boolean success = apiService.deleteChat(chatId);
 
             if (success) {
-                consoleUI.showSuccess("Chat deleted successfully");
+                lanternaUI.showSuccess("Chat deleted successfully");
 
                 // Exit chat mode if we're currently in this chat
                 if (chatId.equals(currentChatId)) {
                     exitCurrentChat();
                 }
             } else {
-                consoleUI.showError("Failed to delete chat");
+                lanternaUI.showError("Failed to delete chat");
             }
         } catch (Exception e) {
-            consoleUI.showError("Failed to delete chat: " + e.getMessage());
+            lanternaUI.showError("Failed to delete chat: " + e.getMessage());
         }
     }
 
@@ -262,19 +262,19 @@ public class ClientManager {
             String chatId = apiService.getChatIdFromChatName(chatName);
             String memberId = apiService.getUserIdFromUsername(username);
             if (memberId == null || chatId == null || memberId.isEmpty() || chatId.isEmpty()) {
-                consoleUI.showError("Failed to retrieve chat and/or user ID");
+                lanternaUI.showError("Failed to retrieve chat and/or user ID");
                 return;
             }
 
             boolean success = apiService.addMemberToChat(memberId, chatId);
 
             if (success) {
-                consoleUI.showSuccess("Member added to chat successfully");
+                lanternaUI.showSuccess("Member added to chat successfully");
             } else {
-                consoleUI.showError("Failed to add member");
+                lanternaUI.showError("Failed to add member");
             }
         } catch (Exception e) {
-            consoleUI.showError("Failed to add member: " + e.getMessage());
+            lanternaUI.showError("Failed to add member: " + e.getMessage());
         }
     }
 
@@ -284,19 +284,19 @@ public class ClientManager {
             String chatId = apiService.getChatIdFromChatName(chatName);
             String memberId = apiService.getUserIdFromUsername(username);
             if (memberId == null || chatId == null || memberId.isEmpty() || chatId.isEmpty()) {
-                consoleUI.showError("Failed to retrieve chat and/or user ID");
+                lanternaUI.showError("Failed to retrieve chat and/or user ID");
                 return;
             }
 
             boolean success = apiService.removeMemberFromChat(memberId, chatId);
 
             if (success) {
-                consoleUI.showSuccess("Member removed from chat successfully");
+                lanternaUI.showSuccess("Member removed from chat successfully");
             } else {
-                consoleUI.showError("Failed to remove member");
+                lanternaUI.showError("Failed to remove member");
             }
         } catch (Exception e) {
-            consoleUI.showError("Failed to remove member: " + e.getMessage());
+            lanternaUI.showError("Failed to remove member: " + e.getMessage());
         }
     }
 
@@ -306,14 +306,14 @@ public class ClientManager {
 
             // Check for null or empty
             if (chats == null || chats.isEmpty()) {
-                consoleUI.showError("No chats were found");
+                lanternaUI.showError("No chats were found");
                 return;
             }
 
             // Display chats
-            consoleUI.showChats(chats);
+            lanternaUI.showChats(chats);
         } catch (Exception e) {
-            consoleUI.showError("Failed to get chats: " + e.getMessage());
+            lanternaUI.showError("Failed to get chats: " + e.getMessage());
         }
     }
 
@@ -324,19 +324,19 @@ public class ClientManager {
             // Retrieve contact ID from contact username
             String contactId = apiService.getUserIdFromUsername(contactUname);
             if (contactId == null || contactId.isEmpty()) {
-                consoleUI.showError("Failed to retrieve contact ID");
+                lanternaUI.showError("Failed to retrieve contact ID");
                 return;
             }
 
             boolean success = apiService.createContact(contactId);
 
             if (success) {
-                consoleUI.showContactAdded(contactId);
+                lanternaUI.showContactAdded(contactId);
             } else {
-                consoleUI.showError("Failed to add contact");
+                lanternaUI.showError("Failed to add contact");
             }
         } catch (Exception e) {
-            consoleUI.showError("Failed to add contact: " + e.getMessage());
+            lanternaUI.showError("Failed to add contact: " + e.getMessage());
         }
     }
 
@@ -345,18 +345,18 @@ public class ClientManager {
             // Retrieve contact ID from contact username
             String contactId = apiService.getUserIdFromUsername(contactUname);
             if (contactId == null || contactId.isEmpty()) {
-                consoleUI.showError("Failed to retrieve contact ID");
+                lanternaUI.showError("Failed to retrieve contact ID");
             }
 
             boolean success = apiService.removeContact(contactId);
 
             if (success) {
-                consoleUI.showContactRemoved(contactId);
+                lanternaUI.showContactRemoved(contactId);
             } else {
-                consoleUI.showError("Failed to remove contact");
+                lanternaUI.showError("Failed to remove contact");
             }
         } catch (Exception e) {
-            consoleUI.showError("Failed to remove contact: " + e.getMessage());
+            lanternaUI.showError("Failed to remove contact: " + e.getMessage());
         }
     }
 
@@ -365,12 +365,12 @@ public class ClientManager {
             List<ContactDTO> contacts = apiService.getUserContacts();
 
             if (contacts != null && !contacts.isEmpty()) {
-                consoleUI.showContacts(contacts);
+                lanternaUI.showContacts(contacts);
             } else {
-                consoleUI.showError("No contacts found");
+                lanternaUI.showError("No contacts found");
             }
         } catch (Exception e) {
-            consoleUI.showError("Failed to get contacts: " + e.getMessage());
+            lanternaUI.showError("Failed to get contacts: " + e.getMessage());
         }
     }
 
@@ -382,19 +382,19 @@ public class ClientManager {
             // Retrieve chat ID from chat name
             String chatId = apiService.getChatIdFromChatName(chatName);
             if (chatName == null || chatName.isEmpty()) {
-                consoleUI.showError("Failed to retrieve chat ID");
+                lanternaUI.showError("Failed to retrieve chat ID");
                 return;
             }
 
             List<MessageDTO> chatMessages = apiService.getChatMessages(chatId);
 
             if (chatMessages != null && !chatMessages.isEmpty()) {
-                consoleUI.showMessages(chatMessages);
+                lanternaUI.showMessages(chatMessages);
             } else {
-                consoleUI.showError("Failed to get messages");
+                lanternaUI.showError("Failed to get messages");
             }
         } catch (Exception e) {
-            consoleUI.showError("Failed to get messages: " + e.getMessage());
+            lanternaUI.showError("Failed to get messages: " + e.getMessage());
         }
     }
 
@@ -406,12 +406,12 @@ public class ClientManager {
             boolean success = apiService.updateUsername(newUsername);
 
             if (success) {
-                consoleUI.showSuccess("Username updated successfully");
+                lanternaUI.showSuccess("Username updated successfully");
             } else {
-                consoleUI.showError("Failed to update username");
+                lanternaUI.showError("Failed to update username");
             }
         } catch (Exception e) {
-            consoleUI.showError("Failed to update username: " + e.getMessage());
+            lanternaUI.showError("Failed to update username: " + e.getMessage());
         }
     }
 
@@ -420,12 +420,12 @@ public class ClientManager {
             boolean success = apiService.updateEmail(newEmail);
 
             if (success) {
-                consoleUI.showSuccess("Email updated successfully");
+                lanternaUI.showSuccess("Email updated successfully");
             } else {
-                consoleUI.showError("Failed to update email");
+                lanternaUI.showError("Failed to update email");
             }
         } catch (Exception e) {
-            consoleUI.showError("Failed to update email: " + e.getMessage());
+            lanternaUI.showError("Failed to update email: " + e.getMessage());
         }
     }
 
@@ -434,12 +434,12 @@ public class ClientManager {
             boolean success = apiService.updatePassword(oldPassword, newPassword);
 
             if (success) {
-                consoleUI.showSuccess("Password updated successfully");
+                lanternaUI.showSuccess("Password updated successfully");
             } else {
-                consoleUI.showError("Failed to update password");
+                lanternaUI.showError("Failed to update password");
             }
         } catch (Exception e) {
-            consoleUI.showError("Failed to update password: " + e.getMessage());
+            lanternaUI.showError("Failed to update password: " + e.getMessage());
         }
     }
 
@@ -449,7 +449,7 @@ public class ClientManager {
     public void uploadFile(String chatName, String filepath) {
         try {
             if (filepath == null || filepath.isEmpty()) {
-                consoleUI.showError("Failed to upload file: filepath is null or empty");
+                lanternaUI.showError("Failed to upload file: filepath is null or empty");
                 return;
             }
 
@@ -458,93 +458,93 @@ public class ClientManager {
 
             // Make sure file exists
             if (!file.exists() || !file.isFile()) {
-                consoleUI.showError("Failed to upload file: file does not exist or is not a file");
+                lanternaUI.showError("Failed to upload file: file does not exist or is not a file");
             }
 
             String chatId = apiService.getChatIdFromChatName(chatName);
 
             if (chatId == null || chatId.isEmpty()) {
-                consoleUI.showError("Failed to upload file: chat does not exist");
+                lanternaUI.showError("Failed to upload file: chat does not exist");
                 return;
             }
 
             boolean success = apiService.uploadFile(chatId, file);
             if (success) {
-                consoleUI.showSuccess("File uploaded successfully");
+                lanternaUI.showSuccess("File uploaded successfully");
             } else {
-                consoleUI.showError("Failed to upload file");
+                lanternaUI.showError("Failed to upload file");
             }
 
         } catch (Exception e) {
-            consoleUI.showError("Failed to upload file: " + e.getMessage());
+            lanternaUI.showError("Failed to upload file: " + e.getMessage());
         }
     }
 
     public void downloadFile(String chatName, String filename, String filePath) {
         try {
             if (filename == null || filePath == null || filename.isEmpty() || filePath.isEmpty()) {
-                consoleUI.showError("Failed to download file: Filename or file path empty/null");
+                lanternaUI.showError("Failed to download file: Filename or file path empty/null");
                 return;
             }
 
             // Retrieve chatId
             String chatId = apiService.getChatIdFromChatName(chatName);
             if (chatId == null || chatId.isEmpty()) {
-                consoleUI.showError("Failed to download file: chat ID not found");
+                lanternaUI.showError("Failed to download file: chat ID not found");
                 return;
             }
 
             // Retrieve file ID
             String fileId = apiService.getFileIdFromFilename(filename, chatId);
             if (fileId == null || fileId.isEmpty()) {
-                consoleUI.showError("Failed to download file: no corresponding file ID");
+                lanternaUI.showError("Failed to download file: no corresponding file ID");
                 return;
             }
 
             String completeFilePath = filePath + "/" + filename;
             boolean success = apiService.downloadFile(chatId, fileId, completeFilePath);
             if (success) {
-                consoleUI.showSuccess("File downloaded successfully");
+                lanternaUI.showSuccess("File downloaded successfully");
             } else {
-                consoleUI.showError("Failed to download file, api service returned false");
+                lanternaUI.showError("Failed to download file, api service returned false");
             }
 
         } catch (Exception e) {
-            consoleUI.showError("Failed to download file: " + e.getMessage());
+            lanternaUI.showError("Failed to download file: " + e.getMessage());
         }
     }
 
     public void getChatFiles(String chatName) {
         try {
             if (chatName == null || chatName.isEmpty()) {
-                consoleUI.showError("Failed to retrieve chat files: chat name is null or empty");
+                lanternaUI.showError("Failed to retrieve chat files: chat name is null or empty");
                 return;
             }
 
             String chatId = apiService.getChatIdFromChatName(chatName);
             if (chatId == null || chatId.isEmpty()) {
-                consoleUI.showError("Failed to retrieve chat files: chat does not exist");
+                lanternaUI.showError("Failed to retrieve chat files: chat does not exist");
                 return;
             }
 
             List<FileDTO> chatFiles = apiService.getChatFiles(chatId);
 
             if (chatFiles == null || chatFiles.isEmpty()) {
-                consoleUI.showInfo("No files in this chat");
+                lanternaUI.showInfo("No files in this chat");
                 return;
             }
 
-            consoleUI.showFiles(chatFiles);
+            lanternaUI.showFiles(chatFiles);
 
         } catch (Exception e) {
-            consoleUI.showError("Failed to retrieve chat files: " + e.getMessage());
+            lanternaUI.showError("Failed to retrieve chat files: " + e.getMessage());
         }
     }
 
     // ========== UTILITY METHODS ==========
 
     public void showHelp() {
-        consoleUI.showHelp();
+        lanternaUI.showHelp();
     }
 
 }
