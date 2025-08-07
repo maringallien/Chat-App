@@ -1,440 +1,453 @@
-package com.MarinGallien.JavaChatApp;
-
-import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.TextColor;
-import com.googlecode.lanterna.gui2.*;
-import com.googlecode.lanterna.screen.Screen;
-import com.googlecode.lanterna.screen.TerminalScreen;
-import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import com.googlecode.lanterna.terminal.Terminal;
-import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
-import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
-import com.MarinGallien.JavaChatApp.DTOs.DataEntities.FileDTO;
-import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
-import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
-import com.MarinGallien.JavaChatApp.WebSocket.ChatService;
-
-import java.io.IOException;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Scanner;
-
-public class LanternaUI implements ChatService.MessageListener {
-
-    private final Terminal terminal;
-    private final Screen screen;
-    private final Scanner scanner;
-
-    // State
-    private boolean inChatMode = false;
-    private String currentChatName;
-    private String currentUser = "Guest";
-    private boolean isOnline = false;
-
-    public LanternaUI() throws IOException {
-        this.terminal = new DefaultTerminalFactory().createTerminal();
-        this.screen = new TerminalScreen(terminal);
-        this.scanner = new Scanner(System.in);
-        screen.startScreen();
-        screen.clear();
-    }
-
-    public void cleanup() {
-        try {
-            if (screen != null) {
-                screen.stopScreen();
-            }
-            if (terminal != null) {
-                terminal.close();
-            }
-        } catch (IOException e) {
-            System.err.println("Error cleaning up UI: " + e.getMessage());
-        }
-    }
-
-    // ========== VISUAL DISPLAY METHODS ==========
-
-    public void showWelcome() {
-        clearScreen();
-        printBox("TCHAT", 60, new String[]{
-                "      ████████╗ ██████╗██╗  ██╗ █████╗ ████████╗",
-                "      ╚══██╔══╝██╔════╝██║  ██║██╔══██╗╚══██╔══╝",
-                "         ██║   ██║     ███████║███████║   ██║   ",
-                "         ██║   ██║     ██╔══██║██╔══██║   ██║   ",
-                "         ██║   ╚██████╗██║  ██║██║  ██║   ██║   ",
-                "         ╚═╝    ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ",
-                "",
-                "                     Welcome to TCHAT!",
-                "                   Type 'help' for commands"
-        });
-
-        printStatusBar("Status: Starting up...", "");
-    }
-
-    public void showChatInterface(String chatName) {
-        clearScreen();
-        String onlineIndicator = isOnline ? "●" : "○";
-        String headerTitle = "Chat with " + chatName;
-
-        printChatBox(headerTitle, currentUser + "! " + onlineIndicator + " " + (isOnline ? "Online" : "Offline"));
-        printStatusBar("[F] File  [D] Download File [H] Home  [B] Back  [Q] Quit", "");
-    }
-
-    public void showHelp() {
-        clearScreen();
-        printBox("Available Commands", 80, new String[]{
-                "=== Authentication ===",
-                "  login <email> <password>                    - Login to your account",
-                "  register <username> <email> <password>      - Create new account",
-                "",
-                "=== Chat Management ===",
-                "  chat -g <group_name>                        - Join group chat",
-                "  chat -p <contact_name>                      - Start private chat",
-                "  create-pc <contact_username>                - Create private chat",
-                "  create-gc <chat_name> <contact1> <contact2> - Create group chat",
-                "  delete-chat <chat_name>                     - Delete a chat",
-                "  chats                                       - Show your chats",
-                "  messages <chat_name>                        - Show chat messages",
-                "",
-                "=== Contact Management ===",
-                "  add-contact <contact_username>              - Add contact",
-                "  remove-contact <contact_username>           - Remove contact",
-                "  contacts                                    - Show your contacts",
-                "",
-                "=== File Management ===",
-                "  upload-file <chatname> <filepath>           - Upload file to chat",
-                "  download-file <chatname> <filename> <path>  - Download file",
-                "  get-files <chatname>                        - List files in chat",
-                "",
-                "=== Utility ===",
-                "  help                                        - Show this help",
-                "  exit                                        - Exit application"
-        });
-
-        printStatusBar("Press Enter to continue...", "");
-    }
-
-    // ========== CHAT MODE MANAGEMENT ==========
-
-    public void enterChatMode(String chatName) {
-        this.inChatMode = true;
-        this.currentChatName = chatName;
-        showChatInterface(chatName);
-        System.out.println();
-        System.out.println("=== Entered chat: " + chatName + " ===");
-        System.out.println("Type messages to send. Type '/exit' to leave.");
-        showChatPrompt();
-    }
-
-    public void exitChatMode() {
-        this.inChatMode = false;
-        this.currentChatName = null;
-        clearScreen();
-        showWelcome();
-        System.out.println("=== Exited chat ===");
-        showMainPrompt();
-    }
-
-    public void showChatPrompt() {
-        System.out.print("┌─ Message: ");
-    }
-
-    public void showMainPrompt() {
-        System.out.print("┌─ Command: ");
-    }
-
-    public void showSentMessage(String message) {
-        String time = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
-        System.out.println("│  [" + time + "] You: " + message);
-    }
-
-    public void showCommand(String command) {
-        System.out.println("│  > " + command);
-    }
-
-    // ========== MESSAGE LISTENER IMPLEMENTATION ==========
-
-    @Override
-    public void onMessageReceived(String senderId, String message) {
-        String currentUserId = UserSession.getInstance().getUserId();
-        if (currentUserId != null && currentUserId.equals(senderId)) {
-            return;
-        }
-
-        String time = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
-        System.out.println("│  [" + time + "] " + senderId + ": " + message);
-
-        if (inChatMode) {
-            showChatPrompt();
-        } else {
-            showMainPrompt();
-        }
-    }
-
-    @Override
-    public void onStatusChanged(String userId, OnlineStatus status) {
-        String statusText = status == OnlineStatus.ONLINE ? "came online" : "went offline";
-        System.out.println("│  📱 " + userId + " " + statusText);
-
-        if (inChatMode) {
-            showChatPrompt();
-        } else {
-            showMainPrompt();
-        }
-    }
-
-    @Override
-    public void onConnectionChanged(boolean connected) {
-        this.isOnline = connected;
-        String status = connected ? "Connected to chat server" : "Disconnected from chat server";
-        String icon = connected ? "🟢" : "🔴";
-        System.out.println("│  " + icon + " " + status);
-
-        if (inChatMode) {
-            showChatPrompt();
-        } else {
-            showMainPrompt();
-        }
-    }
-
-    @Override
-    public void onError(String error) {
-        System.out.println("│  ❌ " + error);
-        if (inChatMode) {
-            showChatPrompt();
-        } else {
-            showMainPrompt();
-        }
-    }
-
-    // ========== DISPLAY METHODS ==========
-
-    public void showContacts(List<ContactDTO> contacts) {
-        clearScreen();
-        String[] contactLines = new String[contacts.size() + 2];
-        contactLines[0] = "=== Your Contacts ===";
-        contactLines[1] = "";
-
-        if (contacts.isEmpty()) {
-            contactLines[2] = "No contacts found.";
-        } else {
-            for (int i = 0; i < contacts.size(); i++) {
-                ContactDTO contact = contacts.get(i);
-                String indicator = contact.getOnlineStatus() == OnlineStatus.ONLINE ? "🟢" : "⚪";
-                contactLines[i + 2] = "  " + indicator + " " + contact.getUsername();
-            }
-        }
-
-        printBox("Contacts", 60, contactLines);
-        printStatusBar("Press Enter to continue...", "");
-        scanner.nextLine();
-        clearScreen();
-        showWelcome();
-        showMainPrompt();
-    }
-
-    public void showChats(List<ChatDTO> chats) {
-        clearScreen();
-        String[] chatLines = new String[chats.size() + 2];
-        chatLines[0] = "=== Your Chats ===";
-        chatLines[1] = "";
-
-        for (int i = 0; i < chats.size(); i++) {
-            ChatDTO chat = chats.get(i);
-            chatLines[i + 2] = "  - " + chat.getChatName() + " (" + chat.getChatType() + ")";
-        }
-
-        printBox("Chat List", 60, chatLines);
-        printStatusBar("Press Enter to continue...", "");
-        scanner.nextLine();
-        clearScreen();
-        showWelcome();
-        showMainPrompt();
-    }
-
-    public void showMessages(List<MessageDTO> messages) {
-        System.out.println("│  === Chat Messages ===");
-        for (MessageDTO message : messages) {
-            System.out.println("│  [" + message.getSenderId() + "]: " + message.getContent());
-        }
-        System.out.println("│");
-    }
-
-    public void showFiles(List<FileDTO> files) {
-        System.out.println("│  === Chat Files ===");
-        for (FileDTO file : files) {
-            System.out.println("│  📄 " + file.getFilename());
-        }
-        System.out.println("│");
-    }
-
-    // ========== STATUS MESSAGES ==========
-
-    public void showLoginSuccess(String username) {
-        this.currentUser = username;
-        this.isOnline = true;
-        clearScreen();
-        printSuccessBox("Login Successful", "Welcome back, " + username + "!");
-        printStatusBar("Press Enter to continue...", "");
-        scanner.nextLine();
-        clearScreen();
-        showWelcome();
-        showMainPrompt();
-    }
-
-    public void showLoginFailure() {
-        clearScreen();
-        printErrorBox("Login Failed", "Please check your credentials and try again.");
-        printStatusBar("Press Enter to continue...", "");
-        scanner.nextLine();
-        clearScreen();
-        showWelcome();
-        showMainPrompt();
-    }
-
-    public void showRegistrationSuccess() {
-        clearScreen();
-        printSuccessBox("Account Created", "Registration successful! You can now login.");
-        printStatusBar("Press Enter to continue...", "");
-        scanner.nextLine();
-        clearScreen();
-        showWelcome();
-        showMainPrompt();
-    }
-
-    public void showRegistrationFailure() {
-        clearScreen();
-        printErrorBox("Registration Failed", "Please try again with different credentials.");
-        printStatusBar("Press Enter to continue...", "");
-        scanner.nextLine();
-        clearScreen();
-        showWelcome();
-        showMainPrompt();
-    }
-
-    public void showError(String error) {
-        System.out.println("│  ❌ " + error);
-    }
-
-    public void showSuccess(String message) {
-        System.out.println("│  ✓ " + message);
-    }
-
-    public void showInfo(String message) {
-        System.out.println("│  ℹ️  " + message);
-    }
-
-    public void showNotLoggedIn() {
-        System.out.println("│  ❌ Please login first.");
-    }
-
-    public void showChatNotFound(String chatName) {
-        System.out.println("│  ❌ Chat '" + chatName + "' not found.");
-    }
-
-    public void showContactAdded(String contactName) {
-        System.out.println("│  ✓ Added " + contactName + " to your contacts.");
-    }
-
-    public void showContactRemoved(String contactName) {
-        System.out.println("│  ✓ Removed " + contactName + " from your contacts.");
-    }
-
-    public void showPrivateChatCreated(String contactName) {
-        System.out.println("│  ✓ Created private chat with " + contactName);
-    }
-
-    public void showGroupChatCreated(String chatName) {
-        System.out.println("│  ✓ Created group chat: " + chatName);
-    }
-
-    public void showGoodbye() {
-        clearScreen();
-        printBox("Goodbye!", 40, new String[]{
-                "Thank you for using Java Chat Client!",
-                "",
-                "See you next time! 👋"
-        });
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    // ========== VISUAL HELPER METHODS ==========
-
-    private void clearScreen() {
-        try {
-            screen.clear();
-            screen.refresh();
-        } catch (IOException e) {
-            System.err.println("Error clearing screen: " + e.getMessage());
-        }
-    }
-
-    private void printBox(String title, int width, String[] content) {
-        // Top border
-        System.out.println("┌" + "─".repeat(width - title.length() - 4) + " " + title + " " + "─".repeat(width - title.length() - 4) + "┐");
-
-        // Content
-        for (String line : content) {
-            int padding = width - line.length() - 4;
-            String leftPad = " ".repeat(Math.max(0, padding / 2));
-            String rightPad = " ".repeat(Math.max(0, padding - leftPad.length()));
-            System.out.println("│  " + leftPad + line + rightPad + "  │");
-        }
-
-        // Bottom border
-        System.out.println("└" + "─".repeat(width - 2) + "┘");
-    }
-
-    private void printChatBox(String title, String userInfo) {
-        System.out.println("┌" + "─".repeat(30) + " " + title + " " + "─".repeat(30) + "┐");
-        System.out.println("│ " + userInfo + " ".repeat(Math.max(0, 78 - userInfo.length())) + "│");
-        System.out.println("├" + "─".repeat(78) + "┤");
-        System.out.println("│  ┌" + "─".repeat(74) + "┐  │");
-    }
-
-    private void printSuccessBox(String title, String message) {
-        System.out.println("┌" + "─".repeat(35) + " " + title + " " + "─".repeat(35) + "┐");
-        System.out.println("│" + " ".repeat(80) + "│");
-        System.out.println("│  ✓ " + message + " ".repeat(Math.max(0, 76 - message.length())) + "│");
-        System.out.println("│" + " ".repeat(80) + "│");
-        System.out.println("└" + "─".repeat(80) + "┘");
-    }
-
-    private void printErrorBox(String title, String message) {
-        System.out.println("┌" + "─".repeat(35) + " " + title + " " + "─".repeat(35) + "┐");
-        System.out.println("│" + " ".repeat(80) + "│");
-        System.out.println("│  ❌ " + message + " ".repeat(Math.max(0, 75 - message.length())) + "│");
-        System.out.println("│" + " ".repeat(80) + "│");
-        System.out.println("└" + "─".repeat(80) + "┘");
-    }
-
-    private void printStatusBar(String leftText, String rightText) {
-        int totalWidth = 80;
-        int rightTextLength = rightText.length();
-        int leftSpace = totalWidth - rightTextLength - 2;
-        String paddedLeft = (leftText.length() > leftSpace) ?
-                leftText.substring(0, leftSpace - 3) + "..." : leftText;
-        String padding = " ".repeat(Math.max(0, leftSpace - paddedLeft.length()));
-
-        System.out.println("  " + paddedLeft + padding + rightText);
-    }
-
-    // ========== GETTERS ==========
-
-    public boolean isInChatMode() {
-        return inChatMode;
-    }
-
-    public String getCurrentChatName() {
-        return currentChatName;
-    }
-
-    public void setCurrentUser(String username) {
-        this.currentUser = username;
-    }
-}
+//package com.MarinGallien.JavaChatApp;
+//
+//import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
+//import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
+//import com.MarinGallien.JavaChatApp.DTOs.DataEntities.FileDTO;
+//import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
+//import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
+//import com.MarinGallien.JavaChatApp.WebSocket.ChatService;
+//
+//import com.googlecode.lanterna.*;
+//import com.googlecode.lanterna.graphics.TextGraphics;
+//import com.googlecode.lanterna.input.KeyStroke;
+//import com.googlecode.lanterna.input.KeyType;
+//import com.googlecode.lanterna.screen.Screen;
+//import com.googlecode.lanterna.screen.TerminalScreen;
+//import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+//import com.googlecode.lanterna.terminal.Terminal;
+//
+//import java.io.IOException;
+//import java.util.*;
+//import java.util.concurrent.ConcurrentLinkedQueue;
+//
+//public class LanternaUI implements ChatService.MessageListener {
+//
+//    private Terminal terminal;
+//    private Screen screen;
+//    private TextGraphics textGraphics;
+//
+//    // UI State
+//    private boolean inChatMode = false;
+//    private String currentChatName;
+//    private final Queue<String> pendingOutput = new ConcurrentLinkedQueue<>();
+//    private StringBuilder currentInput = new StringBuilder();
+//    private int cursorPosition = 0;
+//    private int scrollOffset = 0;
+//    private final List<String> outputHistory = new ArrayList<>();
+//
+//    // Colors - keeping it simple
+//    private static final TextColor BG_COLOR = TextColor.ANSI.DEFAULT;
+//    private static final TextColor FG_COLOR = TextColor.ANSI.DEFAULT;
+//    private static final TextColor ERROR_COLOR = TextColor.ANSI.RED;
+//    private static final TextColor SUCCESS_COLOR = TextColor.ANSI.GREEN;
+//    private static final TextColor INFO_COLOR = TextColor.ANSI.YELLOW;
+//    private static final TextColor CYAN_COLOR = TextColor.ANSI.CYAN;
+//
+//    public LanternaUI() throws IOException {
+//        // Constructor remains lightweight
+//    }
+//
+//    public void initialize() throws IOException {
+//        DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
+//
+//        terminal = terminalFactory.createTerminal();
+//        screen = new TerminalScreen(terminal);
+//        textGraphics = screen.newTextGraphics();
+//
+//        screen.startScreen();
+//        screen.setCursorPosition(null);
+//
+//        // Set default colors
+//        textGraphics.setBackgroundColor(BG_COLOR);
+//        textGraphics.setForegroundColor(FG_COLOR);
+//    }
+//
+//    public void cleanup() {
+//        try {
+//            if (screen != null) {
+//                screen.stopScreen();
+//            }
+//            if (terminal != null) {
+//                terminal.close();
+//            }
+//        } catch (IOException e) {
+//            // Silently fail on cleanup
+//        }
+//    }
+//
+//    // ========== OUTPUT METHODS ==========
+//
+//    private void addToOutput(String text) {
+//        outputHistory.add(text);
+//        // Keep history manageable
+//        if (outputHistory.size() > 1000) {
+//            outputHistory.remove(0);
+//        }
+//    }
+//
+//    private void displayOutput(String text) {
+//        addToOutput(text);
+//        pendingOutput.offer(text);
+//    }
+//
+//    private void displayOutput(String text, TextColor color) {
+//        addToOutput(text);
+//        pendingOutput.offer(text);
+//    }
+//
+//    private void refreshDisplay() throws IOException {
+//        screen.clear();
+//        TerminalSize size = screen.getTerminalSize();
+//
+//        // Calculate display area (leave room for input line)
+//        int maxDisplayLines = size.getRows() - 2;
+//
+//        // Display output history
+//        int startIdx = Math.max(0, outputHistory.size() - maxDisplayLines - scrollOffset);
+//        int endIdx = Math.min(outputHistory.size(), startIdx + maxDisplayLines);
+//
+//        int row = 0;
+//        for (int i = startIdx; i < endIdx && row < maxDisplayLines; i++) {
+//            String line = outputHistory.get(i);
+//
+//            // Simple color detection based on content
+//            TextColor color = FG_COLOR;
+//            if (line.startsWith("❌") || line.contains("failed") || line.contains("error")) {
+//                color = ERROR_COLOR;
+//            } else if (line.startsWith("✓") || line.contains("successful")) {
+//                color = SUCCESS_COLOR;
+//            } else if (line.startsWith("ℹ️") || line.startsWith("===")) {
+//                color = CYAN_COLOR;
+//            } else if (line.startsWith("📱") || line.startsWith("🔗")) {
+//                color = INFO_COLOR;
+//            }
+//
+//            textGraphics.setForegroundColor(color);
+//
+//            // Handle long lines by wrapping
+//            if (line.length() > size.getColumns()) {
+//                String wrapped = line.substring(0, size.getColumns() - 1);
+//                textGraphics.putString(0, row++, wrapped);
+//            } else {
+//                textGraphics.putString(0, row++, line);
+//            }
+//        }
+//
+//        // Draw input line at bottom
+//        textGraphics.setForegroundColor(FG_COLOR);
+//        String prompt = getPrompt();
+//        int inputRow = size.getRows() - 1;
+//        textGraphics.putString(0, inputRow, prompt + currentInput.toString() + " ");
+//
+//        // Position cursor
+//        screen.setCursorPosition(new TerminalPosition(
+//                prompt.length() + cursorPosition,
+//                inputRow
+//        ));
+//
+//        screen.refresh();
+//    }
+//
+//    private String getPrompt() {
+//        if (inChatMode && currentChatName != null) {
+//            return "[" + currentChatName + "] > ";
+//        }
+//        return "> ";
+//    }
+//
+//    // ========== INPUT HANDLING ==========
+//
+//    public String readCommandInput() throws IOException {
+//        return readInput();
+//    }
+//
+//    public String readChatInput() throws IOException {
+//        return readInput();
+//    }
+//
+//    private String readInput() throws IOException {
+//        currentInput.setLength(0);
+//        cursorPosition = 0;
+//        scrollOffset = 0;
+//
+//        // Process any pending output
+//        while (!pendingOutput.isEmpty()) {
+//            pendingOutput.poll();
+//        }
+//
+//        refreshDisplay();
+//
+//        while (true) {
+//            KeyStroke keyStroke = screen.readInput();
+//
+//            if (keyStroke.getKeyType() == KeyType.Enter) {
+//                String result = currentInput.toString();
+//                currentInput.setLength(0);
+//                cursorPosition = 0;
+//
+//                // Add the input to history with prompt
+//                addToOutput(getPrompt() + result);
+//
+//                return result;
+//
+//            } else if (keyStroke.getKeyType() == KeyType.Escape) {
+//                return "exit";
+//
+//            } else if (keyStroke.getKeyType() == KeyType.Backspace) {
+//                if (cursorPosition > 0) {
+//                    currentInput.deleteCharAt(cursorPosition - 1);
+//                    cursorPosition--;
+//                }
+//
+//            } else if (keyStroke.getKeyType() == KeyType.ArrowLeft) {
+//                if (cursorPosition > 0) {
+//                    cursorPosition--;
+//                }
+//
+//            } else if (keyStroke.getKeyType() == KeyType.ArrowRight) {
+//                if (cursorPosition < currentInput.length()) {
+//                    cursorPosition++;
+//                }
+//
+//            } else if (keyStroke.getKeyType() == KeyType.ArrowUp) {
+//                // Scroll up through history
+//                if (scrollOffset < outputHistory.size() - 1) {
+//                    scrollOffset++;
+//                }
+//
+//            } else if (keyStroke.getKeyType() == KeyType.ArrowDown) {
+//                // Scroll down through history
+//                if (scrollOffset > 0) {
+//                    scrollOffset--;
+//                }
+//
+//            } else if (keyStroke.getKeyType() == KeyType.Character) {
+//                char ch = keyStroke.getCharacter();
+//                currentInput.insert(cursorPosition, ch);
+//                cursorPosition++;
+//            }
+//
+//            refreshDisplay();
+//        }
+//    }
+//
+//    // ========== CHAT MODE DISPLAY MANAGEMENT ==========
+//
+//    public void enterChatMode(String chatName) {
+//        this.inChatMode = true;
+//        this.currentChatName = chatName;
+//        displayOutput("=== Entered chat: " + chatName + " ===");
+//        displayOutput("Type messages to send. Type '/exit' to leave.");
+//    }
+//
+//    public void exitChatMode() {
+//        this.inChatMode = false;
+//        this.currentChatName = null;
+//        displayOutput("=== Exited chat ===");
+//    }
+//
+//    public void showChatPrompt() {
+//        // Handled by readInput
+//    }
+//
+//    public void showSentMessage(String message) {
+//        displayOutput("[You]: " + message);
+//    }
+//
+//    // ========== ChatService.MessageListener IMPLEMENTATION ==========
+//
+//    @Override
+//    public void onMessageReceived(String senderId, String message) {
+//        String currentUserId = UserSession.getInstance().getUserId();
+//        if (currentUserId != null && currentUserId.equals(senderId)) {
+//            return;
+//        }
+//
+//        displayOutput("[" + senderId + "]: " + message);
+//
+//        try {
+//            if (inChatMode) {
+//                refreshDisplay();
+//            }
+//        } catch (IOException e) {
+//            // Ignore display errors
+//        }
+//    }
+//
+//    @Override
+//    public void onStatusChanged(String userId, OnlineStatus status) {
+//        String statusText = status == OnlineStatus.ONLINE ? "came online" : "went offline";
+//        displayOutput("📱 " + userId + " " + statusText);
+//    }
+//
+//    @Override
+//    public void onConnectionChanged(boolean connected) {
+//        String status = connected ? "Connected to" : "Disconnected from";
+//        displayOutput("🔗 " + status + " chat server");
+//    }
+//
+//    @Override
+//    public void onError(String error) {
+//        displayOutput("❌ " + error);
+//    }
+//
+//    // ========== DISPLAY METHODS FOR API DATA ==========
+//
+//    public void showContacts(List<ContactDTO> contacts) {
+//        displayOutput("=== Your Contacts ===");
+//        if (contacts.isEmpty()) {
+//            displayOutput("No contacts found.");
+//        } else {
+//            for (ContactDTO contact : contacts) {
+//                String indicator = contact.getOnlineStatus() == OnlineStatus.ONLINE ? "🟢" : "⚪";
+//                displayOutput(indicator + " " + contact.getUsername());
+//            }
+//        }
+//    }
+//
+//    public void showChats(List<ChatDTO> chats) {
+//        displayOutput("=== Your Chats ===");
+//        for (ChatDTO chat : chats) {
+//            String chatName = chat.getChatName();
+//            displayOutput("- " + chatName + " (" + chat.getChatType() + ")");
+//        }
+//    }
+//
+//    public void showMessages(List<MessageDTO> messages) {
+//        displayOutput("=== Chat Messages ===");
+//        for (MessageDTO message : messages) {
+//            displayOutput("[" + message.getSenderId() + "]: " + message.getContent());
+//        }
+//    }
+//
+//    public void showFiles(List<FileDTO> files) {
+//        displayOutput("=== Chat Files ===");
+//        for (FileDTO file : files) {
+//            displayOutput(file.getFilename());
+//        }
+//    }
+//
+//    public void showLoginSuccess(String username) {
+//        displayOutput("✓ Login successful! Welcome " + username);
+//    }
+//
+//    public void showLoginFailure() {
+//        displayOutput("❌ Login failed. Please check your credentials.");
+//    }
+//
+//    public void showRegistrationSuccess() {
+//        displayOutput("✓ Registration successful! You can now login.");
+//    }
+//
+//    public void showRegistrationFailure() {
+//        displayOutput("❌ Registration failed. Please try again.");
+//    }
+//
+//    public void showChatNotFound(String chatName) {
+//        displayOutput("❌ Chat '" + chatName + "' not found.");
+//    }
+//
+//    public void showContactAdded(String contactName) {
+//        displayOutput("✓ Added " + contactName + " to your contacts.");
+//    }
+//
+//    public void showContactRemoved(String contactName) {
+//        displayOutput("✓ Removed " + contactName + " from your contacts.");
+//    }
+//
+//    public void showPrivateChatCreated(String contactName) {
+//        displayOutput("✓ Created private chat with " + contactName);
+//    }
+//
+//    public void showGroupChatCreated(String chatName) {
+//        displayOutput("✓ Created group chat: " + chatName);
+//    }
+//
+//    public void showError(String error) {
+//        displayOutput("❌ " + error);
+//    }
+//
+//    public void showSuccess(String message) {
+//        displayOutput("✓ " + message);
+//    }
+//
+//    public void showInfo(String message) {
+//        displayOutput("ℹ️  " + message);
+//    }
+//
+//    public void showNotLoggedIn() {
+//        displayOutput("❌ Please login first.");
+//    }
+//
+//    public void showWelcome() {
+//        displayOutput("=== Java Chat Client ===");
+//        displayOutput("Type 'help' for commands");
+//        displayOutput("========================");
+//    }
+//
+//    public void showHelp() {
+//        displayOutput("=== Available commands ===");
+//        displayOutput("");
+//
+//        displayOutput("=== Authentication ===");
+//        displayOutput("  login <email> <password>                    - Login to your account");
+//        displayOutput("  register <username> <email> <password>      - Create new account");
+//        displayOutput("");
+//
+//        displayOutput("=== Chat Management ===");
+//        displayOutput("  chat -g <group_name>                        - Join group chat");
+//        displayOutput("  chat -p <contact_name>                      - Start private chat");
+//        displayOutput("  create-pc <contact_username>                - Create private chat");
+//        displayOutput("  create-gc <chat_name> <contact1> <contact2> - Create group chat with contacts");
+//        displayOutput("  delete-chat <chat_name>                     - Delete a chat");
+//        displayOutput("  chats                                       - Show your chats");
+//        displayOutput("  messages <chat_name>                        - Show chat messages");
+//        displayOutput("");
+//
+//        displayOutput("=== Group Chat Management ===");
+//        displayOutput("  add-member <chat_name> <contact_username>   - Add member to group chat");
+//        displayOutput("  remove-member <chat_name> <contact_username>- Remove member from group chat");
+//        displayOutput("");
+//
+//        displayOutput("=== Contact Management ===");
+//        displayOutput("  add-contact <contact_username>              - Add contact by username");
+//        displayOutput("  remove-contact <contact_username>           - Remove contact by username");
+//        displayOutput("  contacts                                    - Show your contacts");
+//        displayOutput("");
+//
+//        displayOutput("=== File Management ===");
+//        displayOutput("  upload-file <chatname> <filepath>           - Upload file to chat");
+//        displayOutput("  download-file <chatname> <filename> <path>  - Download file from chat");
+//        displayOutput("  get-files <chatname>                        - List files in chat");
+//        displayOutput("");
+//
+//        displayOutput("=== Account Settings ===");
+//        displayOutput("  update-username <new_username>              - Update your username");
+//        displayOutput("  update-email <new_email>                    - Update your email");
+//        displayOutput("  update-password <old_password> <new_password> - Update your password");
+//        displayOutput("");
+//
+//        displayOutput("=== Utility ===");
+//        displayOutput("  help                                        - Show this help");
+//        displayOutput("  exit                                        - Exit application");
+//        displayOutput("");
+//
+//        displayOutput("=== In Chat Mode ===");
+//        displayOutput("  Type messages to send them");
+//        displayOutput("  /exit                                       - Leave current chat");
+//    }
+//
+//    public void showGoodbye() {
+//        displayOutput("Goodbye!");
+//    }
+//
+//    // ========== GETTERS ==========
+//
+//    public boolean isInChatMode() {
+//        return inChatMode;
+//    }
+//
+//    public String getCurrentChatName() {
+//        return currentChatName;
+//    }
+//}

@@ -7,6 +7,7 @@ import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
 import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
 import com.MarinGallien.JavaChatApp.WebSocket.ChatService;
 
+import java.io.IOException;
 import java.util.List;
 
 public class ConsoleUI implements ChatService.MessageListener {
