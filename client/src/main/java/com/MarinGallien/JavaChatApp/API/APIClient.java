@@ -292,6 +292,8 @@ public class APIClient {
             // Send authenticatedRequest
             String jsonBody = objectMapper.writeValueAsString(request);
 
+            System.out.println("DEBUG: Sending download request: " + jsonBody);
+
             HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(baseUrl + "/api/file/download"))
                 .header("Content-Type", "application/json")
@@ -302,6 +304,16 @@ public class APIClient {
             // Send request and get response as bytes
             HttpResponse<byte[]> response = httpClient.send(httpRequest,
                     HttpResponse.BodyHandlers.ofByteArray());
+
+            System.out.println("DEBUG: Response status: " + response.statusCode());
+            System.out.println("DEBUG: Response headers: " + response.headers().map());
+            System.out.println("DEBUG: Response body length: " + (response.body() != null ? response.body().length : 0));
+
+            if (response.body() != null && response.body().length > 0) {
+                // Check if response looks like JSON (error response)
+                String responseStart = new String(response.body(), 0, Math.min(100, response.body().length));
+                System.out.println("DEBUG: Response start: " + responseStart);
+            }
 
             // Check if response is successful (200 status code)
             if (response.statusCode() == 200) {

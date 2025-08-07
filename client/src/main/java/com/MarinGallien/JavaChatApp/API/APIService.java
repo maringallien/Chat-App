@@ -196,7 +196,7 @@ public class APIService {
 
         // Create parent directories if they don't exist
         File parentDir = targetFile.getParentFile();
-        if (parentDir == null && !parentDir.exists()) {
+        if (parentDir != null && !parentDir.exists()) {
             parentDir.mkdirs();
         }
 
