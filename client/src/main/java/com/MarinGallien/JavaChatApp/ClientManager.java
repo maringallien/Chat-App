@@ -501,11 +501,12 @@ public class ClientManager {
                 return;
             }
 
-            boolean success = apiService.downloadFile(chatId, fileId, filePath);
+            String completeFilePath = filePath + "/" + filename;
+            boolean success = apiService.downloadFile(chatId, fileId, completeFilePath);
             if (success) {
                 consoleUI.showSuccess("File downloaded successfully");
             } else {
-                consoleUI.showError("Failed to download file");
+                consoleUI.showError("Failed to download file, api service returned false");
             }
 
         } catch (Exception e) {
