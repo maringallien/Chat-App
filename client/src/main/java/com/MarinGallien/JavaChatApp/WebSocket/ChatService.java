@@ -91,7 +91,8 @@ public class ChatService implements WebSocketClient.MessageHandler {
         }
 
         WebSocketMessage message = new WebSocketMessage(UserSession.getInstance().getUserId(), chatId, content, UserSession.getInstance().getUsername());
-        logger.info("Sending message sender ID: {}, chat ID: {}, content: {}", UserSession.getInstance().getUserId(), chatId, content);
+        logger.info("Sending message sender ID: {}, username: {}, chat ID: {}, content: {}",
+                UserSession.getInstance().getUserId(), UserSession.getInstance().getUsername(), chatId, content);
         webSocketClient.sendMessage(message);
     }
 
