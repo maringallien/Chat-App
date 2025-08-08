@@ -187,13 +187,17 @@ public class CmdParser {
                 }
                 break;
 
+            case "clear":
+                clientManager.clearScreen();
+                break;
+
             case "exit":
             case "help":
                 clientManager.showHelp();
                 break;
 
             default:
-                System.out.println("Unknown command: " + command + ". Type 'help' for available commands.");
+                clientManager.displayError("Unknown command: " + command + ". Type 'help' for available commands.");
                 break;
         }
     }

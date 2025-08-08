@@ -268,4 +268,14 @@ public class UserDbService {
             return null;
         }
     }
+
+    public String getUsernameByUserId(String userId) {
+        try {
+            User user = userRepo.findUserById(userId);
+            return user.getUsername();
+        } catch (Exception e) {
+            logger.error("Failed to retrieve username from user ID: {}", e.getMessage());
+            return null;
+        }
+    }
 }

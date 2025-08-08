@@ -70,24 +70,25 @@ public class AuthController {
             // Return if errors in input
             if (bindingResult.hasErrors()) {
                 return ResponseEntity.badRequest()
-                        .body(new LoginResponse(false, "Invalid input", null, null));
+                        .body(new LoginResponse(false, "Invalid input", null, null,null));
             }
 
             // Delegate to UserService
             String token = userService.login(request.email(), request.password());
+            String username = userService.getUsernameByEmail(request.email());
 
             if (token == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new LoginResponse(false, "Invalid credentials", null, null));
+                        .body(new LoginResponse(false, "Invalid credentials", null, null,null));
             }
 
             return ResponseEntity.ok()
-                    .body(new LoginResponse(true, "Login successful", jwtService.extractUserId(token), token));
+                    .body(new LoginResponse(true, "Login successful", jwtService.extractUserId(token), username, token));
 
         } catch (Exception e) {
             logger.error("Failed to process login request");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new LoginResponse(false, "Internal Server Error", null,null));
+                    .body(new LoginResponse(false, "Internal Server Error", null, null,null));
         }
     }
 

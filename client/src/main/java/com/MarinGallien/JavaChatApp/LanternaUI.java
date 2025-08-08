@@ -98,6 +98,9 @@ public class LanternaUI implements ChatService.MessageListener {
 
     private void refreshDisplay() throws IOException {
         screen.clear();
+
+        screen.doResizeIfNecessary();
+
         TerminalSize size = screen.getTerminalSize();
 
         // Calculate display area (leave room for input line)
@@ -154,6 +157,23 @@ public class LanternaUI implements ChatService.MessageListener {
             return "[" + currentChatName + "] > ";
         }
         return "> ";
+    }
+
+    public void clearScreen() {
+        // Clear the history but keep welcome message
+        outputHistory.clear();
+        scrollOffset = 0;
+
+        // Re-add the welcome message
+        displayOutput("=== Java Chat Client ===");
+        displayOutput("Type 'help' for commands");
+        displayOutput("========================");
+
+        try {
+            refreshDisplay();
+        } catch (IOException e) {
+            // Ignore display errors
+        }
     }
 
     // ========== INPUT HANDLING ==========
@@ -235,12 +255,24 @@ public class LanternaUI implements ChatService.MessageListener {
 
     // ========== CHAT MODE DISPLAY MANAGEMENT ==========
 
-    public void enterChatMode(String chatName, String chatId) {
-        this.inChatMode = true;
-        this.currentChatName = chatName;
-        this.currentChatId = chatId;
-        displayOutput("=== Entered chat: " + chatName + " ===");
-        displayOutput("Type messages to send. Type '/exit' to leave.");
+    public boolean enterChatMode(String chatName, String chatId) {
+        try {
+            this.inChatMode = true;
+            this.currentChatName = chatName;
+            this.currentChatId = chatId;
+            displayOutput("=== Entered chat: " + chatName + " ===");
+            displayOutput("Type messages to send. Type '/exit' to leave.");
+
+            // Return true to indicate successful entry into chat mode
+            return true;
+        } catch (Exception e) {
+            // If something goes wrong, reset the state
+            this.inChatMode = false;
+            this.currentChatName = null;
+            this.currentChatId = null;
+            displayOutput("Failed to enter chat mode: " + e.getMessage());
+            return false;
+        }
     }
 
     public void exitChatMode() {
@@ -277,15 +309,15 @@ public class LanternaUI implements ChatService.MessageListener {
     }
 
     @Override
-    public void onStatusChanged(String userId, OnlineStatus status) {
+    public void onStatusChanged(String userId, String username, OnlineStatus status) {
         String statusText = status == OnlineStatus.ONLINE ? "came online" : "went offline";
-        displayOutput("📱 " + userId + " " + statusText);
+        displayOutput((status == OnlineStatus.ONLINE ? "● " : "○ ") + username + " " + statusText);
     }
 
     @Override
     public void onConnectionChanged(boolean connected) {
         String status = connected ? "Connected to" : "Disconnected from";
-        displayOutput("🔗 " + status + " chat server");
+        displayOutput((connected ? "✓ " : "❌ ") + status + " chat server");
     }
 
     @Override
@@ -301,7 +333,7 @@ public class LanternaUI implements ChatService.MessageListener {
             displayOutput("No contacts found.");
         } else {
             for (ContactDTO contact : contacts) {
-                String indicator = contact.getOnlineStatus() == OnlineStatus.ONLINE ? "🟢" : "⚪";
+                String indicator = contact.getOnlineStatus() == OnlineStatus.ONLINE ? "● " : "○ ";
                 displayOutput(indicator + " " + contact.getUsername());
             }
         }
@@ -318,7 +350,7 @@ public class LanternaUI implements ChatService.MessageListener {
     public void showMessages(List<MessageDTO> messages) {
         displayOutput("=== Chat Messages ===");
         for (MessageDTO message : messages) {
-            displayOutput("[" + message.getSenderId() + "]: " + message.getContent());
+            displayOutput("[" + message.getSenderUname() + "]: " + message.getContent());
         }
     }
 
@@ -432,6 +464,7 @@ public class LanternaUI implements ChatService.MessageListener {
         displayOutput("=== Utility ===");
         displayOutput("  help                                        - Show this help");
         displayOutput("  exit                                        - Exit application");
+        displayOutput("  clear                                       - clear screen");
         displayOutput("");
 
         displayOutput("=== In Chat Mode ===");

@@ -6,5 +6,6 @@ public record LoginResponse(
     boolean success,
     String message,
     String userId,
+    String username,
     String JwtToken
 ) implements ApiReqResInterface {}

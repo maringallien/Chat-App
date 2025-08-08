@@ -9,6 +9,7 @@ import com.MarinGallien.JavaChatApp.Enums.OnlineStatus;
 import com.MarinGallien.JavaChatApp.Services.ContactService;
 import com.MarinGallien.JavaChatApp.Services.MessageService;
 import com.MarinGallien.JavaChatApp.Services.SessionService;
+import com.MarinGallien.JavaChatApp.Services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -31,6 +32,7 @@ public class WebSocketHandler {
     private final MessageService messageService;
     private final ContactService contactService;
     private final SessionService sessionService;
+    private final UserService userService;
     private final StatusManager statusManager;
     private final ChatManager chatManager;
     private final SimpMessagingTemplate messagingTemplate;
@@ -39,12 +41,14 @@ public class WebSocketHandler {
     public WebSocketHandler(MessageService messageService,
                             ContactService contactService,
                             SessionService sessionService,
+                            UserService userService,
                             StatusManager statusManager,
                             ChatManager chatManager,
                             SimpMessagingTemplate messagingTemplate) {
         this.contactService = contactService;
         this.messageService = messageService;
         this.sessionService = sessionService;
+        this.userService = userService;
         this.statusManager = statusManager;
         this.chatManager = chatManager;
         this.messagingTemplate = messagingTemplate;
@@ -112,7 +116,8 @@ public class WebSocketHandler {
 
             // Notify contacts of status change
             logger.info("Notifying contacts of user's status change");
-            notifyContactsOfStatusChange(userId, OnlineStatus.ONLINE);
+            String username = userService.getUsernameByUserId(userId);
+            notifyContactsOfStatusChange(userId, username, OnlineStatus.ONLINE);
 
         } catch (Exception e) {
             logger.error("Error handling websocket connection", e);
@@ -144,7 +149,8 @@ public class WebSocketHandler {
             statusManager.setUserOffline(userId);
 
             // Notify contacts of status change
-            notifyContactsOfStatusChange(userId, OnlineStatus.OFFLINE);
+            String username = userService.getUsernameByUserId(userId);
+            notifyContactsOfStatusChange(userId, username, OnlineStatus.OFFLINE);
 
         } catch (Exception e) {
             logger.warn("Error handling websocket disconnection", e);
@@ -152,13 +158,13 @@ public class WebSocketHandler {
     }
 
     // Method notifies a user's contacts of a status change
-    private void notifyContactsOfStatusChange(String userId, OnlineStatus status) {
+    private void notifyContactsOfStatusChange(String userId, String username, OnlineStatus status) {
         try {
             // Retrieve list of contacts from the database
             List<User> contactUsers = contactService.getUserContacts(userId);
 
             // Create a status message
-            OnlineStatusMessage statusMessage = new OnlineStatusMessage(status, userId);
+            OnlineStatusMessage statusMessage = new OnlineStatusMessage(status, userId, username);
 
             // Broadcast status message to each contact
             for (User user: contactUsers) {

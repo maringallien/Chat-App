@@ -19,13 +19,13 @@ public class ChatService implements WebSocketClient.MessageHandler {
     // Interface for components that want to receive chat messages
     public interface MessageListener {
         void onMessageReceived(String chatId, String senderId, String username, String message);
-        void onStatusChanged(String userId, OnlineStatus status);
+        void onStatusChanged(String userId, String username, OnlineStatus status);
         void onConnectionChanged(boolean connected);
         void onError(String error);
     }
 
     public ChatService(WebSocketClient webSocketClient) {
-//        ((ch.qos.logback.classic.Logger) logger).setLevel(Level.OFF);
+        ((ch.qos.logback.classic.Logger) logger).setLevel(Level.OFF);
         this.webSocketClient = webSocketClient;
     }
 
@@ -44,16 +44,11 @@ public class ChatService implements WebSocketClient.MessageHandler {
         // Attempt to connect to the WebSocket server with JWT authentication
         webSocketClient.connect(this)
             .thenRun(() -> {
-//                connected = true;
                 logger.info("Chat started");
 
                 // Broadcast online status to contacts
                 sendOnlineStatus(OnlineStatus.ONLINE);
 
-//                // Notify listener
-//                if (messageListener != null) {
-//                    messageListener.onConnectionChanged(true);
-//                }
             })
             .exceptionally(error -> {
                 connected = false;
@@ -104,7 +99,7 @@ public class ChatService implements WebSocketClient.MessageHandler {
             return;
         }
 
-        OnlineStatusMessage statusMessage = new OnlineStatusMessage(status, UserSession.getInstance().getUserId());
+        OnlineStatusMessage statusMessage = new OnlineStatusMessage(status, UserSession.getInstance().getUserId(), UserSession.getInstance().getUsername());
         webSocketClient.sendStatus(statusMessage);
     }
 
@@ -126,7 +121,7 @@ public class ChatService implements WebSocketClient.MessageHandler {
         logger.debug("Received status update from {}: {}", status.getSenderID(), status.getStatus());
 
         if (messageListener != null) {
-            messageListener.onStatusChanged(status.getSenderID(), status.getStatus());
+            messageListener.onStatusChanged(status.getSenderID(), status.getUsername(), status.getStatus());
         }
     }
 

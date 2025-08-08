@@ -6,10 +6,8 @@ import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.FileDTO;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
 import com.MarinGallien.JavaChatApp.WebSocket.ChatService;
-import org.apache.catalina.User;
 
 import java.io.File;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -89,7 +87,6 @@ public class ClientManager {
         }
 
         try {
-            lanternaUI.showError(UserSession.getInstance().getUsername());
             chatService.sendMessage(currentChatId, message);
             lanternaUI.showSentMessage(message);
         } catch (Exception e) {
@@ -147,18 +144,22 @@ public class ClientManager {
             String chatId = determineChatId(contactUserId);
             String chatName = determineChatName(UserSession.getInstance().getUsername(), contactUname);
 
-            if (chatId != null) {
-                this.currentChatId = chatId;
-                lanternaUI.enterChatMode(chatName, chatId);
-
-                List<MessageDTO> messages = apiService.getChatMessages(chatId);
-
-                if (!messages.isEmpty()) {
-                    lanternaUI.showMessages(messages);
-                }
-            } else {
+            if (chatId == null) {
                 lanternaUI.showChatNotFound(contactUname);
+                return;
             }
+            this.currentChatId = chatId;
+
+            if (!lanternaUI.enterChatMode(chatName, chatId)) {
+                lanternaUI.showError("Failed to enter chat mode");
+                return;
+            }
+
+            List<MessageDTO> messages = apiService.getChatMessages(chatId);
+            if (!messages.isEmpty()) {
+                lanternaUI.showMessages(messages);
+            }
+
         } catch (Exception e) {
             lanternaUI.showError("Failed to enter chat: " + e.getMessage());
         }
@@ -188,7 +189,10 @@ public class ClientManager {
             }
 
             this.currentChatId = chatId;
-            lanternaUI.enterChatMode(chatName, chatId);
+            if (!lanternaUI.enterChatMode(chatName, chatId)) {
+                lanternaUI.showError("Failed to enter chat mode");
+                return;
+            }
             lanternaUI.showMessages(apiService.getChatMessages(chatId));
 
         } catch (Exception e) {
@@ -556,6 +560,12 @@ public class ClientManager {
     public void showHelp() {
         lanternaUI.showHelp();
     }
+
+    public void displayError(String error) {
+        lanternaUI.showError(error);
+    }
+
+    public void clearScreen() { lanternaUI.clearScreen(); }
 
 }
 

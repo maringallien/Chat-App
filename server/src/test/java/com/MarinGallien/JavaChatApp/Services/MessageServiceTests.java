@@ -32,6 +32,7 @@ public class MessageServiceTests {
     private Message testMessage;
     private MessageDTO testMessageDTO;
     private String senderId = "user1";
+    private String senderUname = "bob";
     private String chatId = "chat1";
     private String content = "Hello World!";
 
@@ -42,6 +43,7 @@ public class MessageServiceTests {
         testMessageDTO = new MessageDTO(
                 "msg1",
                 senderId,
+                senderUname,
                 chatId,
                 content,
                 LocalDateTime.now()
@@ -151,9 +153,9 @@ public class MessageServiceTests {
         Message message3 = new Message();
         List<Message> messagesList = List.of(message1, message2, message3);
 
-        MessageDTO messageDTO1 = new MessageDTO("msg1", senderId, chatId, "Message 1", LocalDateTime.now());
-        MessageDTO messageDTO2 = new MessageDTO("msg2", senderId, chatId, "Message 2", LocalDateTime.now());
-        MessageDTO messageDTO3 = new MessageDTO("msg3", senderId, chatId, "Message 3", LocalDateTime.now());
+        MessageDTO messageDTO1 = new MessageDTO("msg1", senderId, senderUname, chatId, "Message 1", LocalDateTime.now());
+        MessageDTO messageDTO2 = new MessageDTO("msg2", senderId, senderUname, chatId, "Message 2", LocalDateTime.now());
+        MessageDTO messageDTO3 = new MessageDTO("msg3", senderId, senderUname, chatId, "Message 3", LocalDateTime.now());
         List<MessageDTO> messageDTOsList = List.of(messageDTO1, messageDTO2, messageDTO3);
 
         when(messageDbService.getChatMessages(senderId, chatId)).thenReturn(messagesList);

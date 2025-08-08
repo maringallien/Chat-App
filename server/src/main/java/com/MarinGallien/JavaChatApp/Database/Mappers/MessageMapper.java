@@ -13,6 +13,7 @@ public class MessageMapper {
         return new MessageDTO(
                 message.getMessageId(),
                 message.getSender().getUserId(),
+                message.getSender().getUsername(),
                 message.getChat().getChatId(),
                 message.getContent(),
                 message.getSentAt()

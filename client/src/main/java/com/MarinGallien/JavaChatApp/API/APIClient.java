@@ -98,7 +98,7 @@ public class APIClient {
 
         } catch (Exception e) {
             logger.error("Login failed: {}", e.getMessage());
-            return new LoginResponse(false, "Login failed: " + e.getMessage(), null, null);
+            return new LoginResponse(false, "Login failed: " + e.getMessage(), null, null,null);
         }
     }
 

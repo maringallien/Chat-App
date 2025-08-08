@@ -215,6 +215,33 @@ public class UserService {
         }
     }
 
+    public String getUsernameByUserId(String userId) {
+        try {
+            if (userId == null || userId.isEmpty()) {
+                logger.error("Failed to retrieve username from user ID");
+                return null;
+            }
+            return userDbService.getUsernameByUserId(userId);
+        } catch (Exception e) {
+            logger.error("Failed to retrieve username from user ID: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public String getUsernameByEmail(String email) {
+        try {
+            if (email == null || email.isEmpty()) {
+                logger.error("Failed to retrieve username from user email");
+                return null;
+            }
+            User user =  userDbService.getUserByEmail(email);
+            return user.getUsername();
+        } catch (Exception e) {
+            logger.error("Failed to retrieve username from user email: {}", e.getMessage());
+            return null;
+        }
+    }
+
     private boolean validateEmail(String email) {
         return email != null &&
                 !email.trim().isEmpty() &&

@@ -50,6 +50,7 @@ public class APIService {
 
         if (response.success()) {
             UserSession.getInstance().setUserId(response.userId());
+            UserSession.getInstance().setUsername(response.username());
 
             // Set JWT token in API client for authenticated requests
             apiClient.setJwtToken(response.JwtToken());
