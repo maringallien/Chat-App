@@ -11,11 +11,6 @@ Upgrades:
 . Update code to be less repetitive by using lambda and helper methods
 
 
-. Chat name is wrong,
-. Received messages are displayed with user ID instead of username
-. received messages are printed weirdly
-
-
 WebSocketMessage message = new WebSocketMessage(UserSession.getInstance().getUserId(), chatId, UserSession.getInstance().getUsername(), content);
 
 messageListener.onMessageReceived(message.getChatID(), message.getSenderID(), message.getUsername(), message.getContent());

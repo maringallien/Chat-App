@@ -89,6 +89,7 @@ public class ClientManager {
         }
 
         try {
+            lanternaUI.showError(UserSession.getInstance().getUsername());
             chatService.sendMessage(currentChatId, message);
             lanternaUI.showSentMessage(message);
         } catch (Exception e) {

@@ -25,7 +25,7 @@ public class ChatService implements WebSocketClient.MessageHandler {
     }
 
     public ChatService(WebSocketClient webSocketClient) {
-        ((ch.qos.logback.classic.Logger) logger).setLevel(Level.OFF);
+//        ((ch.qos.logback.classic.Logger) logger).setLevel(Level.OFF);
         this.webSocketClient = webSocketClient;
     }
 
@@ -115,6 +115,7 @@ public class ChatService implements WebSocketClient.MessageHandler {
     public void onMessage(WebSocketMessage message) {
 
         if (messageListener != null) {
+            logger.info("Received message from username: {}", message.getUsername());
             messageListener.onMessageReceived(message.getChatID(), message.getSenderID(), message.getUsername(), message.getContent());
         }
 

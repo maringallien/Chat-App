@@ -58,6 +58,7 @@ public class ConsoleUI implements ChatService.MessageListener {
 
     @Override
     public void onMessageReceived(String chatId, String senderId, String username, String message) {
+        System.out.println("Received message from username: " + username);
         String currentUserId = UserSession.getInstance().getUserId();
         if (currentUserId != null && currentUserId.equals(senderId)) {
             return;

@@ -188,8 +188,8 @@ public class LanternaUI implements ChatService.MessageListener {
 
                 // Add the input to history with prompt
                 if (!inChatMode) {
-                addToOutput(getPrompt() + result);
-}
+                    addToOutput(getPrompt() + result);
+                }
                 return result;
 
             } else if (keyStroke.getKeyType() == KeyType.Escape) {
