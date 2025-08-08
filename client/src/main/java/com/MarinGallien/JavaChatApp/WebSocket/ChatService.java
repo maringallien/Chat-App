@@ -89,6 +89,8 @@ public class ChatService implements WebSocketClient.MessageHandler {
             logger.warn("Cannot send message: not connected");
             return;
         }
+        String username = UserSession.getInstance().getUsername();
+        logger.info("SENDING - Username from UserSession: '{}'", username);
 
         WebSocketMessage message = new WebSocketMessage(UserSession.getInstance().getUserId(), chatId, content, UserSession.getInstance().getUsername());
         logger.info("Sending message sender ID: {}, username: {}, chat ID: {}, content: {}",
