@@ -1,16 +1,14 @@
 package com.MarinGallien.JavaChatApp.Controllers;
 
 
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.GetterRequests.*;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.GetterResponses.*;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ChatDTO;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.ChatIdRequest;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.ChatIdResponse;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ChatRequests.*;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.ChatResponses.GetUserChatsResponse;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.GenericResponse;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.HTTPRequests.*;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.HTTPResponses.*;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.Chat;
 import com.MarinGallien.JavaChatApp.Services.ChatService;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

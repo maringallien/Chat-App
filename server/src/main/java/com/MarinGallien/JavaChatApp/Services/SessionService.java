@@ -18,34 +18,28 @@ public class SessionService {
     }
 
     public OnlineStatus updateUserStatus(String userId, OnlineStatus status) {
-        try {
-            // Validate inputs
-            if (!validateId(userId)) {
-                logger.warn("Failed to update user status: user ID is null or empty");
-                return null;
-            }
-
-            if (status == null) {
-                logger.warn("Failed to update user status: provided status is null");
-                return null;
-            }
-
-            // Update database
-            OnlineStatus newStatus = sessionDbService.updateStatus(userId, status);
-
-            // Check that update was successful
-            if (newStatus == null || newStatus != status) {
-                logger.info("Failed to update user's status");
-                return null;
-            }
-
-            logger.info("Successfully updated user status to {}", newStatus);
-            return newStatus;
-
-        } catch (Exception e) {
-            logger.error("Error occurred when updating user status: {}", e.getMessage());
+        // Validate inputs
+        if (!validateId(userId)) {
+            logger.warn("Failed to update user status: user ID is null or empty");
             return null;
         }
+
+        if (status == null) {
+            logger.warn("Failed to update user status: provided status is null");
+            return null;
+        }
+
+        // Update database
+        OnlineStatus newStatus = sessionDbService.updateStatus(userId, status);
+
+        // Check that update was successful
+        if (newStatus == null || newStatus != status) {
+            logger.info("Failed to update user's status");
+            return null;
+        }
+
+        logger.info("Successfully updated user status to {}", newStatus);
+        return newStatus;
     }
 
     private boolean validateId(String Id) {

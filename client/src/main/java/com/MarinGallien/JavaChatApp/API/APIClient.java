@@ -1,28 +1,11 @@
 package com.MarinGallien.JavaChatApp.API;
 
 import ch.qos.logback.classic.Level;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.ChatIdRequest;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.FileIdRequest;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.UserIdRequest;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.UserIdsRequest;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.ChatIdResponse;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.FileIdResponse;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.UserIdResponse;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.UserIdsResponse;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.AuthRequests.LoginRequest;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.AuthRequests.RegisterRequest;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ChatRequests.*;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ContactRequests.*;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.FileRequests.DownloadFileRequest;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.FileRequests.GetChatFilesRequest;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.MessageRequests.GetChatMessagesRequest;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.UserRequests.*;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.AuthResponses.LoginResponse;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.ChatResponses.GetUserChatsResponse;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.ContactResponses.GetUserContactsResponse;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.FileResponses.GetChatFilesResponse;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.GenericResponse;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.MessageReponses.GetChatMessagesResponse;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.GetterRequests.*;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.GetterResponses.*;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.HTTPRequests.*;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.HTTPResponses.*;
+
 
 import com.MarinGallien.JavaChatApp.UserSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,7 +29,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.List;
 
 @Component
 public class APIClient {

@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -70,7 +71,7 @@ public class FileDbServiceTests {
     // ==========================================================================
 
     @Test
-    void uploadFile_ValidInputs_UploadsFile() {
+    void uploadFile_ValidInputs_UploadsFile() throws IOException {
         // When
         File uploadedFile = fileDbService.uploadFile(user1.getUserId(), chat.getChatId(), testFile);
 
@@ -83,7 +84,7 @@ public class FileDbServiceTests {
     }
 
     @Test
-    void uploadFile_NonExistentUser_ReturnsNull() {
+    void uploadFile_NonExistentUser_ReturnsNull() throws IOException {
         // When
         File uploadedFile = fileDbService.uploadFile("fake_id", chat.getChatId(), testFile);
 
@@ -92,7 +93,7 @@ public class FileDbServiceTests {
     }
 
     @Test
-    void uploadFile_NonExistentChat_ReturnsNull() {
+    void uploadFile_NonExistentChat_ReturnsNull() throws IOException {
         // When
         File uploadedFile = fileDbService.uploadFile(user1.getUserId(), "fake_chat_id", testFile);
 
@@ -101,7 +102,7 @@ public class FileDbServiceTests {
     }
 
     @Test
-    void uploadFile_UserNotInChat_ReturnsNull() {
+    void uploadFile_UserNotInChat_ReturnsNull() throws IOException {
         // Given - create new user not in chat
         User user3 = new User("charlie", "charlie@test.com", "password3");
         entityManager.persistAndFlush(user3);
@@ -114,7 +115,7 @@ public class FileDbServiceTests {
     }
 
     @Test
-    void uploadFile_NullFile_ReturnsNull() {
+    void uploadFile_NullFile_ReturnsNull() throws IOException {
         // When
         File uploadedFile = fileDbService.uploadFile(user1.getUserId(), chat.getChatId(), null);
 
@@ -123,7 +124,7 @@ public class FileDbServiceTests {
     }
 
     @Test
-    void uploadFile_EmptyFile_ReturnsNull() {
+    void uploadFile_EmptyFile_ReturnsNull() throws IOException {
         // Given
         MockMultipartFile emptyFile = new MockMultipartFile("file", "empty.txt", "text/plain", new byte[0]);
 
@@ -139,7 +140,7 @@ public class FileDbServiceTests {
     // ==========================================================================
 
     @Test
-    void deleteFile_ValidInputs_DeletesFile() {
+    void deleteFile_ValidInputs_DeletesFile() throws IOException {
         // Given
         File uploadedFile = fileDbService.uploadFile(user1.getUserId(), chat.getChatId(), testFile);
         assertNotNull(uploadedFile);
@@ -154,7 +155,7 @@ public class FileDbServiceTests {
     }
 
     @Test
-    void deleteFile_NonExistentUser_ReturnsFalse() {
+    void deleteFile_NonExistentUser_ReturnsFalse() throws IOException {
         // Given
         File uploadedFile = fileDbService.uploadFile(user1.getUserId(), chat.getChatId(), testFile);
         assertNotNull(uploadedFile);
@@ -168,7 +169,7 @@ public class FileDbServiceTests {
     }
 
     @Test
-    void deleteFile_NonExistentFile_ReturnsFalse() {
+    void deleteFile_NonExistentFile_ReturnsFalse() throws IOException {
         // When
         Boolean deleted = fileDbService.deleteFile(user1.getUserId(), chat.getChatId(), "fake_file_id");
 
@@ -177,7 +178,7 @@ public class FileDbServiceTests {
     }
 
     @Test
-    void deleteFile_UserNotFileOwner_ReturnsFalse() {
+    void deleteFile_UserNotFileOwner_ReturnsFalse() throws IOException {
         // Given
         File uploadedFile = fileDbService.uploadFile(user1.getUserId(), chat.getChatId(), testFile);
         assertNotNull(uploadedFile);
@@ -195,7 +196,7 @@ public class FileDbServiceTests {
     // ==========================================================================
 
     @Test
-    void getChatFiles_ValidInputs_ReturnsFilesList() {
+    void getChatFiles_ValidInputs_ReturnsFilesList() throws IOException {
         // Given
         File file1 = fileDbService.uploadFile(user1.getUserId(), chat.getChatId(), testFile);
         MockMultipartFile testFile2 = new MockMultipartFile("file", "test2.txt", "text/plain", "Test content 2".getBytes());

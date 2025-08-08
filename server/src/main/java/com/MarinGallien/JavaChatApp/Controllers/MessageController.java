@@ -1,8 +1,8 @@
 package com.MarinGallien.JavaChatApp.Controllers;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.MessageDTO;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.MessageRequests.GetChatMessagesRequest;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.MessageReponses.GetChatMessagesResponse;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.HTTPRequests.*;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.HTTPResponses.*;
 import com.MarinGallien.JavaChatApp.Services.MessageService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;

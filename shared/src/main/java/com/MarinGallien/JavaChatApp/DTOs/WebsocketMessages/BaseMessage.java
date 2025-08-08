@@ -26,6 +26,10 @@ public class BaseMessage {
     @JsonProperty("sender_id")
     private String senderID;
 
+    @NotBlank(message = "Sender name cannot be blank")
+    @JsonProperty("username")
+    private String username;
+
     @NotBlank(message = "Timestamp ID cannot be blank")
     @JsonProperty("timestamp")
     private Long timestamp;
@@ -37,22 +41,25 @@ public class BaseMessage {
     }
 
     // Constructor with required fields - used when creating DTO objects in code
-    protected BaseMessage(MessageType type, String senderID) {
+    protected BaseMessage(MessageType type, String senderID, String username) {
         this();
         this.type = type;
         this.senderID = senderID;
+        this.username = username;
     }
 
     // Getters
     public String getMessageID() {return messageID;}
     public MessageType getType() {return type;}
     public String getSenderID() {return senderID;}
+    public String getUsername() {return username;}
     public Long getTimestamp() {return timestamp;}
 
     // Setters
     public void setMessageID(String messageID) {this.messageID = messageID;}
     public void setType(MessageType type) {this.type = type;}
     public void setSenderID(String senderID) {this.senderID = senderID;}
+    public void setUsername(String username) {this.username = username;}
     public void setTimestamp(Long timestamp) {this.timestamp = timestamp;}
 
     // Equals function checks for equality between 2 DTO IDs.

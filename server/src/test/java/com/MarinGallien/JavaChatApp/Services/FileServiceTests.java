@@ -14,6 +14,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -69,7 +70,7 @@ public class FileServiceTests {
     // ==========================================================================
 
     @Test
-    void uploadFile_ValidInputs_UploadsFile() {
+    void uploadFile_ValidInputs_UploadsFile() throws IOException {
         // Given
         when(fileDbService.uploadFile(userId, chatId, testMultipartFile)).thenReturn(testFile);
 
@@ -83,7 +84,7 @@ public class FileServiceTests {
     }
 
     @Test
-    void uploadFile_InvalidParameters_ReturnsNull() {
+    void uploadFile_InvalidParameters_ReturnsNull() throws IOException {
         // Test all null parameters
         assertNull(fileService.uploadFile(null, chatId, testMultipartFile));
         assertNull(fileService.uploadFile(userId, null, testMultipartFile));
@@ -106,7 +107,7 @@ public class FileServiceTests {
     }
 
     @Test
-    void uploadFile_DatabaseFailure_ReturnsNull() {
+    void uploadFile_DatabaseFailure_ReturnsNull() throws IOException {
         // Given
         when(fileDbService.uploadFile(userId, chatId, testMultipartFile)).thenReturn(null);
 
@@ -123,7 +124,7 @@ public class FileServiceTests {
     // ==========================================================================
 
     @Test
-    void downloadFile_ValidInputs_ReturnsResource() {
+    void downloadFile_ValidInputs_ReturnsResource() throws IOException {
         // Given
         when(fileDbService.downloadFile(userId, chatId, fileId)).thenReturn(mockResource);
 
@@ -137,7 +138,7 @@ public class FileServiceTests {
     }
 
     @Test
-    void downloadFile_InvalidParameters_ReturnsNull() {
+    void downloadFile_InvalidParameters_ReturnsNull() throws IOException {
         // Test all null parameters
         assertNull(fileService.downloadFile(null, chatId, fileId));
         assertNull(fileService.downloadFile(userId, null, fileId));
@@ -158,7 +159,7 @@ public class FileServiceTests {
     }
 
     @Test
-    void downloadFile_DatabaseFailure_ReturnsNull() {
+    void downloadFile_DatabaseFailure_ReturnsNull() throws IOException {
         // Given
         when(fileDbService.downloadFile(userId, chatId, fileId)).thenReturn(null);
 
@@ -175,7 +176,7 @@ public class FileServiceTests {
     // ==========================================================================
 
     @Test
-    void deleteFile_ValidInputs_DeletesFile() {
+    void deleteFile_ValidInputs_DeletesFile() throws IOException {
         // Given
         when(fileDbService.deleteFile(userId, chatId, fileId)).thenReturn(true);
 
@@ -188,7 +189,7 @@ public class FileServiceTests {
     }
 
     @Test
-    void deleteFile_InvalidParameters_ReturnsFalse() {
+    void deleteFile_InvalidParameters_ReturnsFalse() throws IOException {
         // Test all null parameters
         assertFalse(fileService.deleteFile(null, chatId, fileId));
         assertFalse(fileService.deleteFile(userId, null, fileId));
@@ -209,7 +210,7 @@ public class FileServiceTests {
     }
 
     @Test
-    void deleteFile_DatabaseFailure_ReturnsFalse() {
+    void deleteFile_DatabaseFailure_ReturnsFalse() throws IOException {
         // Given
         when(fileDbService.deleteFile(userId, chatId, fileId)).thenReturn(false);
 

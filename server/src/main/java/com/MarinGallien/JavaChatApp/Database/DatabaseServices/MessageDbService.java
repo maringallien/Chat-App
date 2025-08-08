@@ -35,62 +35,50 @@ public class MessageDbService {
     }
 
     public Message saveMessage (String senderId, String chatId, String content) {
-        try {
-            // Perform validation
-            if (!userRepo.existsById(senderId)) {
-                logger.warn("Failed to save message: user {} does not exist", senderId);
-                return null;
-            }
-
-            if (!chatRepo.existsById(chatId)) {
-                logger.warn("Failed to save message: chat {} does not exist", chatId);
-                return null;
-            }
-
-            if (!chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId, senderId)){
-                logger.warn("Failed to save message: user {} is not a participant of chat {}", senderId, chatId);
-                return null;
-            }
-            // Extract sender and chat
-            User sender = userRepo.findUserById(senderId);
-            Chat chat = chatRepo.findChatById(chatId);
-
-            // Save message
-            Message message = new Message(sender, chat, content, MessageType.TEXT_MESSAGE);
-
-            return messageRepo.save(message);
-
-        } catch (Exception e) {
-            logger.error("Failed to save message: {}", e.getMessage());
+        // Perform validation
+        if (!userRepo.existsById(senderId)) {
+            logger.warn("Failed to save message: user {} does not exist", senderId);
             return null;
         }
+
+        if (!chatRepo.existsById(chatId)) {
+            logger.warn("Failed to save message: chat {} does not exist", chatId);
+            return null;
+        }
+
+        if (!chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId, senderId)){
+            logger.warn("Failed to save message: user {} is not a participant of chat {}", senderId, chatId);
+            return null;
+        }
+        // Extract sender and chat
+        User sender = userRepo.findUserById(senderId);
+        Chat chat = chatRepo.findChatById(chatId);
+
+        // Save message
+        Message message = new Message(sender, chat, content, MessageType.TEXT_MESSAGE);
+
+        return messageRepo.save(message);
     }
 
     public List<Message> getChatMessages(String senderId, String chatId) {
-        try {
-            // Validate input
-            if (!userRepo.existsById(senderId)) {
-                logger.warn("Failed to retrieve messages: sender {} does not exist", senderId);
-                return List.of();
-            }
-
-            if (!chatRepo.existsById(chatId)) {
-                logger.warn("Failed to retrieve messages: chat {} does not exist", chatId);
-                return List.of();
-            }
-
-            if (!chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId, senderId)){
-                logger.warn("Failed to retrieve messages: user {} is not a participant of chat {}", senderId, chatId);
-                return List.of();
-            }
-
-            List<Message> messages = messageRepo.findByChatChatIdOrderBySentAtAsc(chatId);
-
-            return messages!= null ? messages : List.of();
-
-        } catch (Exception e) {
-            logger.error("Failed to retrieve messages: {}", e.getMessage());
+        // Validate input
+        if (!userRepo.existsById(senderId)) {
+            logger.warn("Failed to retrieve messages: sender {} does not exist", senderId);
             return List.of();
         }
+
+        if (!chatRepo.existsById(chatId)) {
+            logger.warn("Failed to retrieve messages: chat {} does not exist", chatId);
+            return List.of();
+        }
+
+        if (!chatParticipantRepo.existsByChatChatIdAndUserUserId(chatId, senderId)){
+            logger.warn("Failed to retrieve messages: user {} is not a participant of chat {}", senderId, chatId);
+            return List.of();
+        }
+
+        List<Message> messages = messageRepo.findByChatChatIdOrderBySentAtAsc(chatId);
+
+        return messages!= null ? messages : List.of();
     }
 }

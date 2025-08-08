@@ -7,9 +7,6 @@ import jakarta.validation.constraints.NotNull;
 
 public class OnlineStatusMessage extends BaseMessage {
     // Parameters
-    @NotBlank(message = "Sender name cannot be blank")
-    private String username;
-
     @NotNull(message = "Status cannot be null")
     private OnlineStatus status;
 
@@ -18,18 +15,15 @@ public class OnlineStatusMessage extends BaseMessage {
 
     // Constructor for creating online presence messages
     public OnlineStatusMessage(OnlineStatus status, String senderID, String username){
-        super(MessageType.ONLINE_PRESENCE, senderID);
+        super(MessageType.ONLINE_PRESENCE, senderID, username);
         this.status = status;
-        this.username = username;
     }
 
     // Getters
     public OnlineStatus getStatus() {return status;}
-    public String getUsername() {return username;}
 
     // Setters
     public void setStatus(OnlineStatus status) {this.status = status;}
-    public void setUsername(String username) {this.username = username;}
 
     public String toString() {
         return "PresenceMessage{" +

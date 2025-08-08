@@ -1,9 +1,7 @@
 package com.MarinGallien.JavaChatApp.Controllers;
 
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.AuthRequests.LoginRequest;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.AuthRequests.RegisterRequest;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.AuthResponses.LoginResponse;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.GenericResponse;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.HTTPRequests.*;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.HTTPResponses.*;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.User;
 import com.MarinGallien.JavaChatApp.Services.AuthService.JWTService;
 import com.MarinGallien.JavaChatApp.Services.UserService;

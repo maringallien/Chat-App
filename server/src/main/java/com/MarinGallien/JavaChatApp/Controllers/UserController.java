@@ -1,15 +1,9 @@
 package com.MarinGallien.JavaChatApp.Controllers;
 
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.ChatIdRequest;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.UserIdRequest;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.UserIdsRequest;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.ChatIdResponse;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.UserIdResponse;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.UserIdsResponse;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.UserRequests.UpdateEmailRequest;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.UserRequests.UpdatePasswdRequest;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.UserRequests.UpdateUnameRequest;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.GenericResponse;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.GetterRequests.*;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.GetterResponses.*;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.HTTPRequests.*;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.HTTPResponses.*;
 import com.MarinGallien.JavaChatApp.Services.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;

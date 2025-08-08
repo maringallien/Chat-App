@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -25,119 +26,90 @@ public class FileService {
         this.fileMapper = fileMapper;
     }
 
-    public File uploadFile(String userId, String chatId, MultipartFile file) {
-        try {
-            // Validate inputs
-            if (!validateId(userId) || !validateId(chatId)) {
-                logger.warn("Failed to upload file: user or chat ID is null or empty");
-                return null;
-            }
-
-            if (file == null || file.isEmpty()) {
-                logger.warn("Failed to upload file: file is null or empty");
-                return null;
-            }
-
-            File uploadedFile = fileDbService.uploadFile(userId, chatId, file);
-
-            if (uploadedFile == null) {
-                logger.warn("Failed to upload file");
-                return null;
-            }
-
-            logger.info("Successfully uploaded file");
-            return uploadedFile;
-
-        } catch (Exception e) {
-            logger.error("Failed to upload file: {}", e.getMessage());
+    public File uploadFile(String userId, String chatId, MultipartFile file) throws IOException{
+        // Validate inputs
+        if (!validateId(userId) || !validateId(chatId)) {
+            logger.warn("Failed to upload file: user or chat ID is null or empty");
             return null;
         }
-    }
 
-    public Resource downloadFile(String userId, String chatId, String fileId) {
-        try {
-            // Validate inputs
-            if (!validateId(userId) || !validateId(fileId) || !validateId(chatId)) {
-                logger.warn("Failed to download file: user or file ID is null or empty");
-                return null;
-            }
-
-            Resource resource = fileDbService.downloadFile(userId, chatId, fileId);
-
-            if (resource == null) {
-                logger.warn("Failed to download file");
-                return null;
-            }
-
-            logger.info("Successfully downloading file to client");
-            return resource;
-
-        } catch (Exception e) {
-            logger.error("Failed to download file: {}", e.getMessage());
+        if (file == null || file.isEmpty()) {
+            logger.warn("Failed to upload file: file is null or empty");
             return null;
         }
+
+        File uploadedFile = fileDbService.uploadFile(userId, chatId, file);
+
+        if (uploadedFile == null) {
+            logger.warn("Failed to upload file");
+            return null;
+        }
+
+        logger.info("Successfully uploaded file");
+        return uploadedFile;
     }
 
-    public boolean deleteFile(String userId, String chatId, String fileId) {
-        try {
-            // Validate inputs
-            if (!validateId(userId) || !validateId(chatId) || !validateId(fileId)) {
-                logger.warn("Failed to delete file: user, chat, or file ID is null or empty");
-                return false;
-            }
+    public Resource downloadFile(String userId, String chatId, String fileId) throws IOException {
+        // Validate inputs
+        if (!validateId(userId) || !validateId(fileId) || !validateId(chatId)) {
+            logger.warn("Failed to download file: user or file ID is null or empty");
+            return null;
+        }
 
-            boolean deleted = fileDbService.deleteFile(userId, chatId, fileId);
+        Resource resource = fileDbService.downloadFile(userId, chatId, fileId);
 
-            if (!deleted) {
-                logger.warn("Failed to delete file");
-                return false;
-            }
+        if (resource == null) {
+            logger.warn("Failed to download file");
+            return null;
+        }
 
-            logger.info("Successfully deleted file");
-            return true;
+        logger.info("Successfully downloading file to client");
+        return resource;
+    }
 
-        } catch (Exception e) {
-            logger.error("Failed to delete file: {}", e.getMessage());
+    public boolean deleteFile(String userId, String chatId, String fileId) throws IOException {
+        // Validate inputs
+        if (!validateId(userId) || !validateId(chatId) || !validateId(fileId)) {
+            logger.warn("Failed to delete file: user, chat, or file ID is null or empty");
             return false;
         }
+
+        boolean deleted = fileDbService.deleteFile(userId, chatId, fileId);
+
+        if (!deleted) {
+            logger.warn("Failed to delete file");
+            return false;
+        }
+
+        logger.info("Successfully deleted file");
+        return true;
     }
 
     public List<FileDTO> getChatFiles(String userId, String chatId) {
-        try {
-            // Validate inputs
-            if (!validateId(userId) || !validateId(chatId)) {
-                logger.warn("Failed to retrieve files list: user or chat ID is null or empty");
-                return List.of();
-            }
-
-            List<File> chatFiles = fileDbService.getChatFiles(userId, chatId);
-
-            if (chatFiles == null) {
-                logger.warn("Failed to retrieve list of files from chat {}", chatId);
-                return List.of();
-            }
-
-            // Convert to DTO and return
-            logger.info("Successfully retrieved list of files from chat {}", chatId);
-            return fileMapper.toDTOList(chatFiles);
-
-        } catch (Exception e) {
-            logger.error("Failed to retrieve files list: {}", e.getMessage());
+        // Validate inputs
+        if (!validateId(userId) || !validateId(chatId)) {
+            logger.warn("Failed to retrieve files list: user or chat ID is null or empty");
             return List.of();
         }
+
+        List<File> chatFiles = fileDbService.getChatFiles(userId, chatId);
+
+        if (chatFiles == null) {
+            logger.warn("Failed to retrieve list of files from chat {}", chatId);
+            return List.of();
+        }
+
+        // Convert to DTO and return
+        logger.info("Successfully retrieved list of files from chat {}", chatId);
+        return fileMapper.toDTOList(chatFiles);
     }
 
     public String getFileIdFromFilename(String filename, String chatId) {
-        try {
-            if (filename == null || filename.isEmpty()) {
-                logger.warn("Failed to retrieve file ID: file name is null or empty");
-                return null;
-            }
-            return fileDbService.getFileIdByFilename(filename, chatId);
-        } catch (Exception e) {
-            logger.error("Failed to retrieve file ID from file name: {}", e.getMessage());
+        if (filename == null || filename.isEmpty()) {
+            logger.warn("Failed to retrieve file ID: file name is null or empty");
             return null;
         }
+        return fileDbService.getFileIdByFilename(filename, chatId);
     }
 
     private boolean validateId(String Id) {

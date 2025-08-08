@@ -1,10 +1,8 @@
 package com.MarinGallien.JavaChatApp.Controllers;
 
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.ContactDTO;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ContactRequests.CreateOrRemoveContactRequest;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.ContactRequests.GetUserContactsRequest;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.ContactResponses.GetUserContactsResponse;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.GenericResponse;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.HTTPRequests.*;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.HTTPResponses.*;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.Contact;
 import com.MarinGallien.JavaChatApp.Services.ContactService;
 import jakarta.validation.Valid;

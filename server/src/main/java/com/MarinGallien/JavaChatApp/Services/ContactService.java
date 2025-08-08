@@ -27,87 +27,67 @@ public class ContactService{
     }
 
     public Contact createContact(String userId, String contactUserId) {
-        try {
-            // Validate inputs
-            if (!validateId(userId) || !validateId(contactUserId)) {
-                logger.warn("Failed to create contact: invalid input parameters");
-                return null;
-            }
-
-            if (userId.equals(contactUserId)) {
-                logger.warn("Failed to create contact: user cannot add themselves as contact");
-                return null;
-            }
-
-            // Call database layer
-            Contact createdContact = contactDbService.createContact(userId, contactUserId);
-
-            if (createdContact == null) {
-                logger.warn("Failed to create contact between user {} and {}", userId, contactUserId);
-                return null;
-            }
-
-            logger.info("Successfully created contact between user {} and {}", userId, contactUserId);
-            return createdContact;
-
-        } catch (Exception e) {
-            logger.error("Error creating contact: {}", e.getMessage());
+        // Validate inputs
+        if (!validateId(userId) || !validateId(contactUserId)) {
+            logger.warn("Failed to create contact: invalid input parameters");
             return null;
         }
+
+        if (userId.equals(contactUserId)) {
+            logger.warn("Failed to create contact: user cannot add themselves as contact");
+            return null;
+        }
+
+        // Call database layer
+        Contact createdContact = contactDbService.createContact(userId, contactUserId);
+
+        if (createdContact == null) {
+            logger.warn("Failed to create contact between user {} and {}", userId, contactUserId);
+            return null;
+        }
+
+        logger.info("Successfully created contact between user {} and {}", userId, contactUserId);
+        return createdContact;
     }
 
     public boolean removeContact(String userId, String contactUserId) {
-        try {
-            // Validate inputs
-            if (!validateId(userId) || !validateId(contactUserId)) {
-                logger.warn("Failed to remove contact: invalid input parameters");
-                return false;
-            }
-
-            if (userId.equals(contactUserId)) {
-                logger.warn("Failed to remove contact: user cannot remove themselves as contact");
-                return false;
-            }
-
-            // Call database layer
-            boolean removed = contactDbService.removeContact(userId, contactUserId);
-
-            if (!removed) {
-                logger.warn("Failed to remove contact between user {} and {}", userId, contactUserId);
-                return false;
-            }
-
-            logger.info("Successfully removed contact between user {} and {}", userId, contactUserId);
-            return true;
-
-        } catch (Exception e) {
-            logger.error("Error removing contact: {}", e.getMessage());
+        // Validate inputs
+        if (!validateId(userId) || !validateId(contactUserId)) {
+            logger.warn("Failed to remove contact: invalid input parameters");
             return false;
         }
+
+        if (userId.equals(contactUserId)) {
+            logger.warn("Failed to remove contact: user cannot remove themselves as contact");
+            return false;
+        }
+
+        // Call database layer
+        boolean removed = contactDbService.removeContact(userId, contactUserId);
+
+        if (!removed) {
+            logger.warn("Failed to remove contact between user {} and {}", userId, contactUserId);
+            return false;
+        }
+
+        logger.info("Successfully removed contact between user {} and {}", userId, contactUserId);
+        return true;
     }
 
     public List<ContactDTO> getUserContactsDTOs(String userId) {
             List<User> users = getUserContacts(userId);
-            return users.isEmpty() ? List.of() : userMapper.toDTOList(users);
+        return users.isEmpty() ? List.of() : userMapper.toDTOList(users);
     }
 
     public List<User> getUserContacts(String userId) {
-        try {
-            if (!validateId(userId)) {
-                logger.warn("Failed to retrieve contacts list: used ID is null or empty");
-                return List.of();
-            }
-
-
-
-            // Convert to DTO and return
-            List<User> users = contactDbService.getUserContacts(userId);
-            return users;
-
-        } catch (Exception e) {
-            logger.error("Failed to retrieve contacts list");
+        if (!validateId(userId)) {
+            logger.warn("Failed to retrieve contacts list: used ID is null or empty");
             return List.of();
         }
+
+        // Convert to DTO and return
+        List<User> users = contactDbService.getUserContacts(userId);
+        return users;
     }
 
     private boolean validateId(String id) {

@@ -1,15 +1,10 @@
 package com.MarinGallien.JavaChatApp.Controllers;
 
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.GetterRequests.*;
+import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.GetterResponses.*;
 import com.MarinGallien.JavaChatApp.DTOs.DataEntities.FileDTO;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.ChatIdRequest;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Requests.FileIdRequest;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.ChatIdResponse;
-import com.MarinGallien.JavaChatApp.DTOs.GetterMessages.Responses.FileIdResponse;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.FileRequests.DeleteFileRequest;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.FileRequests.DownloadFileRequest;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Requests.FileRequests.GetChatFilesRequest;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.FileResponses.GetChatFilesResponse;
-import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.Responses.GenericResponse;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.HTTPRequests.*;
+import com.MarinGallien.JavaChatApp.DTOs.HTTPMessages.HTTPResponses.*;
 import com.MarinGallien.JavaChatApp.Database.JPAEntities.File;
 import com.MarinGallien.JavaChatApp.Services.FileService;
 import jakarta.validation.Valid;
