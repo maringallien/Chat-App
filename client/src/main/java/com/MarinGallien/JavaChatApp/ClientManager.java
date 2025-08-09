@@ -148,6 +148,7 @@ public class ClientManager {
                 lanternaUI.showChatNotFound(contactUname);
                 return;
             }
+
             this.currentChatId = chatId;
 
             if (!lanternaUI.enterChatMode(chatName, chatId)) {
@@ -177,7 +178,6 @@ public class ClientManager {
         Arrays.sort(sortedUnames);
         return sortedUnames[0] + "-" + sortedUnames[1];
     }
-
 
     public void enterGroupChat(String chatName) {
         try {
@@ -330,6 +330,7 @@ public class ClientManager {
             lanternaUI.showError("Failed to get chats: " + e.getMessage());
         }
     }
+
 
     // ========== CONTACT MANAGEMENT METHODS ==========
 
@@ -552,6 +553,34 @@ public class ClientManager {
 
         } catch (Exception e) {
             lanternaUI.showError("Failed to retrieve chat files: " + e.getMessage());
+        }
+    }
+
+    public void deleteFile(String chatName, String filename) {
+        try {
+            String chatId = apiService.getChatIdFromChatName(chatName);
+            if (chatId == null || chatId.isEmpty()) {
+                lanternaUI.showError("Failed to delete file: chat ID is null or empty");
+                return;
+            }
+
+            String fileId = apiService.getFileIdFromFilename(filename, chatId);
+            if (fileId == null || fileId.isEmpty()) {
+                lanternaUI.showError("Failed to delete file: file ID is null or empty");
+                return;
+            }
+
+            boolean success = apiService.deleteFile(chatId, fileId);
+
+            if (!success) {
+                lanternaUI.showError("Failed to delete file");
+                return;
+            }
+
+            lanternaUI.showError("Successfully delete file");
+
+        } catch (Exception e) {
+            lanternaUI.showError("Failed to delete file: " + e.getMessage());
         }
     }
 

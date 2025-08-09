@@ -40,7 +40,7 @@ public class APIClient {
     private String jwtToken;
 
     public APIClient() {
-        ((ch.qos.logback.classic.Logger) logger).setLevel(Level.OFF);
+//        ((ch.qos.logback.classic.Logger) logger).setLevel(Level.OFF);
         this.baseUrl = UserSession.getInstance().getHttpBaseUrl();
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
@@ -319,6 +319,15 @@ public class APIClient {
         } catch (Exception e) {
             logger.error("Failed to get chat files: {}", e.getMessage());
             return new GetChatFilesResponse(false, "Failed to get chat files", null);
+        }
+    }
+
+    public GenericResponse deleteFile(DeleteFileRequest request) {
+        try {
+            return sendAuthenticatedRequest("/api/file/delete", request, GenericResponse.class, "POST");
+        } catch (Exception e) {
+            logger.error("Failed to delete file: {}", e.getMessage());
+            return new GenericResponse(false, "Failed to delete file: " + e.getMessage());
         }
     }
 

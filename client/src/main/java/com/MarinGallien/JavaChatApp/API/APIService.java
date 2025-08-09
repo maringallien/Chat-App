@@ -204,6 +204,15 @@ public class APIService {
         }
     }
 
+    public boolean deleteFile(String chatId, String fileId) {
+        try {
+            DeleteFileRequest request = new DeleteFileRequest(getLocalUserId(), chatId, fileId);
+            GenericResponse response = apiClient.deleteFile(request);
+            return response.success();
+        } catch (Exception e){
+            return false;
+        }
+    }
 
     // ========== NETWORK GETTER METHODS ==========
 

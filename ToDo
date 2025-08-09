@@ -1,21 +1,6 @@
 
 Fixes:
-. add file handling capabilities to client
-. currently, users can be added to chat without being contacts
-. If a chat is deleted while another user is in it, user remains in chat and can keep sending messages until they leave
-. Chats can be created with the same name
-. login does not return username. So if you login without registering, username in usersssion will not be set
-. messageDTO needs to include usernames for display
-. no warning is displayed when user enters baD COMMAND
 . You forgot to implement delete file command
 
 Upgrades:
-. keep try-catch for controllers, and event handlers, maybe even service layer. Remove the rest
 . Update code to be less repetitive by using lambda and helper methods
-
-
-WebSocketMessage message = new WebSocketMessage(UserSession.getInstance().getUserId(), chatId, UserSession.getInstance().getUsername(), content);
-
-messageListener.onMessageReceived(message.getChatID(), message.getSenderID(), message.getUsername(), message.getContent());
-
-public void onMessageReceived(String chatId, String senderId, String username, String message) {

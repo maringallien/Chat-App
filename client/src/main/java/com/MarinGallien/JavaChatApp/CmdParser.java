@@ -20,7 +20,6 @@ public class CmdParser {
         String command = parts[0].toLowerCase();
 
         switch (command) {
-            // Authentication commands
             case "login":
                 if (parts.length >= 3) {
                     clientManager.handleLogin(parts[1], parts[2]);
@@ -37,7 +36,6 @@ public class CmdParser {
                 }
                 break;
 
-            // Chat commands
             case "chat":
                 if (parts.length < 2) {
                     System.out.println("Usage: hat -g <group_name> OR chat -p <contact_name>");
@@ -109,7 +107,6 @@ public class CmdParser {
                 clientManager.getUserChats();
                 break;
 
-            // Contact commands
             case "add-contact":
                 if (parts.length >= 2) {
                     clientManager.addContact(parts[1]);
@@ -130,7 +127,6 @@ public class CmdParser {
                 clientManager.getUserContacts();
                 break;
 
-            // Message commands
             case "messages":
                 if (parts.length >= 2) {
                     clientManager.getChatMessages(parts[1]);
@@ -139,7 +135,6 @@ public class CmdParser {
                 }
                 break;
 
-            // User update commands
             case "update-username":
                 if (parts.length >= 2) {
                     clientManager.updateUsername(parts[1]);
@@ -186,6 +181,13 @@ public class CmdParser {
                     System.out.println("Usage: get-files <chatname>");
                 }
                 break;
+
+            case "delete-file":
+                if (parts.length >= 3) {
+                    clientManager.deleteFile(parts[1], parts[2]);
+                } else {
+                    clientManager.displayError("Usage: delete-file <chatname> <filename>");
+                }
 
             case "clear":
                 clientManager.clearScreen();
